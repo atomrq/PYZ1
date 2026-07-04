@@ -910,6 +910,8 @@ class _TrueChainContactCandidate:
     node_index: int
     position: Vector3
     source_bead: float
+    paired_position: Vector3
+    paired_source_bead: float
     distance: float
 
 
@@ -929,6 +931,17 @@ class _PreservedKinkCandidate:
     ghost_anchor: Vector3 | None
     ghost_clearance: float | None
     pair_override: ShortestPathPair | None
+    reciprocal_position: Vector3 | None
+    reciprocal_source_bead: float | None
+
+
+@dataclass(frozen=True, slots=True)
+class _ReciprocalRetentionState:
+    preserved_nodes: list[Chain]
+    source_beads: list[list[float]]
+    pair_overrides: list[list[ShortestPathPair | None]]
+    candidates: list[list[_PreservedKinkCandidate]]
+    reduced_chains: tuple[Chain, ...]
 
 
 @dataclass(frozen=True, slots=True)
@@ -973,6 +986,9 @@ def _preserve_close_contacts(
         [None for _node in reduced_chain.nodes]
         for reduced_chain in reduced_chains
     ]
+    reciprocal_candidates: list[list[_PreservedKinkCandidate]] = [
+        [] for _chain in reduced_chains
+    ]
     projection_traces: list[ProjectionTrace] = []
     for chain_index, chain in enumerate(original_chains):
         if not chain.is_true_chain:
@@ -1003,6 +1019,11 @@ def _preserve_close_contacts(
         )
         if len(winding_candidates) == 0 and len(true_chain_candidates) > 0:
             candidates = true_chain_candidates
+            _extend_reciprocal_true_chain_candidates(
+                reciprocal_candidates,
+                true_chain_candidates,
+                source_chain_index=chain_index,
+            )
         if len(candidates) == 0:
             candidates = (_contact_kink_candidate(chain, contact),)
         projections = tuple(
@@ -1031,6 +1052,15 @@ def _preserve_close_contacts(
             + [candidate.pair_override for candidate in projected_candidates]
             + [None]
         )
+    _apply_reciprocal_true_chain_candidates(
+        _ReciprocalRetentionState(
+            preserved_nodes=preserved_nodes,
+            source_beads=source_beads,
+            pair_overrides=pair_overrides,
+            candidates=reciprocal_candidates,
+            reduced_chains=reduced_chains,
+        ),
+    )
     return _PreservedChains(
         chains=tuple(preserved_nodes),
         source_beads=tuple(tuple(chain_sources) for chain_sources in source_beads),
@@ -1039,6 +1069,33 @@ def _preserve_close_contacts(
         ),
         projection_traces=tuple(projection_traces),
     )
+
+
+def _apply_reciprocal_true_chain_candidates(
+    state: _ReciprocalRetentionState,
+) -> None:
+    for chain_index, candidates in enumerate(state.candidates):
+        if len(candidates) == 0:
+            continue
+        if state.preserved_nodes[chain_index].node_count > MIN_CHAIN_NODE_COUNT:
+            continue
+        projected_candidates = tuple(
+            sorted(candidates, key=lambda item: item.source_bead),
+        )
+        state.preserved_nodes[chain_index] = _insert_preserved_nodes(
+            state.reduced_chains[chain_index],
+            projected_candidates,
+        )
+        state.source_beads[chain_index] = (
+            [state.source_beads[chain_index][0]]
+            + [candidate.source_bead for candidate in projected_candidates]
+            + [state.source_beads[chain_index][-1]]
+        )
+        state.pair_overrides[chain_index] = (
+            [None]
+            + [candidate.pair_override for candidate in projected_candidates]
+            + [None]
+        )
 
 
 def _closest_lower_index_contact(
@@ -1103,6 +1160,10 @@ def _true_chain_contact_candidates(
                         ),
                         position=closest.first_point,
                         source_bead=segment_index + 1.0 + closest.first_fraction,
+                        paired_position=closest.second_point,
+                        paired_source_bead=(
+                            other_segment_index + 1.0 + closest.second_fraction
+                        ),
                         distance=closest.distance,
                     ),
                 )
@@ -1218,7 +1279,42 @@ def _true_chain_contact_kink_candidate(
             chain_index=candidate.chain_index,
             node_index=candidate.node_index,
         ),
+        reciprocal_position=candidate.paired_position,
+        reciprocal_source_bead=candidate.paired_source_bead,
     )
+
+
+def _extend_reciprocal_true_chain_candidates(
+    reciprocal_candidates: list[list[_PreservedKinkCandidate]],
+    candidates: tuple[_PreservedKinkCandidate, ...],
+    *,
+    source_chain_index: int,
+) -> None:
+    for source_node_index, candidate in enumerate(candidates, start=2):
+        if candidate.pair_override is None:
+            continue
+        target_chain_index = candidate.pair_override.chain_index - 1
+        reciprocal_candidates[target_chain_index].append(
+            _PreservedKinkCandidate(
+                position=candidate.reciprocal_position or candidate.position,
+                source_bead=(
+                    candidate.reciprocal_source_bead
+                    if candidate.reciprocal_source_bead is not None
+                    else candidate.source_bead
+                ),
+                shortcut=None,
+                projection_normal=None,
+                blocker_segment=None,
+                ghost_anchor=None,
+                ghost_clearance=None,
+                pair_override=ShortestPathPair(
+                    chain_index=source_chain_index + 1,
+                    node_index=source_node_index,
+                ),
+                reciprocal_position=None,
+                reciprocal_source_bead=None,
+            ),
+        )
 
 
 def _blocked_kink_candidates(
@@ -1388,6 +1484,8 @@ def _winding_obstacle_kink_candidate(
         ghost_anchor=None,
         ghost_clearance=None,
         pair_override=None,
+        reciprocal_position=None,
+        reciprocal_source_bead=None,
     )
 
 
@@ -1405,6 +1503,8 @@ def _blocked_kink_candidate(
         ghost_anchor=_blocked_ghost_anchor(chains, move.node),
         ghost_clearance=move.node.blocker_distance,
         pair_override=None,
+        reciprocal_position=None,
+        reciprocal_source_bead=None,
     )
 
 
@@ -1482,6 +1582,8 @@ def _contact_kink_candidate(
         ghost_anchor=None,
         ghost_clearance=None,
         pair_override=None,
+        reciprocal_position=None,
+        reciprocal_source_bead=None,
     )
 
 
@@ -1545,6 +1647,8 @@ def _project_to_responsible_segment(
         ghost_anchor=preserved.ghost_anchor,
         ghost_clearance=preserved.ghost_clearance,
         pair_override=preserved.pair_override,
+        reciprocal_position=preserved.reciprocal_position,
+        reciprocal_source_bead=preserved.reciprocal_source_bead,
     )
     return _ProjectionResult(
         candidate=candidate,
