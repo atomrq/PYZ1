@@ -569,6 +569,7 @@ class _PreservedKinkCandidate:
     position: Vector3
     source_bead: float
     shortcut: Segment | None
+    projection_normal: Segment | None
 
 
 @dataclass(frozen=True, slots=True)
@@ -663,7 +664,31 @@ def _blocked_kink_candidate(
         position=move.node.position,
         source_bead=move.node.source_bead,
         shortcut=move.shortcut,
+        projection_normal=_blocked_projection_normal(chains, move.node),
     )
+
+
+def _blocked_projection_normal(
+    chains: tuple[Chain, ...],
+    node: CoreTraceNode,
+) -> Segment | None:
+    if (
+        node.blocker_chain_index is None
+        or node.blocker_node_index is None
+        or node.blocker_fraction is None
+    ):
+        return None
+    blocker_chain = chains[node.blocker_chain_index - 1]
+    blocker_segment = Segment(
+        start=blocker_chain.nodes[node.blocker_node_index - 1],
+        end=blocker_chain.nodes[node.blocker_node_index],
+    )
+    blocker_delta = _subtract(blocker_segment.end, blocker_segment.start)
+    blocker_point = _add(
+        blocker_segment.start,
+        _scale(blocker_delta, node.blocker_fraction),
+    )
+    return Segment(start=node.position, end=blocker_point)
 
 
 def _candidate_trace_node(
@@ -691,6 +716,7 @@ def _contact_kink_candidate(
         position=_midpoint(segment),
         source_bead=contact.segment_index + 1.5,
         shortcut=None,
+        projection_normal=None,
     )
 
 
@@ -699,7 +725,8 @@ def _project_to_responsible_segment(
     reduced_chains: tuple[Chain, ...],
     chain_index: int,
 ) -> _ProjectionResult:
-    if preserved.shortcut is None:
+    normal_segment = preserved.projection_normal or preserved.shortcut
+    if normal_segment is None:
         return _ProjectionResult(
             candidate=preserved,
             trace=_projection_trace(
@@ -726,7 +753,7 @@ def _project_to_responsible_segment(
         )
     projected = _segment_plane_intersection(
         responsible_segment.segment,
-        preserved.shortcut,
+        normal_segment,
         preserved.position,
     )
     if projected is None:
@@ -743,6 +770,7 @@ def _project_to_responsible_segment(
         position=projected,
         source_bead=preserved.source_bead,
         shortcut=preserved.shortcut,
+        projection_normal=preserved.projection_normal,
     )
     return _ProjectionResult(
         candidate=candidate,

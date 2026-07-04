@@ -40,7 +40,7 @@ def test_write_benchmark_regression_report_when_oracles_exist_lists_modes(
     assert records[1].summary_field_mismatches == 3
     assert records[1].node_count_mismatches == 0
     assert records[1].max_node_position_delta is not None
-    assert 0.013 < records[1].max_node_position_delta < 0.014
+    assert 0.0133 < records[1].max_node_position_delta < 0.0134
     assert records[1].pyz1_core_accepted_blocked_moves == 9
     assert records[1].pyz1_core_transient_blocked_nodes == 7
     assert records[1].pyz1_core_trace_node_count == 17
@@ -55,7 +55,7 @@ def test_write_benchmark_regression_report_when_oracles_exist_lists_modes(
     assert records[1].pyz1_first_projection_responsible_chain == 2
     assert records[1].pyz1_first_projection_responsible_node == 1
     assert records[1].pyz1_first_projection_responsible_fraction is not None
-    assert 0.721 < records[1].pyz1_first_projection_responsible_fraction < 0.722
+    assert 0.722 < records[1].pyz1_first_projection_responsible_fraction < 0.723
     assert records[1].oracle_core_node_count == 17
     assert records[1].oracle_core_ghost_nodes == 6
     assert records[1].oracle_core_stage_node_count == 17
@@ -64,9 +64,9 @@ def test_write_benchmark_regression_report_when_oracles_exist_lists_modes(
     assert 4.2 < records[1].pyz1_core_stage_max_node_position_delta < 4.3
     assert records[1].pyz1_core_stage_source_bead_matches == 11
     assert records[1].pyz1_core_stage_source_bead_max_delta is not None
-    assert 0.013 < records[1].pyz1_core_stage_source_bead_max_delta < 0.014
+    assert 0.0133 < records[1].pyz1_core_stage_source_bead_max_delta < 0.0134
     assert "root_mean_squared_contour: 4.597 != 4.598" in text
-    assert "ne_modified_coil: 654.152 != 641.605" in text
+    assert "ne_modified_coil: 653.792 != 641.605" in text
     assert "pyz1 core trace nodes" in text
     assert "pyz1 core transient blocked nodes" in text
     assert "pyz1 first trace blocker fraction" in text
@@ -132,7 +132,7 @@ def test_write_benchmark_regression_report_when_stats_log_exists_lists_core_diag
     assert 4.2 < records[0].pyz1_core_stage_max_node_position_delta < 4.3
     assert records[0].pyz1_core_stage_source_bead_matches == 11
     assert records[0].pyz1_core_stage_source_bead_max_delta is not None
-    assert 0.013 < records[0].pyz1_core_stage_source_bead_max_delta < 0.014
+    assert 0.0133 < records[0].pyz1_core_stage_source_bead_max_delta < 0.0134
     assert "pyz1 core nodes" in text
     assert "pyz1 first projection fraction" in text
     assert "oracle core ghosts" in text
@@ -142,7 +142,7 @@ def test_write_benchmark_regression_report_when_stats_log_exists_lists_core_diag
     assert "| benchmark-04 | spplus | mismatch |" in text
     assert (
         "| 10 | 11 | 17 | 7 | 9 | 7 | 2 | 9 | 0.607385 | 0.936019 | 0.0186654 | "
-        "1 | 2 | 1 | 0.721617 | 17 | 11 | 1 | 6 |"
+        "1 | 2 | 1 | 0.722112 | 17 | 11 | 1 | 6 |"
     ) in text
 
 
