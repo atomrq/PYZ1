@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from pyz1.geometry import (
+    GEOMETRY_TOLERANCE,
     GeometryBox,
     MoveContext,
     NodeMove,
@@ -218,6 +219,7 @@ class _TraceNode:
 class _PreservedKinkCandidate:
     position: Vector3
     source_bead: float
+    shortcut: Segment | None
 
 
 def _preserve_close_contacts(
@@ -247,6 +249,11 @@ def _preserve_close_contacts(
         preserved = _blocked_kink_candidate(original_chains, chain_index)
         if preserved is None:
             preserved = _contact_kink_candidate(chain, contact)
+        preserved = _project_to_responsible_segment(
+            preserved,
+            reduced_chains,
+            chain_index,
+        )
         preserved_nodes[chain_index] = _insert_preserved_node(
             reduced_chains[chain_index],
             preserved.position,
@@ -320,6 +327,7 @@ def _blocked_kink_candidate(
             preserved = _PreservedKinkCandidate(
                 position=candidate.position,
                 source_bead=candidate.source_bead,
+                shortcut=shortcut,
             )
             current = (*current[:node_index], candidate, *current[node_index + 1 :])
         node_index += 1
@@ -350,7 +358,70 @@ def _contact_kink_candidate(
     return _PreservedKinkCandidate(
         position=_midpoint(segment),
         source_bead=contact.segment_index + 1.5,
+        shortcut=None,
     )
+
+
+def _project_to_responsible_segment(
+    preserved: _PreservedKinkCandidate,
+    reduced_chains: tuple[Chain, ...],
+    chain_index: int,
+) -> _PreservedKinkCandidate:
+    if preserved.shortcut is None:
+        return preserved
+    responsible_segment = _nearest_external_segment(
+        preserved.position,
+        reduced_chains,
+        chain_index,
+    )
+    if responsible_segment is None:
+        return preserved
+    projected = _segment_plane_intersection(
+        responsible_segment,
+        preserved.shortcut,
+        preserved.position,
+    )
+    if projected is None:
+        return preserved
+    return _PreservedKinkCandidate(
+        position=projected,
+        source_bead=preserved.source_bead,
+        shortcut=preserved.shortcut,
+    )
+
+
+def _nearest_external_segment(
+    position: Vector3,
+    chains: tuple[Chain, ...],
+    excluded_index: int,
+) -> Segment | None:
+    point = Segment(start=position, end=position)
+    return min(
+        (
+            segment
+            for chain_index, chain in enumerate(chains)
+            if chain_index != excluded_index
+            for segment in _chain_segments(chain)
+        ),
+        key=lambda segment: segment_distance(point, segment),
+        default=None,
+    )
+
+
+def _segment_plane_intersection(
+    segment: Segment,
+    normal_segment: Segment,
+    point_on_plane: Vector3,
+) -> Vector3 | None:
+    normal = _subtract(normal_segment.end, normal_segment.start)
+    segment_delta = _subtract(segment.end, segment.start)
+    denominator = _dot(normal, segment_delta)
+    if abs(denominator) <= GEOMETRY_TOLERANCE:
+        return None
+    fraction = _dot(normal, _subtract(point_on_plane, segment.start)) / denominator
+    if fraction < -GEOMETRY_TOLERANCE or fraction > 1.0 + GEOMETRY_TOLERANCE:
+        return None
+    return _add(segment.start, _scale(segment_delta, fraction))
 
 
 def _insert_preserved_node(
@@ -466,3 +537,19 @@ def _source_bead_for_position(original_chain: Chain, node: Vector3) -> float:
         best_distance = closest.distance
         best_source_bead = segment_index + 1.0 + closest.second_fraction
     return best_source_bead
+
+
+def _add(first: Vector3, second: Vector3) -> Vector3:
+    return Vector3(first.x + second.x, first.y + second.y, first.z + second.z)
+
+
+def _subtract(first: Vector3, second: Vector3) -> Vector3:
+    return Vector3(first.x - second.x, first.y - second.y, first.z - second.z)
+
+
+def _scale(vector: Vector3, scale: float) -> Vector3:
+    return Vector3(vector.x * scale, vector.y * scale, vector.z * scale)
+
+
+def _dot(first: Vector3, second: Vector3) -> float:
+    return first.x * second.x + first.y * second.y + first.z * second.z

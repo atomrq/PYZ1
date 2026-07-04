@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from math import isclose
+from math import isclose, sqrt
 from pathlib import Path
 
 from pyz1.models import Chain, Snapshot, Vector3
@@ -10,6 +10,7 @@ from pyz1.reducer import ReducerSettings, reduce_snapshot, write_reducer_outputs
 from pyz1.z1_io import read_z1_file
 
 FLOAT_TOLERANCE = 1.0e-12
+KINK_POSITION_TOLERANCE = 2.0e-2
 SOURCE_Z1 = Path("/Users/jiaxm/Contents/CodexProjects/source_code/Z1+")
 
 
@@ -235,7 +236,30 @@ def test_reduce_snapshot_when_benchmark_04_matches_oracle_pairing() -> None:
     assert actual_kink.pair == oracle_kink.pair
 
 
+def test_reduce_snapshot_when_benchmark_04_kink_position_approaches_oracle() -> None:
+    snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-04.Z1")
+    oracle = read_shortest_path_file(
+        Path("tests/fixtures/z1plus_oracle/benchmark-04/spplus/Z1+SP.dat"),
+    )
+
+    result = reduce_snapshot(snapshot, ReducerSettings(pairing_enabled=True))
+
+    actual_position = result.shortest_path.chains[0].nodes[1].position
+    oracle_position = oracle.chains[0].nodes[1].position
+    assert (
+        vector_distance(actual_position, oracle_position)
+        < KINK_POSITION_TOLERANCE
+    )
+
+
 def assert_vector_close(actual: Vector3, expected: Vector3) -> None:
     assert isclose(actual.x, expected.x, abs_tol=FLOAT_TOLERANCE)
     assert isclose(actual.y, expected.y, abs_tol=FLOAT_TOLERANCE)
     assert isclose(actual.z, expected.z, abs_tol=FLOAT_TOLERANCE)
+
+
+def vector_distance(first: Vector3, second: Vector3) -> float:
+    dx = first.x - second.x
+    dy = first.y - second.y
+    dz = first.z - second.z
+    return sqrt(dx * dx + dy * dy + dz * dz)
