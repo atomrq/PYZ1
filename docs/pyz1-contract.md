@@ -245,7 +245,8 @@ record measured deltas or an explicit skip reason. Current status is:
   obstacle chains are now retained in native SP output, participate as
   blockers, and contribute retained blocked-move obstacle kinks; the remaining
   gap is exact Z1+ obstacle-kink placement, source-bead selection, and SP+
-  pairing.
+  pairing. Task-62 evidence shows simple retained-trace and lower/upper hull
+  rules do not fully explain the oracle obstacle sequence.
 - SP+ structural comparison counts mismatched `other-chain other-node` pairs.
 - `benchmark-06` and larger benchmark/mode entries are classified as
   `known-invalid` under the current `node_count>1000` performance guard until
@@ -283,6 +284,9 @@ Complete now:
   for dumbbell-obstacle snapshots; benchmark-01/02/03 node-count mismatches
   drop to 5/3/1 after this contract alignment, but the true-chain obstacle kink
   sequence still mismatches Z1+
+- public Z1+ source reading is incomplete for the core default reducer:
+  `Z1+install.pl` lists `module-Z1.f90` only in the private distribution, and
+  the visible public tree supplies the Linux x86-64 ELF oracle `Z1+.ex` instead
 - benchmark regression report generation and transparent mismatch/skip status
 - default/SP+ benchmark regression runs public benchmarks 01-05 under the
   default `node_count>1000` performance guard and records measured deltas for
@@ -316,8 +320,11 @@ Not complete yet:
   structure, and SP+ pairings; benchmark-04 default/SP+ now pass the local
   report contract, benchmark-01/02/03 now preserve two-node obstacle chains in
   SP output and write retained blocked-move obstacle kinks but still miss exact
-  Z1+ obstacle-kink placement/source beads/pairings, benchmark-05 still
-  mismatches, and benchmark-06+ are still guarded for scalability.
+  Z1+ obstacle-kink placement/source beads/pairings. The public Z1+ source tree
+  does not include `module-Z1.f90`, so further clean-room reducer work must be
+  driven by papers, oracle output, and documented diagnostics rather than direct
+  translation of the missing reducer source. Benchmark-05 still mismatches, and
+  benchmark-06+ are still guarded for scalability.
 - scalable all-14 benchmark reducer regression without the current
   `node_count>1000` performance guard.
 - self-entanglement (`selfZ`) behavior in the native reducer beyond the current

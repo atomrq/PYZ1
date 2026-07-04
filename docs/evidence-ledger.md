@@ -97,6 +97,21 @@ again to 5/3/1. These cases are still mismatches: the native reducer does not
 yet reproduce the full Z1+ obstacle-kink positions, source beads, or SP+
 pairings.
 
+Task-62 records the next reducer boundary without introducing another
+heuristic. Evidence in
+`.omo/evidence/task-62-obstacle-placement/benchmark03-current-vs-oracle.txt`
+shows benchmark-03 now has the smallest obstacle case: native output writes
+three first-chain kinks, while Z1+ writes four. The native retained-trace
+blockers do not match the oracle obstacle sequence, so the remaining 01/02/03
+gap is not a parser, summary, dumbbell-output, or simple trace-retention issue.
+`winding-candidates.txt` and `hull-sequence-check.txt` show that a 2D winding
+candidate set contains the benchmark-03 oracle obstacles, but simple
+lower/upper hull filters do not generalize cleanly to benchmark-01/02.
+`z1plus-source-boundary.txt` records the public-source boundary: the distributed
+source tree lacks `module-Z1.f90`; `Z1+install.pl` lists that reducer module
+only in the private distribution, while the visible runnable oracle is the Linux
+x86-64 ELF `Z1+.ex`.
+
 ## Latest PPA/PPA+ Oracle Summary Coverage
 
 `tests/test_ppa.py` covers all currently parseable oracle PPA/PPA+ coordinate
