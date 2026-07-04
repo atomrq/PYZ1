@@ -74,6 +74,33 @@ def test_write_ppa_regression_report_when_default_ppaplus_runs_uses_z1plus_phase
     assert records[0].mean_shortest_path_contour_delta < 1.0
 
 
+def test_write_ppa_regression_report_when_oracle_coordinate_path_is_invalid(
+    tmp_path: Path,
+) -> None:
+    report_path = tmp_path / "pyz1-ppa-regression.md"
+
+    records = write_ppa_regression_report(
+        PpaRegressionRequest(
+            source_dir=SOURCE_Z1,
+            oracle_root=PPA_ORACLE_ROOT,
+            report_path=report_path,
+            modes=(PpaRegressionMode.ACCELERATED,),
+            benchmark_ids=("05",),
+            max_node_count=1000,
+        ),
+    )
+
+    text = report_path.read_text(encoding="utf-8")
+    assert records[0].status == PpaRegressionStatus.KNOWN_INVALID
+    assert records[0].oracle_coordinate_status == "invalid"
+    assert records[0].oracle_coordinate_error_line == 310
+    assert records[0].oracle_coordinate_error_reason == "invalid float"
+    assert records[0].note == "oracle PPA coordinate path invalid"
+    assert "oracle coordinate status" in text
+    assert "oracle coordinate error line" in text
+    assert "| benchmark-05 | ppaplus | known-invalid | 1000 |" in text
+
+
 def test_classify_ppa_summary_deltas_when_output_has_nan_is_known_invalid() -> None:
     status = classify_ppa_summary_deltas(
         lpp_delta=nan,

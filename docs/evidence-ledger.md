@@ -11,14 +11,14 @@ For a requirement-by-requirement completion verdict, see
 
 Latest local gate evidence:
 
-- `.omo/evidence/task-76-source-sequence-residuals/pytest.txt`: `128 passed`
+- `.omo/evidence/task-77-ppa-oracle-coordinate-status/pytest.txt`: `129 passed`
 - `.omo/evidence/task-55-ppa-coverage/ppa-focused.txt`: `21 passed`
 - `.omo/evidence/task-57-ppa-nan-root/ppa-focused.txt`: `22 passed`
-- `.omo/evidence/task-76-source-sequence-residuals/ruff.txt`:
+- `.omo/evidence/task-77-ppa-oracle-coordinate-status/ruff.txt`:
   `All checks passed!`
-- `.omo/evidence/task-76-source-sequence-residuals/basedpyright.txt`:
+- `.omo/evidence/task-77-ppa-oracle-coordinate-status/basedpyright.txt`:
   `0 errors, 0 warnings, 0 notes`
-- `.omo/evidence/task-76-source-sequence-residuals/package-smoke.txt`:
+- `.omo/evidence/task-77-ppa-oracle-coordinate-status/package-smoke.txt`:
   `2 passed`
 
 The package smoke runs `python -m pyz1` for default, SP+, PPA, and PPA+ modes
@@ -373,6 +373,17 @@ Task-57 root-cause evidence is in `.omo/evidence/task-57-ppa-nan-root/`:
   `PPA+.dat` coordinate rows. This fixture is therefore upstream-invalid for
   strict PPA+ numeric parity under the visible native settings, not a parser or
   writer failure.
+
+Task-77 promotes oracle coordinate-path validity into the native PPA regression
+report itself. Evidence in
+`.omo/evidence/task-77-ppa-oracle-coordinate-status/ppa-01-04-05-coordinate-status.txt`
+shows benchmark-01 and benchmark-04 PPA/PPA+ oracle coordinate paths are
+`parseable`, benchmark-05 PPA has missing oracle PPA output, and benchmark-05
+PPA+ is `known-invalid` before native execution because `PPA+.dat` fails at
+line 310 with `invalid float`. The PPA regression report now includes
+`oracle coordinate status`, `oracle coordinate error line`, and
+`oracle coordinate error reason` columns, so upstream-invalid coordinate
+fixtures are part of the same report surface as native summary mismatches.
 
 ## Open Boundaries
 

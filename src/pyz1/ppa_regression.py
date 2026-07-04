@@ -5,6 +5,8 @@ from enum import StrEnum
 from math import isclose, isfinite
 from typing import TYPE_CHECKING, Final
 
+from pyz1.errors import Z1OutputParseError
+from pyz1.initconfig_io import read_init_config_file
 from pyz1.output_io import format_summary_text, read_summary_file
 from pyz1.ppa import (
     PpaSettings,
@@ -48,6 +50,12 @@ class PpaRegressionStatus(StrEnum):
     KNOWN_INVALID = "known-invalid"
 
 
+class PpaOracleCoordinateStatus(StrEnum):
+    PARSEABLE = "parseable"
+    INVALID = "invalid"
+    MISSING = "missing"
+
+
 @dataclass(frozen=True, slots=True)
 class PpaRegressionSettingsOverride:
     mode: PpaRegressionMode
@@ -73,6 +81,13 @@ class PpaSummaryFieldMismatch:
 
 
 @dataclass(frozen=True, slots=True)
+class PpaOracleCoordinateDiagnostic:
+    status: PpaOracleCoordinateStatus
+    error_line: int | None
+    error_reason: str | None
+
+
+@dataclass(frozen=True, slots=True)
 class PpaRegressionRecord:
     benchmark_id: str
     mode: PpaRegressionMode
@@ -83,6 +98,9 @@ class PpaRegressionRecord:
     summary_field_mismatches: int | None
     summary_field_mismatch_details: tuple[PpaSummaryFieldMismatch, ...] | None
     node_count: int | None
+    oracle_coordinate_status: PpaOracleCoordinateStatus | None
+    oracle_coordinate_error_line: int | None
+    oracle_coordinate_error_reason: str | None
     note: str
 
 
@@ -105,17 +123,30 @@ def _compare_benchmark_mode(
     mode: PpaRegressionMode,
 ) -> PpaRegressionRecord:
     source_path = request.source_dir / f".benchmark-{benchmark_id}.Z1"
+    oracle_dir = request.oracle_root / f"benchmark-{benchmark_id}" / mode.value
     summary_path = (
-        request.oracle_root
-        / f"benchmark-{benchmark_id}"
-        / mode.value
+        oracle_dir
         / _summary_filename(mode)
     )
-    if not source_path.exists() or not summary_path.exists():
+    coordinate_path = oracle_dir / _coordinate_filename(mode)
+    if (
+        not source_path.exists()
+        or not summary_path.exists()
+        or not coordinate_path.exists()
+    ):
         return _known_invalid_record(
             benchmark_id=benchmark_id,
             mode=mode,
-            note="missing source or oracle PPA summary",
+            note="missing source or oracle PPA output",
+            coordinate_diagnostic=(
+                PpaOracleCoordinateDiagnostic(
+                    status=PpaOracleCoordinateStatus.MISSING,
+                    error_line=None,
+                    error_reason=None,
+                )
+                if not coordinate_path.exists()
+                else None
+            ),
         )
 
     snapshot = read_z1_file(source_path)
@@ -125,6 +156,16 @@ def _compare_benchmark_mode(
             mode=mode,
             note=f"skipped: node_count>{request.max_node_count}",
             node_count=snapshot.node_count,
+        )
+
+    coordinate_diagnostic = _oracle_coordinate_diagnostic(coordinate_path)
+    if coordinate_diagnostic.status == PpaOracleCoordinateStatus.INVALID:
+        return _known_invalid_record(
+            benchmark_id=benchmark_id,
+            mode=mode,
+            note="oracle PPA coordinate path invalid",
+            node_count=snapshot.node_count,
+            coordinate_diagnostic=coordinate_diagnostic,
         )
 
     result = run_ppa(snapshot, _settings_for_mode(mode, request.settings_overrides))
@@ -159,6 +200,9 @@ def _compare_benchmark_mode(
         summary_field_mismatches=len(details),
         summary_field_mismatch_details=details,
         node_count=snapshot.node_count,
+        oracle_coordinate_status=coordinate_diagnostic.status,
+        oracle_coordinate_error_line=coordinate_diagnostic.error_line,
+        oracle_coordinate_error_reason=coordinate_diagnostic.error_reason,
         note=_note_for_deltas(
             status=status,
             lpp_delta=lpp_delta,
@@ -174,6 +218,7 @@ def _known_invalid_record(
     mode: PpaRegressionMode,
     note: str,
     node_count: int | None = None,
+    coordinate_diagnostic: PpaOracleCoordinateDiagnostic | None = None,
 ) -> PpaRegressionRecord:
     return PpaRegressionRecord(
         benchmark_id=benchmark_id,
@@ -185,6 +230,21 @@ def _known_invalid_record(
         summary_field_mismatches=None,
         summary_field_mismatch_details=None,
         node_count=node_count,
+        oracle_coordinate_status=(
+            coordinate_diagnostic.status
+            if coordinate_diagnostic is not None
+            else None
+        ),
+        oracle_coordinate_error_line=(
+            coordinate_diagnostic.error_line
+            if coordinate_diagnostic is not None
+            else None
+        ),
+        oracle_coordinate_error_reason=(
+            coordinate_diagnostic.error_reason
+            if coordinate_diagnostic is not None
+            else None
+        ),
         note=note,
     )
 
@@ -209,6 +269,30 @@ def _summary_filename(mode: PpaRegressionMode) -> str:
             return "PPA-summary.dat"
         case PpaRegressionMode.ACCELERATED:
             return "PPA+summary.dat"
+
+
+def _coordinate_filename(mode: PpaRegressionMode) -> str:
+    match mode:
+        case PpaRegressionMode.STANDARD:
+            return "PPA.dat"
+        case PpaRegressionMode.ACCELERATED:
+            return "PPA+.dat"
+
+
+def _oracle_coordinate_diagnostic(path: Path) -> PpaOracleCoordinateDiagnostic:
+    try:
+        _ = read_init_config_file(path)
+    except Z1OutputParseError as exc:
+        return PpaOracleCoordinateDiagnostic(
+            status=PpaOracleCoordinateStatus.INVALID,
+            error_line=exc.line_number,
+            error_reason=exc.reason,
+        )
+    return PpaOracleCoordinateDiagnostic(
+        status=PpaOracleCoordinateStatus.PARSEABLE,
+        error_line=None,
+        error_reason=None,
+    )
 
 
 def classify_ppa_summary_deltas(
@@ -312,9 +396,14 @@ def _format_report(records: tuple[PpaRegressionRecord, ...]) -> str:
         (
             "| benchmark | mode | status | nodes | Lpp delta | "
             "Ne classical coil delta | Ne modified coil delta | "
-            "summary field mismatches | summary mismatch details | note |"
+            "summary field mismatches | oracle coordinate status | "
+            "oracle coordinate error line | oracle coordinate error reason | "
+            "summary mismatch details | note |"
         ),
-        "| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | --- | --- |",
+        (
+            "| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | --- | "
+            "---: | --- | --- | --- |"
+        ),
     ]
     lines.extend(_format_record(record) for record in records)
     return "\n".join(lines) + "\n"
@@ -328,6 +417,9 @@ def _format_record(record: PpaRegressionRecord) -> str:
         f"{_format_optional_float(record.ne_classical_coil_delta)} | "
         f"{_format_optional_float(record.ne_modified_coil_delta)} | "
         f"{_format_optional_int(record.summary_field_mismatches)} | "
+        f"{_format_optional_coordinate_status(record.oracle_coordinate_status)} | "
+        f"{_format_optional_int(record.oracle_coordinate_error_line)} | "
+        f"{_format_optional_text(record.oracle_coordinate_error_reason)} | "
         f"{_format_summary_field_details(record.summary_field_mismatch_details)} | "
         f"{record.note} |"
     )
@@ -343,6 +435,20 @@ def _format_optional_int(value: int | None) -> str:
     if value is None:
         return "n/a"
     return str(value)
+
+
+def _format_optional_coordinate_status(
+    status: PpaOracleCoordinateStatus | None,
+) -> str:
+    if status is None:
+        return "n/a"
+    return status.value
+
+
+def _format_optional_text(value: str | None) -> str:
+    if value is None:
+        return "n/a"
+    return value
 
 
 def _format_summary_field_details(
