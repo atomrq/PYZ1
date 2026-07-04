@@ -41,7 +41,7 @@ def test_write_benchmark_regression_report_when_oracles_exist_lists_modes(
     assert records[1].summary_field_mismatches == 2
     assert records[1].node_count_mismatches == 0
     assert records[1].max_node_position_delta is not None
-    assert 0.001 < records[1].max_node_position_delta < 0.003
+    assert records[1].max_node_position_delta < 0.001
     assert_benchmark_04_max_delta_location(records[1])
     assert_benchmark_04_max_delta_pair_geometry(records[1])
     assert records[1].pyz1_core_accepted_blocked_moves == 9
@@ -69,7 +69,7 @@ def test_write_benchmark_regression_report_when_oracles_exist_lists_modes(
     assert records[1].pyz1_core_stage_source_bead_max_delta is not None
     assert 0.037 < records[1].pyz1_core_stage_source_bead_max_delta < 0.038
     assert "ne_classical_coil: 10.486 != 10.485" in text
-    assert "ne_modified_coil: 644.912 != 641.605" in text
+    assert "ne_modified_coil: 643.254 != 641.605" in text
     assert "pyz1 core trace nodes" in text
     assert "pyz1 core transient blocked nodes" in text
     assert "pyz1 first trace blocker fraction" in text

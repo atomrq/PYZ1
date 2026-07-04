@@ -557,6 +557,7 @@ class _PreservedKinkCandidate:
     source_bead: float
     shortcut: Segment | None
     projection_normal: Segment | None
+    blocker_segment: Segment | None
     ghost_anchor: Vector3 | None
     ghost_clearance: float | None
 
@@ -655,8 +656,22 @@ def _blocked_kink_candidate(
         source_bead=move.node.source_bead,
         shortcut=move.shortcut,
         projection_normal=projection_normal,
+        blocker_segment=_blocked_segment(chains, move.node),
         ghost_anchor=_blocked_ghost_anchor(chains, move.node),
         ghost_clearance=move.node.blocker_distance,
+    )
+
+
+def _blocked_segment(
+    chains: tuple[Chain, ...],
+    node: CoreTraceNode,
+) -> Segment | None:
+    if node.blocker_chain_index is None or node.blocker_node_index is None:
+        return None
+    blocker_chain = chains[node.blocker_chain_index - 1]
+    return Segment(
+        start=blocker_chain.nodes[node.blocker_node_index - 1],
+        end=blocker_chain.nodes[node.blocker_node_index],
     )
 
 
@@ -664,17 +679,11 @@ def _blocked_projection_normal(
     chains: tuple[Chain, ...],
     node: CoreTraceNode,
 ) -> Segment | None:
-    if (
-        node.blocker_chain_index is None
-        or node.blocker_node_index is None
-        or node.blocker_fraction is None
-    ):
+    if node.blocker_fraction is None:
         return None
-    blocker_chain = chains[node.blocker_chain_index - 1]
-    blocker_segment = Segment(
-        start=blocker_chain.nodes[node.blocker_node_index - 1],
-        end=blocker_chain.nodes[node.blocker_node_index],
-    )
+    blocker_segment = _blocked_segment(chains, node)
+    if blocker_segment is None:
+        return None
     blocker_delta = _subtract(blocker_segment.end, blocker_segment.start)
     blocker_point = _add(
         blocker_segment.start,
@@ -687,13 +696,9 @@ def _blocked_ghost_anchor(
     chains: tuple[Chain, ...],
     node: CoreTraceNode,
 ) -> Vector3 | None:
-    if node.blocker_chain_index is None or node.blocker_node_index is None:
+    blocker_segment = _blocked_segment(chains, node)
+    if blocker_segment is None:
         return None
-    blocker_chain = chains[node.blocker_chain_index - 1]
-    blocker_segment = Segment(
-        start=blocker_chain.nodes[node.blocker_node_index - 1],
-        end=blocker_chain.nodes[node.blocker_node_index],
-    )
     closest = closest_segment_points(
         Segment(start=node.position, end=node.position),
         blocker_segment,
@@ -727,6 +732,7 @@ def _contact_kink_candidate(
         source_bead=contact.segment_index + 1.5,
         shortcut=None,
         projection_normal=None,
+        blocker_segment=None,
         ghost_anchor=None,
         ghost_clearance=None,
     )
@@ -778,12 +784,17 @@ def _project_to_responsible_segment(
                 responsible_segment=responsible_segment,
             ),
         )
-    relaxed_projected = _relaxed_projected_position(projected, preserved)
+    relaxed_projected = _relaxed_projected_position(
+        projected,
+        preserved,
+        responsible_segment.segment,
+    )
     candidate = _PreservedKinkCandidate(
         position=relaxed_projected,
         source_bead=preserved.source_bead,
         shortcut=preserved.shortcut,
         projection_normal=preserved.projection_normal,
+        blocker_segment=preserved.blocker_segment,
         ghost_anchor=preserved.ghost_anchor,
         ghost_clearance=preserved.ghost_clearance,
     )
@@ -801,6 +812,7 @@ def _project_to_responsible_segment(
 def _relaxed_projected_position(
     projected: Vector3,
     preserved: _PreservedKinkCandidate,
+    responsible_segment: Segment,
 ) -> Vector3:
     if preserved.ghost_anchor is None or preserved.ghost_clearance is None:
         return projected
@@ -809,7 +821,48 @@ def _relaxed_projected_position(
     if anchor_distance <= GEOMETRY_TOLERANCE:
         return projected
     offset = min(anchor_distance, preserved.ghost_clearance / sqrt(2.0))
-    return _add(projected, _scale(anchor_direction, offset / anchor_distance))
+    direct_position = _add(
+        projected,
+        _scale(anchor_direction, offset / anchor_distance),
+    )
+    if preserved.blocker_segment is None:
+        return direct_position
+    return _orthogonal_relaxed_projected_position(
+        projected=projected,
+        direct_position=direct_position,
+        responsible_segment=responsible_segment,
+        blocker_segment=preserved.blocker_segment,
+        reference_position=preserved.position,
+    )
+
+
+def _orthogonal_relaxed_projected_position(
+    *,
+    projected: Vector3,
+    direct_position: Vector3,
+    responsible_segment: Segment,
+    blocker_segment: Segment,
+    reference_position: Vector3,
+) -> Vector3:
+    closest = closest_segment_points(
+        Segment(start=direct_position, end=direct_position),
+        responsible_segment,
+    )
+    normal_distance = _vector_distance(direct_position, closest.second_point)
+    if normal_distance <= GEOMETRY_TOLERANCE:
+        return direct_position
+    responsible_delta = _subtract(responsible_segment.end, responsible_segment.start)
+    blocker_delta = _subtract(blocker_segment.end, blocker_segment.start)
+    normal_direction = _cross(responsible_delta, blocker_delta)
+    normal_length = sqrt(_dot(normal_direction, normal_direction))
+    if normal_length <= GEOMETRY_TOLERANCE:
+        return direct_position
+    if _dot(normal_direction, _subtract(reference_position, projected)) < 0.0:
+        normal_direction = _scale(normal_direction, -1.0)
+    return _add(
+        closest.second_point,
+        _scale(normal_direction, normal_distance / normal_length),
+    )
 
 
 def _projection_trace(
@@ -1017,3 +1070,11 @@ def _scale(vector: Vector3, scale: float) -> Vector3:
 
 def _dot(first: Vector3, second: Vector3) -> float:
     return first.x * second.x + first.y * second.y + first.z * second.z
+
+
+def _cross(first: Vector3, second: Vector3) -> Vector3:
+    return Vector3(
+        x=first.y * second.z - first.z * second.y,
+        y=first.z * second.x - first.x * second.z,
+        z=first.x * second.y - first.y * second.x,
+    )
