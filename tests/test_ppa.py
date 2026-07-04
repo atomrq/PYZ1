@@ -2,16 +2,24 @@ from __future__ import annotations
 
 from itertools import pairwise
 from math import dist, isclose
+from pathlib import Path
 from typing import TYPE_CHECKING
+
+import pytest
 
 from pyz1.initconfig_io import read_init_config_file
 from pyz1.models import Chain, Snapshot, Vector3
 from pyz1.output_io import read_summary_file
 from pyz1.output_values import read_float_values_file, read_int_values_file
 from pyz1.ppa import PpaMode, PpaPhase, PpaSettings, run_ppa, write_ppa_outputs
+from pyz1.ppa_summary import build_ppa_summary_outputs
+from pyz1.z1_io import read_z1_file
 
 if TYPE_CHECKING:
-    from pathlib import Path
+    from pyz1.output_models import Z1SummaryRecord
+
+SOURCE_Z1 = Path("/Users/jiaxm/Contents/CodexProjects/source_code/Z1+")
+PPA_FIXTURE_ROOT = Path("tests/fixtures/z1plus_oracle/corpus-ppa-ppaplus-20260703")
 
 
 def test_run_ppa_when_single_chain_is_bent_keeps_endpoints_and_shortens_path() -> None:
@@ -76,6 +84,61 @@ def test_run_ppa_when_different_chains_overlap_applies_wca_repulsion() -> None:
     assert after > before
 
 
+def test_run_ppa_when_dumbbells_exist_preserves_them_in_coordinate_output() -> None:
+    snapshot = Snapshot(
+        chains=(
+            Chain(
+                (
+                    Vector3(0.0, 0.0, 0.0),
+                    Vector3(0.5, 0.2, 0.0),
+                    Vector3(1.0, 0.0, 0.0),
+                ),
+            ),
+            Chain((Vector3(3.0, 0.0, 0.0), Vector3(4.0, 0.0, 0.0))),
+        ),
+        box=Vector3(10.0, 10.0, 10.0),
+        label=None,
+        shear=None,
+    )
+
+    result = run_ppa(snapshot, _quick_settings(PpaMode.STANDARD))
+
+    assert result.primitive_path.chain_count == 2
+    assert result.primitive_path.chains[1] == snapshot.chains[1]
+
+
+@pytest.mark.parametrize(
+    ("benchmark", "mode", "path_name", "summary_name"),
+    [
+        ("01", "ppa", "PPA.dat", "PPA-summary.dat"),
+        ("01", "ppaplus", "PPA+.dat", "PPA+summary.dat"),
+        ("04", "ppa", "PPA.dat", "PPA-summary.dat"),
+        ("04", "ppaplus", "PPA+.dat", "PPA+summary.dat"),
+    ],
+)
+def test_ppa_summary_when_oracle_coordinate_path_matches_oracle_summary(
+    benchmark: str,
+    mode: str,
+    path_name: str,
+    summary_name: str,
+) -> None:
+    original = read_z1_file(SOURCE_Z1 / f".benchmark-{benchmark}.Z1")
+    fixture_dir = PPA_FIXTURE_ROOT / f"benchmark-{benchmark}" / mode
+    primitive_path = read_init_config_file(fixture_dir / path_name)
+    expected = read_summary_file(fixture_dir / summary_name)[0]
+
+    outputs = build_ppa_summary_outputs(
+        original=original,
+        primitive_path=primitive_path,
+        timestep=1,
+    )
+
+    if benchmark == "01":
+        assert outputs.n_values[:2] == (11, 2)
+        assert len(outputs.lpp_values) == 1
+    _assert_ppa_summary_close(outputs.record, expected)
+
+
 def test_write_ppa_outputs_when_standard_mode_writes_path_and_summary(
     tmp_path: Path,
 ) -> None:
@@ -138,3 +201,49 @@ def _assert_float_values_close(
     assert len(actual) == len(expected)
     for actual_value, expected_value in zip(actual, expected, strict=True):
         assert isclose(actual_value, expected_value, abs_tol=1.0e-12)
+
+
+def _assert_ppa_summary_close(
+    actual: Z1SummaryRecord,
+    expected: Z1SummaryRecord,
+) -> None:
+    assert isclose(
+        actual.mean_shortest_path_contour,
+        expected.mean_shortest_path_contour,
+        abs_tol=1.0e-3,
+    )
+    assert isclose(
+        actual.mean_squared_end_to_end,
+        expected.mean_squared_end_to_end,
+        abs_tol=1.0e-3,
+    )
+    assert isclose(
+        actual.coil_tube_step_length,
+        expected.coil_tube_step_length,
+        abs_tol=1.0e-3,
+    )
+    assert isclose(
+        actual.root_mean_squared_contour,
+        expected.root_mean_squared_contour,
+        abs_tol=1.0e-3,
+    )
+    assert isclose(
+        actual.ne_classical_coil,
+        expected.ne_classical_coil,
+        abs_tol=1.0e-3,
+    )
+    assert isclose(
+        actual.ne_modified_coil,
+        expected.ne_modified_coil,
+        abs_tol=1.0e-3,
+    )
+    assert isclose(
+        actual.mean_original_bond_length,
+        expected.mean_original_bond_length,
+        abs_tol=1.0e-3,
+    )
+    assert isclose(
+        actual.original_bead_density,
+        expected.original_bead_density,
+        abs_tol=1.0e-3,
+    )

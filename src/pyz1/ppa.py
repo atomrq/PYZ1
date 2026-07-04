@@ -16,6 +16,7 @@ from pyz1.ppa_config import (
     accelerated_ppa_settings,
     standard_ppa_settings,
 )
+from pyz1.ppa_summary import build_ppa_summary_outputs
 from pyz1.ppa_vector import (
     PpaVector,
     add_vectors,
@@ -26,10 +27,11 @@ from pyz1.ppa_vector import (
     vector_to_model,
     zero_vector,
 )
-from pyz1.summary import SummaryOutputs, build_summary_outputs_from_coordinate_path
 
 if TYPE_CHECKING:
     from pathlib import Path
+
+    from pyz1.summary import SummaryOutputs
 
 ChainRange = tuple[int, int]
 
@@ -70,10 +72,9 @@ def run_ppa(snapshot: Snapshot, settings: PpaSettings | None = None) -> PpaResul
     for phase in resolved_settings.phases:
         _run_phase(state, phase, resolved_settings.constants)
     primitive_path = _snapshot_from_state(state)
-    summary = build_summary_outputs_from_coordinate_path(
+    summary = build_ppa_summary_outputs(
         original=snapshot,
         primitive_path=primitive_path,
-        entanglement_counts=(-1,) * snapshot.true_chain_count,
         timestep=snapshot.label or 1,
     )
     return PpaResult(primitive_path=primitive_path, summary=summary)
@@ -183,7 +184,7 @@ def _state_from_snapshot(snapshot: Snapshot) -> _PpaState:
     positions: list[PpaVector] = []
     chain_ranges: list[ChainRange] = []
     chain_for_node: list[int] = []
-    for chain_index, chain in enumerate(snapshot.true_chains):
+    for chain_index, chain in enumerate(snapshot.chains):
         start = len(positions)
         positions.extend(vector_from_model(node) for node in chain.nodes)
         end = len(positions)
