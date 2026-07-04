@@ -259,12 +259,14 @@ Complete now:
   path cannot be confused with default reducer output
 - PPA/PPA+ summary parity for all currently parseable oracle coordinate-path
   fixtures, with Fortran-overflow coordinates tracked as known-invalid
+- native PPA/PPA+ WCA force path uses deterministic periodic cell-list candidate
+  generation instead of scanning every cross-chain pair
 
 Not complete yet:
 
 - full PPA/PPA+ benchmark-level runtime parity from native integration output;
-  the scalar all-chain WCA path still needs neighbor-list or vectorized
-  acceleration without Numba/GPU.
+  the WCA path now has a local candidate list, but full native convergence still
+  needs long-run benchmark comparison against Z1+ oracle outputs.
 - default geometrical Z1+ numerical parity for `Lpp`, `Z`, shortest-path
   structure, and SP+ pairings.
 - scalable all-14 benchmark reducer regression without the current

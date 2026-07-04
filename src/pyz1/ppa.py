@@ -16,6 +16,11 @@ from pyz1.ppa_config import (
     accelerated_ppa_settings,
     standard_ppa_settings,
 )
+from pyz1.ppa_neighbors import (
+    PpaNeighborInput,
+    fold_periodic_vector,
+    wca_neighbor_pairs,
+)
 from pyz1.ppa_summary import build_ppa_summary_outputs
 from pyz1.ppa_vector import (
     PpaVector,
@@ -143,23 +148,18 @@ def _add_wca_forces(
     constants: PpaConstants,
     forces: list[PpaVector],
 ) -> None:
-    cutoff_squared = constants.wca_cutoff * constants.wca_cutoff
-    node_count = len(state.positions)
-    for first in range(node_count - 1):
-        for second in range(first + 1, node_count):
-            if state.chain_for_node[first] == state.chain_for_node[second]:
-                continue
-            separation = _minimum_image(
-                subtract_vectors(state.positions[second], state.positions[first]),
-                state,
-            )
-            r_squared = dot_vectors(separation, separation)
-            if r_squared <= 0.0 or r_squared > cutoff_squared:
-                continue
-            factor = -24.0 * (2.0 - r_squared**3) / r_squared**7
-            pair_force = scale_vector(separation, factor)
-            forces[first] = add_vectors(forces[first], pair_force)
-            forces[second] = subtract_vectors(forces[second], pair_force)
+    neighbor_input = PpaNeighborInput(
+        positions=state.positions,
+        chain_for_node=state.chain_for_node,
+        box=state.box,
+        shear=state.shear,
+        cutoff=constants.wca_cutoff,
+    )
+    for pair in wca_neighbor_pairs(neighbor_input):
+        factor = -24.0 * (2.0 - pair.distance_squared**3) / pair.distance_squared**7
+        pair_force = scale_vector(pair.separation, factor)
+        forces[pair.first] = add_vectors(forces[pair.first], pair_force)
+        forces[pair.second] = subtract_vectors(forces[pair.second], pair_force)
 
 
 def _control_temperature(state: _PpaState, temperature: float) -> None:
@@ -231,17 +231,7 @@ def _unfold_positions(state: _PpaState) -> None:
 
 
 def _fold(vector: PpaVector, state: _PpaState) -> PpaVector:
-    y_correction = round(vector.y / state.box.y)
-    x = vector.x - state.shear * y_correction
-    return PpaVector(
-        x=x - round(x / state.box.x) * state.box.x,
-        y=vector.y - y_correction * state.box.y,
-        z=vector.z - round(vector.z / state.box.z) * state.box.z,
-    )
-
-
-def _minimum_image(vector: PpaVector, state: _PpaState) -> PpaVector:
-    return _fold(vector, state)
+    return fold_periodic_vector(vector, state.box, state.shear)
 
 
 def _mean_bond_length(state: _PpaState) -> float:

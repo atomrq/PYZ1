@@ -13,7 +13,9 @@ from pyz1.models import Chain, Snapshot, Vector3
 from pyz1.output_io import read_summary_file
 from pyz1.output_values import read_float_values_file, read_int_values_file
 from pyz1.ppa import PpaMode, PpaPhase, PpaSettings, run_ppa, write_ppa_outputs
+from pyz1.ppa_neighbors import PpaNeighborInput, wca_neighbor_pairs
 from pyz1.ppa_summary import build_ppa_summary_outputs
+from pyz1.ppa_vector import PpaVector
 from pyz1.z1_io import read_z1_file
 
 if TYPE_CHECKING:
@@ -123,6 +125,28 @@ def test_run_ppa_when_dumbbells_exist_preserves_them_in_coordinate_output() -> N
 
     assert result.primitive_path.chain_count == 2
     assert result.primitive_path.chains[1] == snapshot.chains[1]
+
+
+def test_wca_neighbor_pairs_when_boundary_pair_is_near_filters_candidates() -> None:
+    neighbors = wca_neighbor_pairs(
+        PpaNeighborInput(
+            positions=(
+                PpaVector(0.2, 0.0, 0.0),
+                PpaVector(9.9, 0.0, 0.0),
+                PpaVector(5.0, 5.0, 5.0),
+                PpaVector(5.8, 5.0, 5.0),
+                PpaVector(2.0, 0.0, 0.0),
+                PpaVector(2.1, 0.0, 0.0),
+            ),
+            chain_for_node=(0, 1, 2, 3, 4, 4),
+            box=PpaVector(10.0, 10.0, 10.0),
+            shear=0.0,
+            cutoff=0.5,
+        ),
+    )
+
+    assert tuple((pair.first, pair.second) for pair in neighbors) == ((0, 1),)
+    assert isclose(neighbors[0].distance_squared, 0.09, abs_tol=1.0e-12)
 
 
 @pytest.mark.parametrize(
