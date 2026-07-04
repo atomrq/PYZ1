@@ -537,6 +537,51 @@ def test_write_benchmark_regression_report_when_spplus_sources_match_default(
     assert "oracle source sequence matches default" in text
 
 
+def test_write_benchmark_regression_report_when_pyz1_sources_differ_from_default(
+    tmp_path: Path,
+) -> None:
+    report_path = tmp_path / "pyz1-benchmark-regression.md"
+
+    records = write_benchmark_regression_report(
+        RegressionRequest(
+            source_dir=SOURCE_Z1,
+            oracle_root=ORACLE_ROOT,
+            report_path=report_path,
+            modes=(RegressionMode.SPPLUS,),
+            benchmark_ids=("01", "02"),
+        ),
+    )
+
+    text = report_path.read_text(encoding="utf-8")
+    assert records[0].pyz1_source_sequence == (
+        2.5,
+        3.5,
+        4.5,
+        6.25,
+        7.5,
+        8.5,
+        9.5,
+        10.5,
+    )
+    assert records[0].pyz1_source_sequence_mismatch_count == 13
+    assert records[0].pyz1_source_sequence_max_delta == 4.51
+    assert records[1].pyz1_source_sequence == (
+        2.5,
+        3.5,
+        4.5,
+        5.5,
+        8.125,
+        9.5,
+        10.5,
+    )
+    assert records[1].pyz1_source_sequence_mismatch_count == 10
+    assert records[1].pyz1_source_sequence_max_delta is not None
+    assert 3.65 < records[1].pyz1_source_sequence_max_delta < 3.651
+    assert "pyz1 source sequence" in text
+    assert "pyz1 source sequence mismatches" in text
+    assert "pyz1 source sequence max delta" in text
+
+
 def test_write_benchmark_regression_report_when_source_beads_differ_reports_max_delta(
     tmp_path: Path,
 ) -> None:

@@ -11,14 +11,14 @@ For a requirement-by-requirement completion verdict, see
 
 Latest local gate evidence:
 
-- `.omo/evidence/task-74-stdout-scan-diagnostics/pytest.txt`: `127 passed`
+- `.omo/evidence/task-75-source-sequence-delta/pytest.txt`: `128 passed`
 - `.omo/evidence/task-55-ppa-coverage/ppa-focused.txt`: `21 passed`
 - `.omo/evidence/task-57-ppa-nan-root/ppa-focused.txt`: `22 passed`
-- `.omo/evidence/task-74-stdout-scan-diagnostics/ruff.txt`:
+- `.omo/evidence/task-75-source-sequence-delta/ruff.txt`:
   `All checks passed!`
-- `.omo/evidence/task-74-stdout-scan-diagnostics/basedpyright.txt`:
+- `.omo/evidence/task-75-source-sequence-delta/basedpyright.txt`:
   `0 errors, 0 warnings, 0 notes`
-- `.omo/evidence/task-74-stdout-scan-diagnostics/package-smoke.txt`:
+- `.omo/evidence/task-75-source-sequence-delta/package-smoke.txt`:
   `2 passed`
 
 The package smoke runs `python -m pyz1` for default, SP+, PPA, and PPA+ modes
@@ -271,6 +271,17 @@ core crossings `15`, and core ghosts `0`, while benchmark-05 reports
 confirms these counters now enter the benchmark regression records for all
 01-05 default/SP+ cases without changing the known status split: benchmark-04
 default/SP+ remain `passed`, while 01/02/03/05 remain `mismatch`.
+
+Task-75 adds pyz1-vs-default-oracle source sequence diagnostics to the benchmark
+regression report. Evidence in
+`.omo/evidence/task-75-source-sequence-delta/regression-01-05-source-sequence-delta.txt`
+records the native first-chain entanglement source sequence, the default Z1+
+oracle source sequence, their index-wise mismatch count, and max aligned source
+delta for benchmarks 01-05 in default and SP+ modes. The current stable split is
+explicit: benchmark-04 default/SP+ have `source_mismatches=0`, while benchmark
+01/02/03/05 report `13`, `10`, `4`, and `2` mismatches respectively. This makes
+the remaining default reducer source/order blocker directly regression-testable
+instead of relying only on residual detail columns.
 
 ## Latest PPA/PPA+ Oracle Summary Coverage
 

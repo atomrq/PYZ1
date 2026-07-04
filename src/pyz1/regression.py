@@ -207,6 +207,9 @@ class RegressionRecord:
     ) = None
     oracle_default_source_sequence: tuple[float, ...] | None = None
     oracle_mode_source_sequence_matches_default: bool | None = None
+    pyz1_source_sequence: tuple[float, ...] | None = None
+    pyz1_source_sequence_mismatch_count: int | None = None
+    pyz1_source_sequence_max_delta: float | None = None
     oracle_true_chain_pair_sequence: tuple[int, ...] | None = None
 
 
@@ -438,6 +441,7 @@ def _compare_benchmark_mode(
         benchmark_id,
     )
     oracle_mode_source_sequence = _entanglement_source_sequence(oracle_shortest_path)
+    pyz1_source_sequence = _entanglement_source_sequence(result.shortest_path)
     geometry_comparison = _shortest_path_snapshot_geometry_comparison(
         result.shortest_path,
         oracle_shortest_path,
@@ -652,6 +656,15 @@ def _compare_benchmark_mode(
             oracle_default_source_sequence == oracle_mode_source_sequence
             if oracle_default_source_sequence is not None
             else None
+        ),
+        pyz1_source_sequence=pyz1_source_sequence,
+        pyz1_source_sequence_mismatch_count=_source_sequence_mismatch_count(
+            pyz1_source_sequence,
+            oracle_default_source_sequence,
+        ),
+        pyz1_source_sequence_max_delta=_source_sequence_max_delta(
+            pyz1_source_sequence,
+            oracle_default_source_sequence,
         ),
         oracle_true_chain_pair_sequence=(
             winding_candidate_coverage.oracle_true_chain_pair_sequence
@@ -1326,6 +1339,31 @@ def _entanglement_source_sequence(
     )
 
 
+def _source_sequence_mismatch_count(
+    actual: tuple[float, ...],
+    expected: tuple[float, ...] | None,
+) -> int | None:
+    if expected is None:
+        return None
+    shared_count = min(len(actual), len(expected))
+    return abs(len(actual) - len(expected)) + sum(
+        abs(actual[index] - expected[index]) > SOURCE_BEAD_TOLERANCE
+        for index in range(shared_count)
+    )
+
+
+def _source_sequence_max_delta(
+    actual: tuple[float, ...],
+    expected: tuple[float, ...] | None,
+) -> float | None:
+    if expected is None:
+        return None
+    shared_count = min(len(actual), len(expected))
+    if shared_count == 0:
+        return 0.0
+    return max(abs(actual[index] - expected[index]) for index in range(shared_count))
+
+
 def _format_report(records: tuple[RegressionRecord, ...]) -> str:
     header = (
         "| benchmark | mode | status | Lpp delta | Z delta | "
@@ -1380,6 +1418,9 @@ def _format_report(records: tuple[RegressionRecord, ...]) -> str:
         "oracle source segment ambiguity details | "
         "oracle default source sequence | "
         "oracle source sequence matches default | "
+        "pyz1 source sequence | "
+        "pyz1 source sequence mismatches | "
+        "pyz1 source sequence max delta | "
         "oracle true-chain pair sequence | "
         "summary mismatch details | note |"
     )
@@ -1463,6 +1504,9 @@ def _format_record(record: RegressionRecord) -> str:
         f"{_format_oracle_source_segment_ambiguities(record)} | "
         f"{_format_float_sequence(record.oracle_default_source_sequence)} | "
         f"{_format_oracle_source_sequence_default_match(record)} | "
+        f"{_format_float_sequence(record.pyz1_source_sequence)} | "
+        f"{_format_optional_int(record.pyz1_source_sequence_mismatch_count)} | "
+        f"{_format_optional_float(record.pyz1_source_sequence_max_delta)} | "
         f"{_format_int_sequence(record.oracle_true_chain_pair_sequence)} | "
         f"{_format_summary_field_details(record.summary_field_mismatch_details)} | "
         f"{record.note} |"
