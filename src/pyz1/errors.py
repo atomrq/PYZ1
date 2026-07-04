@@ -53,3 +53,13 @@ class Z1OutputParseError(ValueError):
     @override
     def __str__(self) -> str:
         return f"line {self.line_number}: {self.reason}"
+
+
+@dataclass(frozen=True, slots=True)
+class LammpsParseError(ValueError):
+    line_number: int
+    reason: str
+
+    @override
+    def __str__(self) -> str:
+        return f"line {self.line_number}: {self.reason}"
