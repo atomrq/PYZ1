@@ -5,6 +5,7 @@ from shutil import copyfile
 
 from pyz1.regression import (
     RegressionMode,
+    RegressionRecord,
     RegressionRequest,
     compare_spplus_pairing,
     write_benchmark_regression_report,
@@ -41,6 +42,7 @@ def test_write_benchmark_regression_report_when_oracles_exist_lists_modes(
     assert records[1].node_count_mismatches == 0
     assert records[1].max_node_position_delta is not None
     assert 0.0133 < records[1].max_node_position_delta < 0.0134
+    assert_benchmark_04_max_delta_location(records[1])
     assert records[1].pyz1_core_accepted_blocked_moves == 9
     assert records[1].pyz1_core_transient_blocked_nodes == 7
     assert records[1].pyz1_core_trace_node_count == 17
@@ -125,6 +127,7 @@ def test_write_benchmark_regression_report_when_stats_log_exists_lists_core_diag
     assert records[0].pyz1_first_projection_responsible_node == 1
     assert records[0].oracle_core_node_count == 17
     assert records[0].oracle_final_node_count == 11
+    assert_benchmark_04_max_delta_location(records[0])
     assert records[0].oracle_core_ghost_nodes == 6
     assert records[0].oracle_core_stage_node_count == 17
     assert records[0].pyz1_core_stage_node_count_mismatches == 0
@@ -144,6 +147,8 @@ def test_write_benchmark_regression_report_when_stats_log_exists_lists_core_diag
         "| 10 | 11 | 17 | 7 | 9 | 7 | 2 | 9 | 0.607385 | 0.936019 | 0.0186654 | "
         "1 | 2 | 1 | 0.722112 | 17 | 11 | 1 | 6 |"
     ) in text
+    assert "max node delta chain" in text
+    assert "| 1 | 2 | 3.5 | 3.5 |" in text
 
 
 def test_compare_spplus_pairing_when_pairing_differs_reports_mismatch() -> None:
@@ -162,3 +167,10 @@ def _spplus_snapshot_text() -> str:
     return (ORACLE_ROOT / "benchmark-04" / "spplus" / "Z1+SP.dat").read_text(
         encoding="utf-8",
     )
+
+
+def assert_benchmark_04_max_delta_location(record: RegressionRecord) -> None:
+    assert record.max_node_delta_chain_index == 1
+    assert record.max_node_delta_node_index == 2
+    assert record.max_node_delta_actual_source_bead == 3.5
+    assert record.max_node_delta_expected_source_bead == 3.5

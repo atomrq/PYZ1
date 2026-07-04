@@ -100,6 +100,10 @@ class RegressionRecord:
     pairing_mismatches: int | None
     node_count_mismatches: int | None
     max_node_position_delta: float | None
+    max_node_delta_chain_index: int | None
+    max_node_delta_node_index: int | None
+    max_node_delta_actual_source_bead: float | None
+    max_node_delta_expected_source_bead: float | None
     pyz1_core_node_count: int | None
     pyz1_final_node_count: int | None
     pyz1_core_trace_node_count: int | None
@@ -131,6 +135,10 @@ class RegressionRecord:
 class ShortestPathGeometryComparison:
     node_count_mismatches: int
     max_node_position_delta: float
+    max_node_delta_chain_index: int | None
+    max_node_delta_node_index: int | None
+    max_node_delta_actual_source_bead: float | None
+    max_node_delta_expected_source_bead: float | None
 
 
 @dataclass(frozen=True, slots=True)
@@ -190,6 +198,10 @@ def _compare_benchmark_mode(
             pairing_mismatches=None,
             node_count_mismatches=None,
             max_node_position_delta=None,
+            max_node_delta_chain_index=None,
+            max_node_delta_node_index=None,
+            max_node_delta_actual_source_bead=None,
+            max_node_delta_expected_source_bead=None,
             pyz1_core_node_count=None,
             pyz1_final_node_count=None,
             pyz1_core_trace_node_count=None,
@@ -229,6 +241,10 @@ def _compare_benchmark_mode(
             pairing_mismatches=None,
             node_count_mismatches=None,
             max_node_position_delta=None,
+            max_node_delta_chain_index=None,
+            max_node_delta_node_index=None,
+            max_node_delta_actual_source_bead=None,
+            max_node_delta_expected_source_bead=None,
             pyz1_core_node_count=None,
             pyz1_final_node_count=None,
             pyz1_core_trace_node_count=None,
@@ -296,6 +312,14 @@ def _compare_benchmark_mode(
         pairing_mismatches=pairing_mismatches,
         node_count_mismatches=geometry_comparison.node_count_mismatches,
         max_node_position_delta=geometry_comparison.max_node_position_delta,
+        max_node_delta_chain_index=geometry_comparison.max_node_delta_chain_index,
+        max_node_delta_node_index=geometry_comparison.max_node_delta_node_index,
+        max_node_delta_actual_source_bead=(
+            geometry_comparison.max_node_delta_actual_source_bead
+        ),
+        max_node_delta_expected_source_bead=(
+            geometry_comparison.max_node_delta_expected_source_bead
+        ),
         pyz1_core_node_count=result.diagnostics.core_node_count,
         pyz1_final_node_count=result.diagnostics.final_node_count,
         pyz1_core_trace_node_count=result.diagnostics.core_trace_node_count,
@@ -595,6 +619,10 @@ def _shortest_path_snapshot_geometry_comparison(
 ) -> ShortestPathGeometryComparison:
     node_count_mismatches = abs(actual.chain_count - expected.chain_count)
     max_position_delta = 0.0
+    max_delta_chain_index: int | None = None
+    max_delta_node_index: int | None = None
+    max_delta_actual_source_bead: float | None = None
+    max_delta_expected_source_bead: float | None = None
     box = GeometryBox(lengths=actual.box)
     shared_chain_count = min(actual.chain_count, expected.chain_count)
     for chain_index in range(shared_chain_count):
@@ -610,10 +638,23 @@ def _shortest_path_snapshot_geometry_comparison(
                 expected_chain.nodes[node_index].position,
                 box,
             )
-            max_position_delta = max(max_position_delta, delta)
+            if max_delta_chain_index is None or delta > max_position_delta:
+                max_position_delta = delta
+                max_delta_chain_index = chain_index + 1
+                max_delta_node_index = node_index + 1
+                max_delta_actual_source_bead = (
+                    actual_chain.nodes[node_index].source_bead
+                )
+                max_delta_expected_source_bead = (
+                    expected_chain.nodes[node_index].source_bead
+                )
     return ShortestPathGeometryComparison(
         node_count_mismatches=node_count_mismatches,
         max_node_position_delta=max_position_delta,
+        max_node_delta_chain_index=max_delta_chain_index,
+        max_node_delta_node_index=max_delta_node_index,
+        max_node_delta_actual_source_bead=max_delta_actual_source_bead,
+        max_node_delta_expected_source_bead=max_delta_expected_source_bead,
     )
 
 
@@ -699,6 +740,9 @@ def _format_report(records: tuple[RegressionRecord, ...]) -> str:
             "| benchmark | mode | status | Lpp delta | Z delta | "
             "summary field mismatches | pair mismatches | "
             "node count mismatches | max node position delta | "
+            "max node delta chain | max node delta node | "
+            "max node delta actual source | "
+            "max node delta expected source | "
             "pyz1 core nodes | pyz1 final nodes | "
             "pyz1 core trace nodes | pyz1 core trace ghosts | "
             "pyz1 core accepted blocked moves | "
@@ -722,6 +766,7 @@ def _format_report(records: tuple[RegressionRecord, ...]) -> str:
         (
             "| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | "
             "---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | "
+            "---: | ---: | ---: | ---: | "
             "---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | "
             "---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- |"
         ),
@@ -739,6 +784,10 @@ def _format_record(record: RegressionRecord) -> str:
         f"{_format_optional_int(record.pairing_mismatches)} | "
         f"{_format_optional_int(record.node_count_mismatches)} | "
         f"{_format_optional_float(record.max_node_position_delta)} | "
+        f"{_format_optional_int(record.max_node_delta_chain_index)} | "
+        f"{_format_optional_int(record.max_node_delta_node_index)} | "
+        f"{_format_optional_float(record.max_node_delta_actual_source_bead)} | "
+        f"{_format_optional_float(record.max_node_delta_expected_source_bead)} | "
         f"{_format_optional_int(record.pyz1_core_node_count)} | "
         f"{_format_optional_int(record.pyz1_final_node_count)} | "
         f"{_format_optional_int(record.pyz1_core_trace_node_count)} | "
