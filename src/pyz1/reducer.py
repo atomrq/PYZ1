@@ -63,6 +63,13 @@ class WindingObstacleSource:
 
 
 @dataclass(frozen=True, slots=True)
+class BlockedTraceObstacleContact:
+    chain_index: int
+    source_bead: float
+    retained: bool
+
+
+@dataclass(frozen=True, slots=True)
 class CoreTraceNode:
     position: Vector3
     source_bead: float
@@ -258,6 +265,22 @@ def convex_winding_obstacle_candidate_sources(
             source_bead=candidate.source_bead,
         )
         for candidate in _convex_winding_obstacle_candidates(chains, chain_index)
+    )
+
+
+def blocked_trace_obstacle_contacts(
+    chains: tuple[Chain, ...],
+    chain_index: int,
+) -> tuple[BlockedTraceObstacleContact, ...]:
+    return tuple(
+        BlockedTraceObstacleContact(
+            chain_index=move.node.blocker_chain_index,
+            source_bead=move.node.source_bead,
+            retained=move.node.retained,
+        )
+        for move in _blocked_move_trace(chains, chain_index).blocked_moves
+        if move.node.blocker_chain_index is not None
+        and not chains[move.node.blocker_chain_index - 1].is_true_chain
     )
 
 

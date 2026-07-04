@@ -11,14 +11,14 @@ For a requirement-by-requirement completion verdict, see
 
 Latest local gate evidence:
 
-- `.omo/evidence/task-70-oracle-source-order/pytest.txt`: `123 passed`
+- `.omo/evidence/task-71-blocked-trace-source-order/pytest.txt`: `124 passed`
 - `.omo/evidence/task-55-ppa-coverage/ppa-focused.txt`: `21 passed`
 - `.omo/evidence/task-57-ppa-nan-root/ppa-focused.txt`: `22 passed`
-- `.omo/evidence/task-70-oracle-source-order/ruff.txt`:
+- `.omo/evidence/task-71-blocked-trace-source-order/ruff.txt`:
   `All checks passed!`
-- `.omo/evidence/task-70-oracle-source-order/basedpyright.txt`:
+- `.omo/evidence/task-71-blocked-trace-source-order/basedpyright.txt`:
   `0 errors, 0 warnings, 0 notes`
-- `.omo/evidence/task-70-oracle-source-order/package-smoke.txt`:
+- `.omo/evidence/task-71-blocked-trace-source-order/package-smoke.txt`:
   `2 passed`
 
 The package smoke runs `python -m pyz1` for default, SP+, PPA, and PPA+ modes
@@ -216,6 +216,19 @@ records benchmark-01 max oracle-obstacle source residual
 `1.3252898191386155` at chain 146. This moves the benchmark-01/02 blocker from
 candidate coverage to the hidden source/order rule that maps obstacle contacts
 onto first-chain source beads.
+
+Task-71 adds blocked-trace obstacle sequence diagnostics to the benchmark
+regression report. Evidence in
+`.omo/evidence/task-71-blocked-trace-source-order/block-trace-probe.md` and
+`.omo/evidence/task-71-blocked-trace-source-order/regression-01-03-blocked-trace.txt`
+shows the reducer's accepted/retained blocked trace is not the missing
+source/order rule either: benchmark-01 reports blocked trace sequence
+`(27,199,41,38,38,38,166,201,201)` and retained sequence
+`(27,199,41,38,38,166,201,201)`, while the oracle sequence is
+`(95,20,80,283,128,134,275,87,208,132,140,97,36)`. Benchmark-03 similarly
+reports blocked trace sequence `(8,153,153,212,212,212,212,212,212)` while the
+oracle sequence is `(268,241,160,130)`. This rules out current blocked trace
+source carrying as the general explanation for oracle obstacle source/order.
 
 ## Latest PPA/PPA+ Oracle Summary Coverage
 

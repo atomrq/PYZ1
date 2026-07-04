@@ -25,6 +25,7 @@ from pyz1.output_models import (
 )
 from pyz1.reducer import (
     ReducerSettings,
+    blocked_trace_obstacle_contacts,
     convex_selected_winding_obstacle_chain_indices,
     convex_winding_obstacle_candidate_chain_indices,
     convex_winding_obstacle_candidate_sources,
@@ -182,6 +183,8 @@ class RegressionRecord:
     pyz1_convex_selected_winding_sequence: tuple[int, ...] | None = None
     pyz1_convex_selected_missing_oracle_sequence: tuple[int, ...] | None = None
     pyz1_convex_selected_extra_count: int | None = None
+    pyz1_blocked_trace_obstacle_sequence: tuple[int, ...] | None = None
+    pyz1_retained_blocked_trace_obstacle_sequence: tuple[int, ...] | None = None
     max_oracle_obstacle_source_delta: float | None = None
     max_oracle_obstacle_source_delta_chain: int | None = None
     oracle_obstacle_source_residuals: (
@@ -233,6 +236,8 @@ class _WindingCandidateCoverage:
     convex_selected_sequence: tuple[int, ...]
     convex_selected_missing_oracle_sequence: tuple[int, ...]
     convex_selected_extra_count: int
+    blocked_trace_obstacle_sequence: tuple[int, ...]
+    retained_blocked_trace_obstacle_sequence: tuple[int, ...]
     max_oracle_obstacle_source_delta: float
     max_oracle_obstacle_source_delta_chain: int | None
     oracle_obstacle_source_residuals: tuple[OracleObstacleSourceResidual, ...]
@@ -588,6 +593,12 @@ def _compare_benchmark_mode(
         pyz1_convex_selected_extra_count=(
             winding_candidate_coverage.convex_selected_extra_count
         ),
+        pyz1_blocked_trace_obstacle_sequence=(
+            winding_candidate_coverage.blocked_trace_obstacle_sequence
+        ),
+        pyz1_retained_blocked_trace_obstacle_sequence=(
+            winding_candidate_coverage.retained_blocked_trace_obstacle_sequence
+        ),
         max_oracle_obstacle_source_delta=(
             winding_candidate_coverage.max_oracle_obstacle_source_delta
         ),
@@ -627,6 +638,7 @@ def _winding_candidate_coverage(
         chains,
         0,
     )
+    blocked_trace_contacts = blocked_trace_obstacle_contacts(chains, 0)
     convex_sources = {
         source.chain_index: source.source_bead
         for source in convex_winding_obstacle_candidate_sources(chains, 0)
@@ -670,6 +682,14 @@ def _winding_candidate_coverage(
         convex_selected_extra_count=sum(
             chain_index not in oracle_set
             for chain_index in convex_selected_sequence
+        ),
+        blocked_trace_obstacle_sequence=tuple(
+            contact.chain_index for contact in blocked_trace_contacts
+        ),
+        retained_blocked_trace_obstacle_sequence=tuple(
+            contact.chain_index
+            for contact in blocked_trace_contacts
+            if contact.retained
         ),
         max_oracle_obstacle_source_delta=_max_oracle_obstacle_source_delta(
             oracle_source_residuals,
@@ -1175,6 +1195,8 @@ def _format_report(records: tuple[RegressionRecord, ...]) -> str:
         "pyz1 convex selected winding sequence | "
         "pyz1 convex selected missing oracle sequence | "
         "pyz1 convex selected extra candidates | "
+        "pyz1 blocked trace obstacle sequence | "
+        "pyz1 retained blocked trace obstacle sequence | "
         "max oracle obstacle source delta | "
         "max oracle obstacle source delta chain | "
         "oracle obstacle source residual details | "
@@ -1252,6 +1274,8 @@ def _format_record(record: RegressionRecord) -> str:
         f"{_format_int_sequence(record.pyz1_convex_selected_winding_sequence)} | "
         f"{_format_convex_selected_missing_sequence(record)} | "
         f"{_format_optional_int(record.pyz1_convex_selected_extra_count)} | "
+        f"{_format_int_sequence(record.pyz1_blocked_trace_obstacle_sequence)} | "
+        f"{_format_retained_blocked_trace_sequence(record)} | "
         f"{_format_optional_float(record.max_oracle_obstacle_source_delta)} | "
         f"{_format_optional_int(record.max_oracle_obstacle_source_delta_chain)} | "
         f"{_format_oracle_obstacle_source_residuals(record)} | "
@@ -1283,6 +1307,10 @@ def _format_int_sequence(values: tuple[int, ...] | None) -> str:
 
 def _format_convex_selected_missing_sequence(record: RegressionRecord) -> str:
     return _format_int_sequence(record.pyz1_convex_selected_missing_oracle_sequence)
+
+
+def _format_retained_blocked_trace_sequence(record: RegressionRecord) -> str:
+    return _format_int_sequence(record.pyz1_retained_blocked_trace_obstacle_sequence)
 
 
 def _format_oracle_obstacle_source_residuals(record: RegressionRecord) -> str:

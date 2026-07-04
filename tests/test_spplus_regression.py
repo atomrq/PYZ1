@@ -375,6 +375,61 @@ def test_write_benchmark_regression_report_when_oracle_obstacle_sources_differ(
     assert "80: 10.9436!=2.19(d=8.75364)" in text
 
 
+def test_write_benchmark_regression_report_when_blocked_trace_sequence_differs(
+    tmp_path: Path,
+) -> None:
+    report_path = tmp_path / "pyz1-benchmark-regression.md"
+
+    records = write_benchmark_regression_report(
+        RegressionRequest(
+            source_dir=SOURCE_Z1,
+            oracle_root=ORACLE_ROOT,
+            report_path=report_path,
+            modes=(RegressionMode.SPPLUS,),
+            benchmark_ids=("01", "03"),
+        ),
+    )
+
+    text = report_path.read_text(encoding="utf-8")
+    benchmark_01 = records[0]
+    benchmark_03 = records[1]
+    assert benchmark_01.pyz1_blocked_trace_obstacle_sequence == (
+        27,
+        199,
+        41,
+        38,
+        38,
+        38,
+        166,
+        201,
+        201,
+    )
+    assert benchmark_01.pyz1_retained_blocked_trace_obstacle_sequence == (
+        27,
+        199,
+        41,
+        38,
+        38,
+        166,
+        201,
+        201,
+    )
+    assert benchmark_03.pyz1_blocked_trace_obstacle_sequence == (
+        8,
+        153,
+        153,
+        212,
+        212,
+        212,
+        212,
+        212,
+        212,
+    )
+    assert benchmark_03.oracle_obstacle_pair_sequence == (268, 241, 160, 130)
+    assert "pyz1 blocked trace obstacle sequence" in text
+    assert "pyz1 retained blocked trace obstacle sequence" in text
+
+
 def test_write_benchmark_regression_report_when_source_beads_differ_reports_max_delta(
     tmp_path: Path,
 ) -> None:
