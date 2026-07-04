@@ -39,6 +39,9 @@ ulimit -n 1000000; micromamba run -n pyz1 pyz1-benchmark-regression \
 
 By default this discovers every `benchmark-*` directory under the oracle root.
 Pass `--benchmark-id` repeatedly to restrict the report to a smaller slice.
+Use `--max-node-count` to tune the benchmark skip guard, and
+`--trace-diagnostics-max-node-count` to disable expensive trace diagnostics for
+larger runnable cases while still reporting summary and geometry deltas.
 
 Run native PPA/PPA+ modes:
 

@@ -42,6 +42,78 @@ def test_regression_cli_when_benchmark_requested_writes_report(
     assert "| benchmark-04 | selfz | passed |" in text
 
 
+def test_regression_cli_when_node_guard_requested_reports_known_invalid(
+    tmp_path: Path,
+) -> None:
+    report_path = tmp_path / "pyz1-benchmark-regression.md"
+
+    result = subprocess.run(  # noqa: S603 - command is fixed package smoke.
+        [
+            sys.executable,
+            "-m",
+            "pyz1.regression_cli",
+            "--source-dir",
+            str(SOURCE_Z1),
+            "--oracle-root",
+            str(ORACLE_ROOT),
+            "--report-path",
+            str(report_path),
+            "--benchmark-id",
+            "04",
+            "--max-node-count",
+            "1",
+            "--trace-diagnostics-max-node-count",
+            "1",
+        ],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+
+    assert result.returncode == 0, result.stdout + result.stderr
+    text = report_path.read_text(encoding="utf-8")
+    assert "wrote 3 benchmark regression records" in result.stdout
+    assert "| benchmark-04 | default | known-invalid |" in text
+    assert "| benchmark-04 | spplus | known-invalid |" in text
+    assert "| benchmark-04 | selfz | known-invalid |" in text
+    assert "skipped: node_count>1" in text
+
+
+def test_regression_cli_when_trace_guard_requested_disables_trace_diagnostics(
+    tmp_path: Path,
+) -> None:
+    report_path = tmp_path / "pyz1-benchmark-regression.md"
+
+    result = subprocess.run(  # noqa: S603 - command is fixed package smoke.
+        [
+            sys.executable,
+            "-m",
+            "pyz1.regression_cli",
+            "--source-dir",
+            str(SOURCE_Z1),
+            "--oracle-root",
+            str(ORACLE_ROOT),
+            "--report-path",
+            str(report_path),
+            "--benchmark-id",
+            "04",
+            "--mode",
+            "spplus",
+            "--trace-diagnostics-max-node-count",
+            "1",
+        ],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+
+    assert result.returncode == 0, result.stdout + result.stderr
+    text = report_path.read_text(encoding="utf-8")
+    assert "wrote 1 benchmark regression records" in result.stdout
+    assert "| benchmark-04 | spplus | passed |" in text
+    assert "| 10 | 11 | 10 | 0 | 0 | 0 | n/a | n/a | n/a | n/a | n/a |" in text
+
+
 def test_discover_benchmark_ids_when_root_has_mixed_entries_returns_sorted_ids(
     tmp_path: Path,
 ) -> None:

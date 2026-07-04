@@ -29,7 +29,7 @@ app = typer.Typer(
 
 
 @app.callback(invoke_without_command=True)
-def main(
+def main(  # noqa: PLR0913 - Typer callback parameters define the CLI surface.
     source_dir: Annotated[
         Path,
         typer.Option(
@@ -65,6 +65,20 @@ def main(
             help="Regression mode to include, repeatable.",
         ),
     ] = None,
+    max_node_count: Annotated[
+        int,
+        typer.Option(
+            "--max-node-count",
+            help="Skip benchmarks above this source node count.",
+        ),
+    ] = 1000,
+    trace_diagnostics_max_node_count: Annotated[
+        int,
+        typer.Option(
+            "--trace-diagnostics-max-node-count",
+            help="Disable expensive trace diagnostics above this source node count.",
+        ),
+    ] = 1000,
 ) -> None:
     requested_benchmark_ids = (
         tuple(benchmark_ids)
@@ -79,6 +93,8 @@ def main(
             report_path=report_path,
             modes=requested_modes,
             benchmark_ids=requested_benchmark_ids,
+            max_node_count=max_node_count,
+            trace_diagnostics_max_node_count=trace_diagnostics_max_node_count,
         ),
     )
     typer.echo(
