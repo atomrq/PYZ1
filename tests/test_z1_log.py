@@ -47,3 +47,6 @@ def test_reducer_scan_diagnostics_when_postprocess_scan_exists() -> None:
     assert diagnostics.final_node_count == 11
     assert diagnostics.core_mean_shortest_path_contour == 4.231
     assert diagnostics.final_mean_shortest_path_contour == 4.230
+    assert diagnostics.core_crossings == 1
+    assert diagnostics.core_ghost_nodes == 6
+    assert diagnostics.core_handled_crosspoints == 100

@@ -40,6 +40,9 @@ class Z1ReducerScanDiagnostics:
     final_node_count: int
     core_mean_shortest_path_contour: float
     final_mean_shortest_path_contour: float
+    core_crossings: int
+    core_ghost_nodes: int
+    core_handled_crosspoints: int
 
 
 def read_z1_log_file(path: Path) -> Z1Log:
@@ -56,6 +59,9 @@ def reducer_scan_diagnostics(log: Z1Log) -> Z1ReducerScanDiagnostics | None:
         final_node_count=final_record.node_count,
         core_mean_shortest_path_contour=core_record.mean_shortest_path_contour,
         final_mean_shortest_path_contour=final_record.mean_shortest_path_contour,
+        core_crossings=core_record.crossings,
+        core_ghost_nodes=core_record.ghost_nodes,
+        core_handled_crosspoints=core_record.handled_crosspoints,
     )
 
 

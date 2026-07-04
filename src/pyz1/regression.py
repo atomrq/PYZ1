@@ -95,6 +95,8 @@ class RegressionRecord:
     pyz1_final_node_count: int | None
     oracle_core_node_count: int | None
     oracle_final_node_count: int | None
+    oracle_core_crossings: int | None
+    oracle_core_ghost_nodes: int | None
     note: str
 
 
@@ -157,6 +159,8 @@ def _compare_benchmark_mode(
             pyz1_final_node_count=None,
             oracle_core_node_count=None,
             oracle_final_node_count=None,
+            oracle_core_crossings=None,
+            oracle_core_ghost_nodes=None,
             note="missing source or oracle output",
         )
     snapshot = read_z1_file(source_path)
@@ -176,6 +180,8 @@ def _compare_benchmark_mode(
             pyz1_final_node_count=None,
             oracle_core_node_count=None,
             oracle_final_node_count=None,
+            oracle_core_crossings=None,
+            oracle_core_ghost_nodes=None,
             note=f"skipped: node_count>{request.max_node_count}",
         )
     result = reduce_snapshot(snapshot, _settings_for_mode(mode))
@@ -218,6 +224,16 @@ def _compare_benchmark_mode(
         ),
         oracle_final_node_count=(
             oracle_diagnostics.final_node_count
+            if oracle_diagnostics is not None
+            else None
+        ),
+        oracle_core_crossings=(
+            oracle_diagnostics.core_crossings
+            if oracle_diagnostics is not None
+            else None
+        ),
+        oracle_core_ghost_nodes=(
+            oracle_diagnostics.core_ghost_nodes
             if oracle_diagnostics is not None
             else None
         ),
@@ -381,11 +397,12 @@ def _format_report(records: tuple[RegressionRecord, ...]) -> str:
             "node count mismatches | max node position delta | "
             "pyz1 core nodes | pyz1 final nodes | "
             "oracle core nodes | oracle final nodes | "
+            "oracle core crossings | oracle core ghosts | "
             "summary mismatch details | note |"
         ),
         (
             "| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | "
-            "---: | ---: | ---: | ---: | --- | --- |"
+            "---: | ---: | ---: | ---: | ---: | ---: | --- | --- |"
         ),
     ]
     lines.extend(_format_record(record) for record in records)
@@ -405,6 +422,8 @@ def _format_record(record: RegressionRecord) -> str:
         f"{_format_optional_int(record.pyz1_final_node_count)} | "
         f"{_format_optional_int(record.oracle_core_node_count)} | "
         f"{_format_optional_int(record.oracle_final_node_count)} | "
+        f"{_format_optional_int(record.oracle_core_crossings)} | "
+        f"{_format_optional_int(record.oracle_core_ghost_nodes)} | "
         f"{_format_summary_field_details(record.summary_field_mismatch_details)} | "
         f"{record.note} |"
     )
