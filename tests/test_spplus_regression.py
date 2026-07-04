@@ -38,7 +38,11 @@ def test_write_benchmark_regression_report_when_oracles_exist_lists_modes(
     text = report_path.read_text(encoding="utf-8")
     assert len(records) == 2
     assert "| benchmark-04 | default |" in text
-    assert "| benchmark-04 | spplus |" in text
+    assert "| benchmark-04 | spplus | passed |" in text
+    assert tuple(record.status for record in records) == (
+        RegressionStatus.PASSED,
+        RegressionStatus.PASSED,
+    )
     assert "summary field mismatches" in text
     assert "max node position delta" in text
     assert "node count mismatches" in text
@@ -147,7 +151,7 @@ def test_write_benchmark_regression_report_when_stats_log_exists_lists_core_diag
     assert "oracle core stage nodes" in text
     assert "pyz1 core stage node count mismatches" in text
     assert "pyz1 core stage source bead matches" in text
-    assert "| benchmark-04 | spplus | mismatch |" in text
+    assert "| benchmark-04 | spplus | passed |" in text
     assert "max node delta chain" in text
     assert "| 1 | 2 | 3.5 | 3.5 |" in text
     assert "max node actual pair fraction" in text

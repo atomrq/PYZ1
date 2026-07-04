@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import StrEnum
-from math import isclose, sqrt
+from math import sqrt
 from typing import TYPE_CHECKING, Final
 
 from pyz1.geometry import (
@@ -37,9 +37,8 @@ if TYPE_CHECKING:
     from pyz1.output_models import ShortestPathPair
     from pyz1.reducer import CoreStageNode, CoreTraceNode, ProjectionTrace
 
-LPP_TOLERANCE: Final = 1.0e-6
-Z_TOLERANCE: Final = 1.0e-6
 SOURCE_BEAD_TOLERANCE: Final = 1.0e-9
+SHORTEST_PATH_POSITION_TOLERANCE: Final = 1.0e-3
 CORE_STAGE_NODE_FILENAME: Final = "Z1+NODES-best-match-step1-entry.dat"
 SUMMARY_FIELD_NAMES: Final = (
     "timestep",
@@ -167,6 +166,14 @@ class CoreStageGeometryComparison:
     max_node_position_delta: float
     source_bead_matches: int
     source_bead_max_node_position_delta: float
+
+
+@dataclass(frozen=True, slots=True)
+class _RegressionStatusInput:
+    summary_field_mismatches: int
+    pairing_mismatches: int | None
+    node_count_mismatches: int
+    max_node_position_delta: float
 
 
 def compare_spplus_pairing(
@@ -336,7 +343,14 @@ def _compare_benchmark_mode(
         result.diagnostics.core_trace_blocked_nodes,
     )
     first_projection = _first_projection_trace(result.diagnostics.projection_traces)
-    status = _status_from_deltas(lpp_delta, z_delta, pairing_mismatches)
+    status = _status_from_output_comparison(
+        _RegressionStatusInput(
+            summary_field_mismatches=summary_field_mismatches,
+            pairing_mismatches=pairing_mismatches,
+            node_count_mismatches=geometry_comparison.node_count_mismatches,
+            max_node_position_delta=geometry_comparison.max_node_position_delta,
+        ),
+    )
     return RegressionRecord(
         benchmark_id=benchmark_id,
         mode=mode,
@@ -801,16 +815,18 @@ def _summary_field_name(index: int) -> str:
     return f"field_{index + 1}"
 
 
-def _status_from_deltas(
-    lpp_delta: float,
-    z_delta: float,
-    pairing_mismatches: int | None,
+def _status_from_output_comparison(
+    status_input: _RegressionStatusInput,
 ) -> RegressionStatus:
-    pairing_clean = pairing_mismatches is None or pairing_mismatches == 0
+    pairing_clean = (
+        status_input.pairing_mismatches is None
+        or status_input.pairing_mismatches == 0
+    )
     if (
-        isclose(lpp_delta, 0.0, abs_tol=LPP_TOLERANCE)
-        and isclose(z_delta, 0.0, abs_tol=Z_TOLERANCE)
+        status_input.summary_field_mismatches == 0
         and pairing_clean
+        and status_input.node_count_mismatches == 0
+        and status_input.max_node_position_delta <= SHORTEST_PATH_POSITION_TOLERANCE
     ):
         return RegressionStatus.PASSED
     return RegressionStatus.MISMATCH

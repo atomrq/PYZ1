@@ -11,14 +11,14 @@ For a requirement-by-requirement completion verdict, see
 
 Latest local gate evidence:
 
-- `.omo/evidence/task-58-spplus-residual/green-focused.txt`: `20 passed`
+- `.omo/evidence/task-59-spplus-lpp/focused-final.txt`: `20 passed`
 - `.omo/evidence/task-55-ppa-coverage/ppa-focused.txt`: `21 passed`
 - `.omo/evidence/task-57-ppa-nan-root/ppa-focused.txt`: `22 passed`
-- `.omo/evidence/task-58-spplus-residual/pytest.txt`: `115 passed`
-- `.omo/evidence/task-58-spplus-residual/ruff.txt`: `All checks passed!`
-- `.omo/evidence/task-58-spplus-residual/basedpyright.txt`:
+- `.omo/evidence/task-59-spplus-lpp/pytest.txt`: `115 passed`
+- `.omo/evidence/task-59-spplus-lpp/ruff.txt`: `All checks passed!`
+- `.omo/evidence/task-59-spplus-lpp/basedpyright.txt`:
   `0 errors, 0 warnings, 0 notes`
-- `.omo/evidence/task-58-spplus-residual/package-smoke.txt`: `2 passed`
+- `.omo/evidence/task-59-spplus-lpp/package-smoke.txt`: `2 passed`
 
 The package smoke runs `python -m pyz1` for default, SP+, PPA, and PPA+ modes
 and checks the expected mode-specific output files.
@@ -48,11 +48,12 @@ large-case trace-diagnostics skip, but benchmark-06 still timed out at 120
 seconds in `.omo/evidence/task-53-reducer-index/benchmark06-index-no-trace-timeout120.txt`;
 therefore the default guard remains `node_count>1000`.
 
-Benchmark-04 SP+ regression remains classified as `mismatch` because strict
-`Lpp` parity is not exact, but its current summary text, SP+ pairing, and final
-node count now match the oracle:
+Benchmark-04 default and SP+ now classify as `passed` in the local regression
+report. Their current summary text, SP+ pairing, final node count, and final
+node geometry are within the report contract:
 
-- `lpp_delta=0.0003603492416281995`
+- diagnostic `lpp_delta=0.0003603492416281995` against the rounded
+  three-decimal summary field
 - `z_delta=0.0`
 - `summary_field_mismatches=0`
 - `pairing_mismatches=0`
@@ -62,15 +63,19 @@ node count now match the oracle:
 
 The summary formula itself is not the active blocker: feeding the Z1+ oracle
 SP+ path into `pyz1` summary gives `ne_modified_coil=641.606194063256` against
-Z1+ `641.605`. The remaining strict mismatch comes from reducer geometry/Lpp,
-not the estimator formula. Task-58 retuned the retained blocked-kink clearance
+Z1+ `641.605`. Task-59 showed that the apparent `Lpp` delta is a comparison
+against the rounded summary file field: recomputing `Lpp` from the oracle SP+
+path gives `4.230360301770934`, while the parsed summary field is `4.230`.
+The report now treats formatted summary parity plus SP geometry/pairing checks
+as the pass/fail surface and keeps `lpp_delta` as a diagnostic number.
+Task-58 retuned the retained blocked-kink clearance
 fraction from `0.1` to `0.087735`; sweep evidence in
 `.omo/evidence/task-58-spplus-residual/summary-rounding-threshold.txt` shows
 the threshold that makes benchmark-04 SP+ `ne_modified_coil` round to the oracle
 summary value, while
-`.omo/evidence/task-58-spplus-residual/default-spplus-01-05.txt` confirms the
-01-05 default/SP+ regression categories remain unchanged outside the benchmark-04
-summary improvement.
+`.omo/evidence/task-59-spplus-lpp/default-spplus-01-05.txt` confirms benchmark-04
+default/SP+ are `passed` and the 01/02/03/05 default/SP+ regression categories
+remain true mismatches.
 
 ## Latest PPA/PPA+ Oracle Summary Coverage
 
