@@ -52,6 +52,25 @@ def test_write_ppa_regression_report_when_oracles_exist_lists_native_modes(
     assert records[1].status == "mismatch"
 
 
+def test_write_ppa_regression_report_when_default_ppaplus_runs_uses_z1plus_phase_stop(
+    tmp_path: Path,
+) -> None:
+    report_path = tmp_path / "pyz1-ppa-regression.md"
+
+    records = write_ppa_regression_report(
+        PpaRegressionRequest(
+            source_dir=SOURCE_Z1,
+            oracle_root=PPA_ORACLE_ROOT,
+            report_path=report_path,
+            modes=(PpaRegressionMode.ACCELERATED,),
+            benchmark_ids=("04",),
+        ),
+    )
+
+    assert records[0].mean_shortest_path_contour_delta is not None
+    assert records[0].mean_shortest_path_contour_delta < 1.0
+
+
 def _quick_settings(mode: PpaMode) -> PpaSettings:
     return PpaSettings(
         mode=mode,

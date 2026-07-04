@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from math import sqrt
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Final
 
 from pyz1.initconfig_io import write_init_config_file
 from pyz1.models import Chain, Snapshot
@@ -39,6 +39,17 @@ if TYPE_CHECKING:
     from pyz1.summary import SummaryOutputs
 
 ChainRange = tuple[int, int]
+PPA_EARLY_STOP_MAX_GROWTH_PHASE: Final[int] = 3
+PPA_EARLY_STOP_MIN_STEP: Final[int] = 300
+PPA_EARLY_STOP_RATIO_LIMITS: Final[tuple[float, float, float, float, float]] = (
+    0.0,
+    1.01,
+    1.001,
+    1.0001,
+    1.00005,
+)
+PPA_EARLY_STOP_PHASE4_DELTA: Final[float] = 0.005
+PPA_EARLY_STOP_PHASE5_DELTA: Final[float] = 0.001
 
 __all__ = (
     "PpaMode",
@@ -70,12 +81,25 @@ class _PpaState:
     shear: float
 
 
+@dataclass(frozen=True, slots=True)
+class _PpaRunProgress:
+    global_step: int
+    last_system_lpp: float
+
+
 def run_ppa(snapshot: Snapshot, settings: PpaSettings | None = None) -> PpaResult:
     resolved_settings = settings or accelerated_ppa_settings()
     state = _state_from_snapshot(snapshot)
     _unfold_positions(state)
-    for phase in resolved_settings.phases:
-        _run_phase(state, phase, resolved_settings.constants)
+    progress = _PpaRunProgress(global_step=0, last_system_lpp=_system_lpp(state))
+    for phase_index, phase in enumerate(resolved_settings.phases, start=1):
+        progress = _run_phase(
+            state,
+            phase,
+            phase_index,
+            resolved_settings,
+            progress,
+        )
     primitive_path = _snapshot_from_state(state)
     summary = build_ppa_summary_outputs(
         original=snapshot,
@@ -101,19 +125,79 @@ def write_ppa_outputs(directory: Path, result: PpaResult, mode: PpaMode) -> None
     write_int_values_file(directory / "N_values.dat", result.summary.n_values)
 
 
-def _run_phase(state: _PpaState, phase: PpaPhase, constants: PpaConstants) -> None:
-    forces = _forces(state, constants)
+def _run_phase(
+    state: _PpaState,
+    phase: PpaPhase,
+    phase_index: int,
+    settings: PpaSettings,
+    progress: _PpaRunProgress,
+) -> _PpaRunProgress:
+    forces = _forces(state, settings.constants)
     half_step = 0.5 * phase.timestep
+    global_step = progress.global_step
+    last_system_lpp = progress.last_system_lpp
+    current_system_lpp = last_system_lpp
+    nav = round(1.0 / phase.timestep)
     for _ in range(phase.step_count):
+        global_step += 1
         state.velocities = _add_scaled_series(state.velocities, forces, half_step)
         state.positions = _add_scaled_series(
             state.positions,
             state.velocities,
             phase.timestep,
         )
-        forces = _forces(state, constants)
+        forces = _forces(state, settings.constants)
         state.velocities = _add_scaled_series(state.velocities, forces, half_step)
         _control_temperature(state, phase.temperature)
+        if not settings.early_stop or global_step % nav != 1:
+            continue
+        current_system_lpp = _system_lpp(state)
+        if _should_stop_phase(
+            phase_index=phase_index,
+            global_step=global_step,
+            current_system_lpp=current_system_lpp,
+            last_system_lpp=last_system_lpp,
+        ):
+            last_system_lpp = current_system_lpp
+            break
+        last_system_lpp = current_system_lpp
+    return _PpaRunProgress(
+        global_step=global_step,
+        last_system_lpp=current_system_lpp,
+    )
+
+
+def _should_stop_phase(
+    *,
+    phase_index: int,
+    global_step: int,
+    current_system_lpp: float,
+    last_system_lpp: float,
+) -> bool:
+    should_stop = (
+        current_system_lpp >= last_system_lpp
+        and phase_index <= PPA_EARLY_STOP_MAX_GROWTH_PHASE
+    )
+    if (
+        should_stop
+        or current_system_lpp <= 0.0
+        or global_step <= PPA_EARLY_STOP_MIN_STEP
+    ):
+        return should_stop
+    ratio = last_system_lpp / current_system_lpp
+    delta = current_system_lpp - last_system_lpp
+    match phase_index:
+        case 1 | 2 | 3:
+            should_stop = ratio <= PPA_EARLY_STOP_RATIO_LIMITS[phase_index]
+        case 4:
+            should_stop = ratio <= PPA_EARLY_STOP_RATIO_LIMITS[
+                phase_index
+            ] or delta <= PPA_EARLY_STOP_PHASE4_DELTA
+        case 5:
+            should_stop = delta <= PPA_EARLY_STOP_PHASE5_DELTA
+        case _:
+            should_stop = False
+    return should_stop
 
 
 def _forces(state: _PpaState, constants: PpaConstants) -> list[PpaVector]:
@@ -246,6 +330,18 @@ def _mean_bond_length(state: _PpaState) -> float:
             total += sqrt(dot_vectors(segment, segment))
             bond_count += 1
     return total / bond_count
+
+
+def _system_lpp(state: _PpaState) -> float:
+    total = 0.0
+    for start, end in state.chain_ranges:
+        for first in range(start, end - 1):
+            segment = subtract_vectors(
+                state.positions[first + 1],
+                state.positions[first],
+            )
+            total += sqrt(dot_vectors(segment, segment))
+    return total
 
 
 def _add_scaled_series(

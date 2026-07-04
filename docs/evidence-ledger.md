@@ -8,11 +8,10 @@ parity claim.
 
 Latest local gate evidence:
 
-- `.omo/evidence/task-48-ppa-native-regression/ppa-regression-focused.txt`:
-  `1 passed`
-- `.omo/evidence/task-48-ppa-native-regression/pytest.txt`: `110 passed`
-- `.omo/evidence/task-48-ppa-native-regression/ruff.txt`: `All checks passed!`
-- `.omo/evidence/task-48-ppa-native-regression/basedpyright.txt`:
+- `.omo/evidence/task-49-ppa-lpp-debug/ppa-focused.txt`: `20 passed`
+- `.omo/evidence/task-49-ppa-lpp-debug/pytest.txt`: `111 passed`
+- `.omo/evidence/task-49-ppa-lpp-debug/ruff.txt`: `All checks passed!`
+- `.omo/evidence/task-49-ppa-lpp-debug/basedpyright.txt`:
   `0 errors, 0 warnings, 0 notes`
 
 The package smoke runs `python -m pyz1` for default, SP+, PPA, and PPA+ modes
@@ -26,7 +25,7 @@ and checks the expected mode-specific output files.
 | Z1+ output parser/writer | Summary, SP/SP+, initconfig, value files, PPA, and PPA+ round-trip tests | `tests/test_output_io.py`, `tests/test_output_values.py`, `tests/test_initconfig_io.py` |
 | Summary and `Ne` estimators | Estimator unit tests plus oracle-SP-through-pyz1 summary parity for benchmark-04 SP+ | `tests/test_estimators.py`, `tests/test_summary.py`, `tests/test_spplus_regression.py`, `.omo/evidence/task-42-summary-ne-source/` |
 | Oracle fixture tooling and parity reporting | Oracle manifest tests, CLI help smoke, benchmark regression report tests, and logged oracle run metadata | `tests/test_oracle.py`, `tests/test_z1plus_parity.py`, `tests/test_spplus_regression.py` |
-| Native PPA/PPA+ slices | PPA mode tests, CLI mode tests, package-level smoke, WCA cell-list candidate generation, native PPA summary regression reporting, 12 parseable oracle coordinate-path summary parity cases, and one explicit Fortran-overflow known-invalid fixture | `tests/test_ppa.py`, `tests/test_ppa_regression.py`, `tests/test_cli_scaffold.py`, `tests/test_package_integration_smoke.py`, `.omo/evidence/task-46-ppa-summary-oracle-coverage/`, `.omo/evidence/task-47-ppa-neighbor-list/`, `.omo/evidence/task-48-ppa-native-regression/` |
+| Native PPA/PPA+ slices | PPA mode tests, CLI mode tests, package-level smoke, WCA cell-list candidate generation, native PPA summary regression reporting, Z1+ PPA+ phase-stop regression, 12 parseable oracle coordinate-path summary parity cases, and one explicit Fortran-overflow known-invalid fixture | `tests/test_ppa.py`, `tests/test_ppa_regression.py`, `tests/test_cli_scaffold.py`, `tests/test_package_integration_smoke.py`, `.omo/evidence/task-46-ppa-summary-oracle-coverage/`, `.omo/evidence/task-47-ppa-neighbor-list/`, `.omo/evidence/task-48-ppa-native-regression/`, `.omo/evidence/task-49-ppa-lpp-debug/` |
 | Clean-room reducer | Geometry primitives, reducer diagnostics, benchmark-04 reducer structure, SP+ pairing, and benchmark regression diagnostics | `tests/test_geometry.py`, `tests/test_z1_reducer.py`, `tests/test_spplus_regression.py` |
 | SP+ regression | Pairing comparison, max-node-delta localization, pair-segment geometry diagnostics, and oracle summary source isolation | `tests/test_spplus_regression.py`, `.omo/evidence/task-38-final-node-delta-location/`, `.omo/evidence/task-39-max-node-pair-geometry/`, `.omo/evidence/task-41-spplus-projection-direction/` |
 | Package integration smoke | Real module entrypoint smoke for default, SP+, PPA, and PPA+ | `tests/test_package_integration_smoke.py`, `.omo/evidence/task-44-evidence-ledger/` |
@@ -88,14 +87,19 @@ report. It runs `run_ppa`, compares the produced summary against Z1+ oracle
 `PPA-summary.dat` / `PPA+summary.dat`, and classifies the result without mixing
 in reducer-specific geometry diagnostics.
 
-Current evidence from `.omo/evidence/task-48-ppa-native-regression/`:
+Current evidence from `.omo/evidence/task-49-ppa-lpp-debug/`:
 
-- quick benchmark-04 PPA and PPA+ report: both modes run through the native
-  execution path and are classified as `mismatch`.
-- full benchmark-04 PPA+ report with default accelerated settings: completed in
-  `real 3.60` seconds and remains `mismatch`; `Lpp delta=50.6201`,
-  `Ne classical coil delta=7.55898e-13`, and
-  `Ne modified coil delta=3.02714e-13`.
+- `diagnostics.txt` isolates the old `Lpp delta=50.620053857564926` to the
+  native PPA+ final coordinate path, not the summary parser/writer.
+- `fene-min-image-toggle.txt` shows changing FENE bond handling to a minimum
+  image segment does not materially change the mismatch.
+- `early-stop-toggle.txt` confirms the Z1+ PPA+ phase-stop mechanism is
+  causal: adding Fortran-style phase stops reduces benchmark-04 PPA+
+  `Lpp delta` from `50.620053857564926` to `0.7762019820511341`.
+- `native-report.txt` records the current default accelerated benchmark-04 PPA+
+  status as `mismatch` with `Lpp delta=0.7762019820511341`,
+  `Ne classical coil delta=7.55902839681513e-13`, and
+  `Ne modified coil delta=3.027149435282842e-13`.
 
 ## Open Boundaries
 
