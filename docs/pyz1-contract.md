@@ -257,11 +257,14 @@ Complete now:
   SP+, PPA, and PPA+ modes
 - explicit CLI failure for `-selfZ` / `-0` so the unsupported self-entanglement
   path cannot be confused with default reducer output
+- PPA/PPA+ summary parity for all currently parseable oracle coordinate-path
+  fixtures, with Fortran-overflow coordinates tracked as known-invalid
 
 Not complete yet:
 
-- full PPA/PPA+ benchmark-level runtime parity; the scalar all-chain WCA path
-  still needs neighbor-list or vectorized acceleration without Numba/GPU.
+- full PPA/PPA+ benchmark-level runtime parity from native integration output;
+  the scalar all-chain WCA path still needs neighbor-list or vectorized
+  acceleration without Numba/GPU.
 - default geometrical Z1+ numerical parity for `Lpp`, `Z`, shortest-path
   structure, and SP+ pairings.
 - scalable all-14 benchmark reducer regression without the current

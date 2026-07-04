@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
+from pyz1.errors import Z1OutputParseError
 from pyz1.initconfig_io import read_init_config_file
 from pyz1.models import Chain, Snapshot, Vector3
 from pyz1.output_io import read_summary_file
@@ -20,6 +21,23 @@ if TYPE_CHECKING:
 
 SOURCE_Z1 = Path("/Users/jiaxm/Contents/CodexProjects/source_code/Z1+")
 PPA_FIXTURE_ROOT = Path("tests/fixtures/z1plus_oracle/corpus-ppa-ppaplus-20260703")
+PPA_SUMMARY_ORACLE_CASES = (
+    ("01", "ppa", "PPA.dat", "PPA-summary.dat"),
+    ("01", "ppaplus", "PPA+.dat", "PPA+summary.dat"),
+    ("04", "ppa", "PPA.dat", "PPA-summary.dat"),
+    ("04", "ppaplus", "PPA+.dat", "PPA+summary.dat"),
+    ("07", "ppa", "PPA.dat", "PPA-summary.dat"),
+    ("07", "ppaplus", "PPA+.dat", "PPA+summary.dat"),
+    ("10", "ppa", "PPA.dat", "PPA-summary.dat"),
+    ("10", "ppaplus", "PPA+.dat", "PPA+summary.dat"),
+    ("11", "ppa", "PPA.dat", "PPA-summary.dat"),
+    ("11", "ppaplus", "PPA+.dat", "PPA+summary.dat"),
+    ("12", "ppa", "PPA.dat", "PPA-summary.dat"),
+    ("12", "ppaplus", "PPA+.dat", "PPA+summary.dat"),
+)
+PPA_INVALID_COORDINATE_ORACLE_CASES = (
+    ("05", "ppaplus", "PPA+.dat", 310, "invalid float"),
+)
 
 
 def test_run_ppa_when_single_chain_is_bent_keeps_endpoints_and_shortens_path() -> None:
@@ -109,12 +127,7 @@ def test_run_ppa_when_dumbbells_exist_preserves_them_in_coordinate_output() -> N
 
 @pytest.mark.parametrize(
     ("benchmark", "mode", "path_name", "summary_name"),
-    [
-        ("01", "ppa", "PPA.dat", "PPA-summary.dat"),
-        ("01", "ppaplus", "PPA+.dat", "PPA+summary.dat"),
-        ("04", "ppa", "PPA.dat", "PPA-summary.dat"),
-        ("04", "ppaplus", "PPA+.dat", "PPA+summary.dat"),
-    ],
+    PPA_SUMMARY_ORACLE_CASES,
 )
 def test_ppa_summary_when_oracle_coordinate_path_matches_oracle_summary(
     benchmark: str,
@@ -137,6 +150,25 @@ def test_ppa_summary_when_oracle_coordinate_path_matches_oracle_summary(
         assert outputs.n_values[:2] == (11, 2)
         assert len(outputs.lpp_values) == 1
     _assert_ppa_summary_close(outputs.record, expected)
+
+
+@pytest.mark.parametrize(
+    ("benchmark", "mode", "path_name", "line_number", "reason"),
+    PPA_INVALID_COORDINATE_ORACLE_CASES,
+)
+def test_ppa_oracle_coordinate_path_when_fortran_overflows_is_known_invalid(
+    benchmark: str,
+    mode: str,
+    path_name: str,
+    line_number: int,
+    reason: str,
+) -> None:
+    fixture_dir = PPA_FIXTURE_ROOT / f"benchmark-{benchmark}" / mode
+
+    with pytest.raises(Z1OutputParseError) as exc_info:
+        _ = read_init_config_file(fixture_dir / path_name)
+    assert exc_info.value.line_number == line_number
+    assert exc_info.value.reason == reason
 
 
 def test_write_ppa_outputs_when_standard_mode_writes_path_and_summary(
