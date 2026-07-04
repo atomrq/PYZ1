@@ -11,6 +11,11 @@ from pyz1.output_io import (
     parse_shortest_path_text,
     read_summary_file,
 )
+from pyz1.output_models import (
+    ShortestPathChain,
+    ShortestPathNode,
+    ShortestPathSnapshot,
+)
 from pyz1.reducer import ReducerSettings, reduce_snapshot
 from pyz1.z1_io import read_z1_file
 from pyz1.z1_log import (
@@ -23,11 +28,12 @@ if TYPE_CHECKING:
     from pathlib import Path
 
     from pyz1.models import Vector3
-    from pyz1.output_models import ShortestPathPair, ShortestPathSnapshot
+    from pyz1.output_models import ShortestPathPair
     from pyz1.reducer import CoreTraceNode, ProjectionTrace
 
 LPP_TOLERANCE: Final = 1.0e-6
 Z_TOLERANCE: Final = 1.0e-6
+CORE_STAGE_NODE_FILENAME: Final = "Z1+NODES-best-match-step1-entry.dat"
 SUMMARY_FIELD_NAMES: Final = (
     "timestep",
     "true_chain_count",
@@ -111,6 +117,9 @@ class RegressionRecord:
     oracle_final_node_count: int | None
     oracle_core_crossings: int | None
     oracle_core_ghost_nodes: int | None
+    oracle_core_stage_node_count: int | None
+    pyz1_core_stage_node_count_mismatches: int | None
+    pyz1_core_stage_max_node_position_delta: float | None
     note: str
 
 
@@ -188,6 +197,9 @@ def _compare_benchmark_mode(
             oracle_final_node_count=None,
             oracle_core_crossings=None,
             oracle_core_ghost_nodes=None,
+            oracle_core_stage_node_count=None,
+            pyz1_core_stage_node_count_mismatches=None,
+            pyz1_core_stage_max_node_position_delta=None,
             note="missing source or oracle output",
         )
     snapshot = read_z1_file(source_path)
@@ -222,6 +234,9 @@ def _compare_benchmark_mode(
             oracle_final_node_count=None,
             oracle_core_crossings=None,
             oracle_core_ghost_nodes=None,
+            oracle_core_stage_node_count=None,
+            pyz1_core_stage_node_count_mismatches=None,
+            pyz1_core_stage_max_node_position_delta=None,
             note=f"skipped: node_count>{request.max_node_count}",
         )
     result = reduce_snapshot(snapshot, _settings_for_mode(mode))
@@ -243,6 +258,12 @@ def _compare_benchmark_mode(
         sp_path.read_text(encoding="utf-8"),
     )
     oracle_diagnostics = _oracle_reducer_diagnostics(oracle_dir / "log-stats.Z1")
+    oracle_core_stage = _oracle_core_stage(oracle_dir / CORE_STAGE_NODE_FILENAME)
+    pyz1_core_stage_comparison = _pyz1_core_stage_comparison(
+        result.shortest_path,
+        result.diagnostics.core_trace_blocked_nodes,
+        oracle_core_stage,
+    )
     first_trace_node = _first_core_trace_node(
         result.diagnostics.core_trace_blocked_nodes,
     )
@@ -330,6 +351,21 @@ def _compare_benchmark_mode(
             if oracle_diagnostics is not None
             else None
         ),
+        oracle_core_stage_node_count=(
+            _snapshot_node_count(oracle_core_stage)
+            if oracle_core_stage is not None
+            else None
+        ),
+        pyz1_core_stage_node_count_mismatches=(
+            pyz1_core_stage_comparison.node_count_mismatches
+            if pyz1_core_stage_comparison is not None
+            else None
+        ),
+        pyz1_core_stage_max_node_position_delta=(
+            pyz1_core_stage_comparison.max_node_position_delta
+            if pyz1_core_stage_comparison is not None
+            else None
+        ),
         note=_note_for_status(status),
     )
 
@@ -355,6 +391,61 @@ def _oracle_reducer_diagnostics(path: Path) -> Z1ReducerScanDiagnostics | None:
     if not path.exists():
         return None
     return reducer_scan_diagnostics(read_z1_log_file(path))
+
+
+def _oracle_core_stage(path: Path) -> ShortestPathSnapshot | None:
+    if not path.exists():
+        return None
+    return parse_shortest_path_text(path.read_text(encoding="utf-8"))
+
+
+def _pyz1_core_stage_comparison(
+    shortest_path: ShortestPathSnapshot,
+    trace_nodes: tuple[tuple[CoreTraceNode, ...], ...],
+    oracle_core_stage: ShortestPathSnapshot | None,
+) -> ShortestPathGeometryComparison | None:
+    if oracle_core_stage is None:
+        return None
+    return _shortest_path_snapshot_geometry_comparison(
+        _pyz1_core_stage_snapshot(shortest_path, trace_nodes),
+        oracle_core_stage,
+    )
+
+
+def _pyz1_core_stage_snapshot(
+    shortest_path: ShortestPathSnapshot,
+    trace_nodes: tuple[tuple[CoreTraceNode, ...], ...],
+) -> ShortestPathSnapshot:
+    chains = tuple(
+        _pyz1_core_stage_chain(chain, trace_nodes[chain_index])
+        for chain_index, chain in enumerate(shortest_path.chains)
+    )
+    return ShortestPathSnapshot(chains=chains, box=shortest_path.box)
+
+
+def _pyz1_core_stage_chain(
+    chain: ShortestPathChain,
+    trace_nodes: tuple[CoreTraceNode, ...],
+) -> ShortestPathChain:
+    endpoint_nodes = (chain.nodes[0], chain.nodes[-1])
+    transient_nodes = tuple(
+        ShortestPathNode(
+            position=node.position,
+            source_bead=node.source_bead,
+            is_entanglement=False,
+            pair=None,
+        )
+        for node in trace_nodes
+        if not node.retained
+    )
+    return ShortestPathChain(
+        nodes=tuple(
+            sorted(
+                (*endpoint_nodes, *transient_nodes),
+                key=lambda node: node.source_bead,
+            ),
+        ),
+    )
 
 
 def _settings_for_mode(mode: RegressionMode) -> ReducerSettings:
@@ -393,7 +484,16 @@ def _shortest_path_geometry_comparison(
     actual: ShortestPathSnapshot,
     expected_text: str,
 ) -> ShortestPathGeometryComparison:
-    expected = parse_shortest_path_text(expected_text)
+    return _shortest_path_snapshot_geometry_comparison(
+        actual,
+        parse_shortest_path_text(expected_text),
+    )
+
+
+def _shortest_path_snapshot_geometry_comparison(
+    actual: ShortestPathSnapshot,
+    expected: ShortestPathSnapshot,
+) -> ShortestPathGeometryComparison:
     node_count_mismatches = abs(actual.chain_count - expected.chain_count)
     max_position_delta = 0.0
     shared_chain_count = min(actual.chain_count, expected.chain_count)
@@ -414,6 +514,10 @@ def _shortest_path_geometry_comparison(
         node_count_mismatches=node_count_mismatches,
         max_node_position_delta=max_position_delta,
     )
+
+
+def _snapshot_node_count(snapshot: ShortestPathSnapshot) -> int:
+    return sum(chain.node_count for chain in snapshot.chains)
 
 
 def _node_position_delta(
@@ -518,13 +622,16 @@ def _format_report(records: tuple[RegressionRecord, ...]) -> str:
             "pyz1 first projection node | pyz1 first projection fraction | "
             "oracle core nodes | oracle final nodes | "
             "oracle core crossings | oracle core ghosts | "
+            "oracle core stage nodes | "
+            "pyz1 core stage node count mismatches | "
+            "pyz1 core stage max node position delta | "
             "summary mismatch details | note |"
         ),
         (
             "| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | "
             "---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | "
             "---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | "
-            "---: | ---: | --- | --- |"
+            "---: | ---: | ---: | ---: | ---: | --- | --- |"
         ),
     ]
     lines.extend(_format_record(record) for record in records)
@@ -559,6 +666,9 @@ def _format_record(record: RegressionRecord) -> str:
         f"{_format_optional_int(record.oracle_final_node_count)} | "
         f"{_format_optional_int(record.oracle_core_crossings)} | "
         f"{_format_optional_int(record.oracle_core_ghost_nodes)} | "
+        f"{_format_optional_int(record.oracle_core_stage_node_count)} | "
+        f"{_format_optional_int(record.pyz1_core_stage_node_count_mismatches)} | "
+        f"{_format_optional_float(record.pyz1_core_stage_max_node_position_delta)} | "
         f"{_format_summary_field_details(record.summary_field_mismatch_details)} | "
         f"{record.note} |"
     )

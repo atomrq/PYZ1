@@ -58,6 +58,10 @@ def test_write_benchmark_regression_report_when_oracles_exist_lists_modes(
     assert 0.721 < records[1].pyz1_first_projection_responsible_fraction < 0.722
     assert records[1].oracle_core_node_count == 17
     assert records[1].oracle_core_ghost_nodes == 6
+    assert records[1].oracle_core_stage_node_count == 17
+    assert records[1].pyz1_core_stage_node_count_mismatches == 6
+    assert records[1].pyz1_core_stage_max_node_position_delta is not None
+    assert 4.2 < records[1].pyz1_core_stage_max_node_position_delta < 4.3
     assert "root_mean_squared_contour: 4.597 != 4.598" in text
     assert "ne_modified_coil: 654.152 != 641.605" in text
     assert "pyz1 core trace nodes" in text
@@ -66,6 +70,8 @@ def test_write_benchmark_regression_report_when_oracles_exist_lists_modes(
     assert "pyz1 projection traces" in text
     assert "pyz1 first projection fraction" in text
     assert "oracle core ghosts" in text
+    assert "oracle core stage nodes" in text
+    assert "pyz1 core stage max node position delta" in text
 
 
 def test_write_benchmark_regression_report_when_stats_log_exists_lists_core_diagnostics(
@@ -83,6 +89,11 @@ def test_write_benchmark_regression_report_when_stats_log_exists_lists_core_diag
         oracle_dir / "Z1+summary.dat",
     )
     _ = copyfile(LOG_STATS, oracle_dir / "log-stats.Z1")
+    _ = copyfile(
+        Path("tests/fixtures/z1plus_oracle/benchmark-04/spplus")
+        / "Z1+NODES-best-match-step1-entry.dat",
+        oracle_dir / "Z1+NODES-best-match-step1-entry.dat",
+    )
     report_path = tmp_path / "pyz1-benchmark-regression.md"
 
     records = write_benchmark_regression_report(
@@ -111,9 +122,15 @@ def test_write_benchmark_regression_report_when_stats_log_exists_lists_core_diag
     assert records[0].oracle_core_node_count == 17
     assert records[0].oracle_final_node_count == 11
     assert records[0].oracle_core_ghost_nodes == 6
+    assert records[0].oracle_core_stage_node_count == 17
+    assert records[0].pyz1_core_stage_node_count_mismatches == 6
+    assert records[0].pyz1_core_stage_max_node_position_delta is not None
+    assert 4.2 < records[0].pyz1_core_stage_max_node_position_delta < 4.3
     assert "pyz1 core nodes" in text
     assert "pyz1 first projection fraction" in text
     assert "oracle core ghosts" in text
+    assert "oracle core stage nodes" in text
+    assert "pyz1 core stage node count mismatches" in text
     assert "| benchmark-04 | spplus | mismatch |" in text
     assert (
         "| 10 | 11 | 17 | 7 | 9 | 7 | 2 | 9 | 0.607385 | 0.936019 | 0.0186654 | "
