@@ -220,6 +220,28 @@ def test_reduce_snapshot_when_benchmark_04_reports_reducer_diagnostics() -> None
     assert result.diagnostics.core_trace_ghost_node_count == 7
 
 
+def test_reduce_snapshot_when_benchmark_04_reports_core_trace_nodes() -> None:
+    snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-04.Z1")
+
+    result = reduce_snapshot(snapshot, ReducerSettings(pairing_enabled=True))
+
+    trace_nodes = result.diagnostics.core_trace_blocked_nodes
+    assert tuple(len(chain_nodes) for chain_nodes in trace_nodes) == (1, 3, 0, 3, 2)
+    retained_count = sum(
+        node.retained
+        for chain_nodes in trace_nodes
+        for node in chain_nodes
+    )
+    assert retained_count == 2
+    first_trace_node = trace_nodes[0][0]
+    assert isclose(first_trace_node.source_bead, 3.5, abs_tol=FLOAT_TOLERANCE)
+    assert first_trace_node.retained is False
+    assert_vector_close(
+        first_trace_node.position,
+        Vector3(0.1293575, -0.030405000000000015, 1.72274),
+    )
+
+
 def test_reduce_snapshot_when_benchmark_04_matches_oracle_kink_source() -> None:
     snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-04.Z1")
     oracle = read_shortest_path_file(
