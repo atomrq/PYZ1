@@ -35,6 +35,15 @@ ulimit -n 1000000; micromamba run -n pyz1 python -m pyz1 -PPA config.Z1
 ulimit -n 1000000; micromamba run -n pyz1 python -m pyz1 -PPA+ config.Z1
 ```
 
+Run the package-level integration smoke:
+
+```bash
+ulimit -n 1000000; micromamba run -n pyz1 pytest -q tests/test_package_integration_smoke.py
+```
+
+That smoke drives the installed package surface through `python -m pyz1` for
+default, SP+, PPA, and PPA+ modes and checks the mode-specific output files.
+
 ## Outputs
 
 The package has parser/writer coverage for:

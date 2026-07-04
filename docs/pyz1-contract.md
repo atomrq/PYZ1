@@ -250,6 +250,8 @@ Complete now:
 - native default reducer initial slice
 - native SP+ pairing output for retained kink nodes
 - benchmark regression report generation and transparent mismatch/skip status
+- package-level final integration smoke through `python -m pyz1` for default,
+  SP+, PPA, and PPA+ modes
 
 Not complete yet:
 
@@ -260,5 +262,4 @@ Not complete yet:
 - scalable all-14 benchmark reducer regression without the current
   `node_count` performance guard.
 - self-entanglement (`selfZ`) behavior in the native reducer.
-- final user/developer documentation review and package-level final integration
-  smoke.
+- final user/developer documentation review for scientific parity caveats.
