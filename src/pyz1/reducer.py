@@ -34,6 +34,8 @@ CORE_STAGE_SUPPORT_MAX_LENGTH: Final = 2.2
 BLOCKED_KINK_CLEARANCE_FRACTION: Final = 0.087735
 MAX_INDEX_CELLS_PER_SEGMENT: Final = 4096
 MIN_INDEX_CELL_SIZE: Final = 1.0e-6
+MAX_SMALL_WINDING_OBSTACLE_CANDIDATES: Final = 8
+SMALL_WINDING_SOURCE_CLUSTER_GAP: Final = 0.35
 CellKey = tuple[int, int, int]
 
 
@@ -829,6 +831,14 @@ class _PreservedKinkCandidate:
 
 
 @dataclass(frozen=True, slots=True)
+class _WindingObstacleCandidate:
+    chain_index: int
+    position: Vector3
+    source_bead: float
+    distance: float
+
+
+@dataclass(frozen=True, slots=True)
 class _ProjectionResult:
     candidate: _PreservedKinkCandidate
     trace: ProjectionTrace
@@ -876,6 +886,12 @@ def _preserve_close_contacts(
             chain_index,
             multiple_enabled=_has_dumbbell_obstacles(original_chains),
         )
+        winding_candidates = _small_winding_obstacle_kink_candidates(
+            original_chains,
+            chain_index,
+        )
+        if len(winding_candidates) > 0:
+            candidates = winding_candidates
         if len(candidates) == 0:
             candidates = (_contact_kink_candidate(chain, contact),)
         projections = tuple(
@@ -963,6 +979,104 @@ def _unique_retained_blocked_moves(
 
 def _has_dumbbell_obstacles(chains: tuple[Chain, ...]) -> bool:
     return any(not chain.is_true_chain for chain in chains)
+
+
+def _small_winding_obstacle_kink_candidates(
+    chains: tuple[Chain, ...],
+    chain_index: int,
+) -> tuple[_PreservedKinkCandidate, ...]:
+    winding_candidates = _winding_obstacle_candidates(chains, chain_index)
+    if len(winding_candidates) == 0:
+        return ()
+    if len(winding_candidates) > MAX_SMALL_WINDING_OBSTACLE_CANDIDATES:
+        return ()
+    selected = _select_small_winding_obstacles(winding_candidates)
+    return tuple(
+        _winding_obstacle_kink_candidate(candidate) for candidate in selected
+    )
+
+
+def _winding_obstacle_candidates(
+    chains: tuple[Chain, ...],
+    chain_index: int,
+) -> tuple[_WindingObstacleCandidate, ...]:
+    chain = chains[chain_index]
+    if not chain.is_true_chain:
+        return ()
+    candidates: list[_WindingObstacleCandidate] = []
+    for candidate_chain_index, obstacle in enumerate(chains, start=1):
+        if obstacle.is_true_chain:
+            continue
+        midpoint = _midpoint(Segment(obstacle.nodes[0], obstacle.nodes[1]))
+        if not _point_in_chain_polygon_xy(midpoint, chain):
+            continue
+        source_bead, distance = _nearest_chain_source_bead_and_distance(
+            chain,
+            Segment(start=midpoint, end=midpoint),
+        )
+        candidates.append(
+            _WindingObstacleCandidate(
+                chain_index=candidate_chain_index,
+                position=midpoint,
+                source_bead=source_bead,
+                distance=distance,
+            ),
+        )
+    return tuple(
+        sorted(
+            candidates,
+            key=lambda candidate: candidate.source_bead,
+        ),
+    )
+
+
+def _select_small_winding_obstacles(
+    candidates: tuple[_WindingObstacleCandidate, ...],
+) -> tuple[_WindingObstacleCandidate, ...]:
+    selected: list[_WindingObstacleCandidate] = []
+    group: list[_WindingObstacleCandidate] = []
+    previous_source: float | None = None
+    for candidate in candidates:
+        if (
+            previous_source is not None
+            and candidate.source_bead - previous_source
+            > SMALL_WINDING_SOURCE_CLUSTER_GAP
+        ):
+            selected.append(_select_winding_group_representative(tuple(group)))
+            group = []
+        group.append(candidate)
+        previous_source = candidate.source_bead
+    if len(group) > 0:
+        selected.append(_select_winding_group_representative(tuple(group)))
+    return tuple(selected)
+
+
+def _select_winding_group_representative(
+    candidates: tuple[_WindingObstacleCandidate, ...],
+) -> _WindingObstacleCandidate:
+    return min(
+        candidates,
+        key=lambda candidate: (
+            candidate.position.y,
+            candidate.distance,
+            candidate.source_bead,
+            candidate.chain_index,
+        ),
+    )
+
+
+def _winding_obstacle_kink_candidate(
+    candidate: _WindingObstacleCandidate,
+) -> _PreservedKinkCandidate:
+    return _PreservedKinkCandidate(
+        position=candidate.position,
+        source_bead=candidate.source_bead,
+        shortcut=None,
+        projection_normal=None,
+        blocker_segment=None,
+        ghost_anchor=None,
+        ghost_clearance=None,
+    )
 
 
 def _blocked_kink_candidate(
@@ -1301,6 +1415,37 @@ def _midpoint(segment: Segment) -> Vector3:
         y=(segment.start.y + segment.end.y) * 0.5,
         z=(segment.start.z + segment.end.z) * 0.5,
     )
+
+
+def _point_in_chain_polygon_xy(point: Vector3, chain: Chain) -> bool:
+    inside = False
+    previous = chain.nodes[-1]
+    for current in chain.nodes:
+        if (current.y > point.y) != (previous.y > point.y) and (
+            point.x
+            < (previous.x - current.x)
+            * (point.y - current.y)
+            / (previous.y - current.y)
+            + current.x
+        ):
+            inside = not inside
+        previous = current
+    return inside
+
+
+def _nearest_chain_source_bead_and_distance(
+    chain: Chain,
+    segment: Segment,
+) -> tuple[float, float]:
+    best_source_bead = 1.0
+    best_distance = float("inf")
+    for segment_index, chain_segment in enumerate(_chain_segments(chain)):
+        closest = closest_segment_points(segment, chain_segment)
+        if closest.distance >= best_distance:
+            continue
+        best_source_bead = segment_index + 1.0 + closest.second_fraction
+        best_distance = closest.distance
+    return best_source_bead, best_distance
 
 
 @dataclass(frozen=True, slots=True)

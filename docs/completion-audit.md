@@ -26,17 +26,16 @@ evidence still leaves scientific and scalability boundaries open.
 
 Latest gate artifacts:
 
-- `.omo/evidence/task-63-obstacle-sequence-report/pytest.txt`: `117 passed`
-- `.omo/evidence/task-63-obstacle-sequence-report/ruff.txt`: `All checks passed!`
-- `.omo/evidence/task-63-obstacle-sequence-report/basedpyright.txt`:
+- `.omo/evidence/task-64-obstacle-candidates/pytest.txt`: `118 passed`
+- `.omo/evidence/task-64-obstacle-candidates/ruff.txt`: `All checks passed!`
+- `.omo/evidence/task-64-obstacle-candidates/basedpyright.txt`:
   `0 errors, 0 warnings, 0 notes`
-- `.omo/evidence/task-63-obstacle-sequence-report/package-smoke.txt`: `2 passed`
-- `.omo/evidence/task-63-obstacle-sequence-report/default-spplus-01-05-sequences.txt`:
-  benchmark-04 default/SP+ are `passed`; benchmarks 01/02/03/05 default/SP+
-  remain `mismatch`; benchmark-01/02/03 now retain the 300 two-node obstacle
-  chains and retained blocked-move obstacle kinks, reducing node-count
-  mismatches to 5/3/1; SP+ rows now also report native/oracle obstacle pair
-  sequences for placement debugging
+- `.omo/evidence/task-64-obstacle-candidates/package-smoke.txt`: `2 passed`
+- `.omo/evidence/task-64-obstacle-candidates/default-spplus-01-05-sequences.txt`:
+  benchmark-04 default/SP+ are `passed`; benchmark-03 SP+ now has
+  `node_count_mismatches=0`, `pairing_mismatches=0`, and matching
+  `(268, 241, 160, 130)` native/oracle obstacle sequences; benchmarks
+  01/02/05 and benchmark-03 summary/geometry remain `mismatch`
 - `.omo/evidence/task-57-ppa-nan-root/benchmark05-first-steps.txt`:
   benchmark-05 PPA+ first position update drives `mean_lpp` from
   `19.000003838046396` to `4089134097.2156291`
@@ -48,7 +47,7 @@ Latest gate artifacts:
 
 | Boundary | Current evidence | Completion evidence required |
 | --- | --- | --- |
-| Full default/SP+ numerical parity | Benchmark-04 default/SP+ now report `passed` using formatted summary parity plus SP geometry/pairing checks; benchmarks 01/02/03/05 default/SP+ remain `mismatch`; benchmark-01/02/03 now preserve two-node obstacles and retained obstacle kinks in SP output but still miss the full Z1+ obstacle-kink positions, source beads, and SP+ pairings; task-62 shows the remaining 01/02/03 rule is closer to 2D obstacle homotopy/winding than simple trace retention, and the public Z1+ tree lacks `module-Z1.f90`; benchmark-06+ remain guarded | Reported `passed` status or documented scientifically acceptable tolerance for all intended default/SP+ cases |
+| Full default/SP+ numerical parity | Benchmark-04 default/SP+ now report `passed` using formatted summary parity plus SP geometry/pairing checks; benchmark-03 SP+ now matches first-chain obstacle sequence and reports zero node/pair mismatches, but still has summary and geometry/source-bead mismatches; benchmark-01/02/05 remain `mismatch`; task-62/task-64 show the remaining 01/02/03 rule is closer to 2D obstacle homotopy/winding than simple trace retention, and the public Z1+ tree lacks `module-Z1.f90`; benchmark-06+ remain guarded | Reported `passed` status or documented scientifically acceptable tolerance for all intended default/SP+ cases |
 | Scalable all-14 default/SP+ regression | Benchmark-06 still timed out at 120 seconds even with bounds index and trace diagnostics disabled | All 14 benchmarks run with measured deltas or a deliberate documented tiered-regression contract accepted as final scope |
 | Full native PPA/PPA+ runtime parity | PPA+ benchmark-04 `Lpp` delta improved but remains `mismatch`; task-56 quick slice covers 01/04/05 under `max_node_count=1000`; task-57 shows 05 PPA+ is upstream-invalid because near-zero inter-chain WCA contact produces a first-step `mean_lpp` jump from `19.000003838046396` to `4089134097.2156291`, matching native Fortran `********` overflow in summary and coordinate output | Strict parity, accepted tolerance, or documented upstream-invalid fixture handling for every intended PPA/PPA+ benchmark |
 | Native `selfZ` implementation | CLI fails explicitly with not-implemented | Implemented `selfZ` reducer behavior and oracle parity evidence, or a final documented non-goal decision |
@@ -62,11 +61,12 @@ Latest gate artifacts:
    lookup; benchmark-06 still spends time in `_reduce_chain_once` and
    `_shortcut_is_clear`.
 3. If scientific parity is the priority, continue reducer geometry debugging
-   on benchmarks 01/02/03/05. For benchmark-01/02/03, the next reducer gap is
-   obstacle-kink placement/source-bead selection and SP+ pairing. Use the
-   task-62 winding diagnostics, task-63 obstacle sequence report fields, and
-   oracle traces; do not assume the missing public `module-Z1.f90` can be read
-   locally.
+   on benchmarks 01/02/03/05. For benchmark-03, the next reducer gap is
+   source-bead/final-geometry/summary alignment after task-64 removed the
+   node/pair sequence mismatch. For benchmark-01/02, the next reducer gap is
+   still multi-obstacle placement/source-bead selection and SP+ pairing. Use
+   task-62 winding diagnostics, task-63/64 sequence report fields, and oracle
+   traces; do not assume the missing public `module-Z1.f90` can be read locally.
 4. Keep the package gate green after each slice:
    `pytest -q`, `ruff check .`, `basedpyright`, and
    `pytest tests/test_package_integration_smoke.py -q`.

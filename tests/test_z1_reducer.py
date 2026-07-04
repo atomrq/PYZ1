@@ -216,6 +216,19 @@ def test_reduce_snapshot_when_benchmark_01_preserves_trace_kinks() -> None:
     assert result.summary.z_values == (8,)
 
 
+def test_reduce_snapshot_when_benchmark_03_uses_small_winding_sequence() -> None:
+    snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-03.Z1")
+
+    result = reduce_snapshot(snapshot, ReducerSettings(pairing_enabled=True))
+
+    sequence = tuple(
+        node.pair.chain_index
+        for node in result.shortest_path.chains[0].nodes
+        if node.is_entanglement and node.pair is not None
+    )
+    assert sequence == (268, 241, 160, 130)
+
+
 def test_reduce_snapshot_when_benchmark_04_reports_reducer_diagnostics() -> None:
     snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-04.Z1")
 

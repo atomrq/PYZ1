@@ -11,15 +11,15 @@ For a requirement-by-requirement completion verdict, see
 
 Latest local gate evidence:
 
-- `.omo/evidence/task-63-obstacle-sequence-report/spplus-tests-final.txt`:
-  `7 passed`
+- `.omo/evidence/task-64-obstacle-candidates/focused-tests-final.txt`:
+  `23 passed`
 - `.omo/evidence/task-55-ppa-coverage/ppa-focused.txt`: `21 passed`
 - `.omo/evidence/task-57-ppa-nan-root/ppa-focused.txt`: `22 passed`
-- `.omo/evidence/task-63-obstacle-sequence-report/pytest.txt`: `117 passed`
-- `.omo/evidence/task-63-obstacle-sequence-report/ruff.txt`: `All checks passed!`
-- `.omo/evidence/task-63-obstacle-sequence-report/basedpyright.txt`:
+- `.omo/evidence/task-64-obstacle-candidates/pytest.txt`: `118 passed`
+- `.omo/evidence/task-64-obstacle-candidates/ruff.txt`: `All checks passed!`
+- `.omo/evidence/task-64-obstacle-candidates/basedpyright.txt`:
   `0 errors, 0 warnings, 0 notes`
-- `.omo/evidence/task-63-obstacle-sequence-report/package-smoke.txt`: `2 passed`
+- `.omo/evidence/task-64-obstacle-candidates/package-smoke.txt`: `2 passed`
 
 The package smoke runs `python -m pyz1` for default, SP+, PPA, and PPA+ modes
 and checks the expected mode-specific output files.
@@ -120,6 +120,15 @@ sequences for each runnable benchmark. For example, benchmark-03 SP+ reports
 native `(77, 212, 212)` versus oracle `(268, 241, 160, 130)`. This gives the
 next reducer slice a stable report surface for placement/source-bead/pairing
 work without changing the pass/fail tolerance.
+
+Task-64 adds a guarded small-winding obstacle candidate path for dumbbell
+obstacle snapshots. Evidence in
+`.omo/evidence/task-64-obstacle-candidates/default-spplus-01-05-sequences.txt`
+shows benchmark-03 SP+ now has `node_count_mismatches=0`,
+`pairing_mismatches=0`, and native/oracle first-chain obstacle sequences both
+`(268, 241, 160, 130)`. Benchmark-03 SP+ remains a `mismatch` because summary
+fields and final geometry/source-bead values still differ; benchmark-01/02/05
+remain mismatches, and benchmark-04 default/SP+ remain passed.
 
 ## Latest PPA/PPA+ Oracle Summary Coverage
 
