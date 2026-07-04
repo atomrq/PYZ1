@@ -11,14 +11,14 @@ For a requirement-by-requirement completion verdict, see
 
 Latest local gate evidence:
 
-- `.omo/evidence/task-71-blocked-trace-source-order/pytest.txt`: `124 passed`
+- `.omo/evidence/task-72-oracle-source-ambiguity/pytest.txt`: `125 passed`
 - `.omo/evidence/task-55-ppa-coverage/ppa-focused.txt`: `21 passed`
 - `.omo/evidence/task-57-ppa-nan-root/ppa-focused.txt`: `22 passed`
-- `.omo/evidence/task-71-blocked-trace-source-order/ruff.txt`:
+- `.omo/evidence/task-72-oracle-source-ambiguity/ruff.txt`:
   `All checks passed!`
-- `.omo/evidence/task-71-blocked-trace-source-order/basedpyright.txt`:
+- `.omo/evidence/task-72-oracle-source-ambiguity/basedpyright.txt`:
   `0 errors, 0 warnings, 0 notes`
-- `.omo/evidence/task-71-blocked-trace-source-order/package-smoke.txt`:
+- `.omo/evidence/task-72-oracle-source-ambiguity/package-smoke.txt`:
   `2 passed`
 
 The package smoke runs `python -m pyz1` for default, SP+, PPA, and PPA+ modes
@@ -229,6 +229,20 @@ source/order rule either: benchmark-01 reports blocked trace sequence
 reports blocked trace sequence `(8,153,153,212,212,212,212,212,212)` while the
 oracle sequence is `(268,241,160,130)`. This rules out current blocked trace
 source carrying as the general explanation for oracle obstacle source/order.
+
+Task-72 adds oracle source segment ambiguity diagnostics to the benchmark
+regression report. Evidence in
+`.omo/evidence/task-72-oracle-source-ambiguity/source-segment-ambiguity.md` and
+`.omo/evidence/task-72-oracle-source-ambiguity/regression-01-02-source-segment-ambiguity.txt`
+shows the oracle source-bead assignment is not nearest first-chain segment
+projection from obstacle midpoint. Benchmark-01 reports max source segment rank
+`8`, with ambiguous oracle obstacle chains
+`(80,283,134,87,208,132,97,36)`; for example, chain 80's nearest midpoint
+source is `10.943640568161117`, while the oracle source is `2.19` and the
+nearest source-compatible segment is rank 2. Benchmark-02 reports max rank `5`
+with ambiguous chains `(146,278,132,239,46,86,27,139,102)`. This localizes the
+remaining 01/02 source/order blocker to a non-nearest, sequence-aware source
+assignment rule rather than a simple geometric nearest-projection rule.
 
 ## Latest PPA/PPA+ Oracle Summary Coverage
 

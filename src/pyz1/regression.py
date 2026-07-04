@@ -12,6 +12,7 @@ from pyz1.geometry import (
     minimum_image_delta,
     unfold_chain,
 )
+from pyz1.models import Chain, Snapshot, Vector3
 from pyz1.output_io import (
     format_shortest_path_text,
     format_summary_text,
@@ -43,7 +44,6 @@ if TYPE_CHECKING:
     from collections.abc import Mapping
     from pathlib import Path
 
-    from pyz1.models import Snapshot, Vector3
     from pyz1.output_models import ShortestPathPair
     from pyz1.reducer import CoreStageNode, CoreTraceNode, ProjectionTrace
 
@@ -124,6 +124,17 @@ class OracleObstacleSourceResidual:
 
 
 @dataclass(frozen=True, slots=True)
+class OracleObstacleSourceSegmentAmbiguity:
+    chain_index: int
+    expected_source: float
+    nearest_source: float
+    nearest_distance: float
+    expected_rank: int
+    expected_rank_source: float
+    expected_rank_distance: float
+
+
+@dataclass(frozen=True, slots=True)
 class RegressionRecord:
     benchmark_id: str
     mode: RegressionMode
@@ -190,6 +201,10 @@ class RegressionRecord:
     oracle_obstacle_source_residuals: (
         tuple[OracleObstacleSourceResidual, ...] | None
     ) = None
+    max_oracle_obstacle_source_segment_rank: int | None = None
+    oracle_obstacle_source_segment_ambiguities: (
+        tuple[OracleObstacleSourceSegmentAmbiguity, ...] | None
+    ) = None
     oracle_true_chain_pair_sequence: tuple[int, ...] | None = None
 
 
@@ -241,7 +256,18 @@ class _WindingCandidateCoverage:
     max_oracle_obstacle_source_delta: float
     max_oracle_obstacle_source_delta_chain: int | None
     oracle_obstacle_source_residuals: tuple[OracleObstacleSourceResidual, ...]
+    max_oracle_obstacle_source_segment_rank: int
+    oracle_obstacle_source_segment_ambiguities: (
+        tuple[OracleObstacleSourceSegmentAmbiguity, ...]
+    )
     oracle_true_chain_pair_sequence: tuple[int, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class _SourceSegmentCandidate:
+    rank: int
+    source_bead: float
+    distance: float
 
 
 @dataclass(frozen=True, slots=True)
@@ -608,6 +634,12 @@ def _compare_benchmark_mode(
         oracle_obstacle_source_residuals=(
             winding_candidate_coverage.oracle_obstacle_source_residuals
         ),
+        max_oracle_obstacle_source_segment_rank=(
+            winding_candidate_coverage.max_oracle_obstacle_source_segment_rank
+        ),
+        oracle_obstacle_source_segment_ambiguities=(
+            winding_candidate_coverage.oracle_obstacle_source_segment_ambiguities
+        ),
         oracle_true_chain_pair_sequence=(
             winding_candidate_coverage.oracle_true_chain_pair_sequence
         ),
@@ -647,6 +679,12 @@ def _winding_candidate_coverage(
     oracle_source_residuals = _oracle_obstacle_source_residuals(
         oracle_shortest_path,
         convex_sources,
+    )
+    oracle_source_segment_ambiguities = (
+        _oracle_obstacle_source_segment_ambiguities(
+            chains,
+            oracle_shortest_path,
+        )
     )
     candidate_set = set(candidate_sequence)
     convex_candidate_set = set(convex_candidate_sequence)
@@ -698,6 +736,14 @@ def _winding_candidate_coverage(
             _max_oracle_obstacle_source_delta_chain(oracle_source_residuals)
         ),
         oracle_obstacle_source_residuals=oracle_source_residuals,
+        max_oracle_obstacle_source_segment_rank=(
+            _max_oracle_obstacle_source_segment_rank(
+                oracle_source_segment_ambiguities,
+            )
+        ),
+        oracle_obstacle_source_segment_ambiguities=(
+            oracle_source_segment_ambiguities
+        ),
         oracle_true_chain_pair_sequence=tuple(
             chain_index
             for chain_index in oracle_sequence
@@ -744,6 +790,91 @@ def _max_oracle_obstacle_source_delta_chain(
     if len(residuals) == 0:
         return None
     return max(residuals, key=lambda residual: residual.delta).chain_index
+
+
+def _oracle_obstacle_source_segment_ambiguities(
+    chains: tuple[Chain, ...],
+    oracle_shortest_path: ShortestPathSnapshot,
+) -> tuple[OracleObstacleSourceSegmentAmbiguity, ...]:
+    if len(chains) == 0 or oracle_shortest_path.chain_count == 0:
+        return ()
+    first_chain = chains[0]
+    ambiguities: list[OracleObstacleSourceSegmentAmbiguity] = []
+    for node in oracle_shortest_path.chains[0].nodes:
+        if node.pair is None:
+            continue
+        obstacle = chains[node.pair.chain_index - 1]
+        if obstacle.is_true_chain:
+            continue
+        midpoint = _midpoint_between(obstacle.nodes[0], obstacle.nodes[1])
+        ranked_sources = _rank_source_segments(first_chain, midpoint)
+        if len(ranked_sources) == 0:
+            continue
+        expected_source = min(
+            ranked_sources,
+            key=lambda candidate: abs(candidate.source_bead - node.source_bead),
+        )
+        if expected_source.rank == 1:
+            continue
+        nearest_source = ranked_sources[0]
+        ambiguities.append(
+            OracleObstacleSourceSegmentAmbiguity(
+                chain_index=node.pair.chain_index,
+                expected_source=node.source_bead,
+                nearest_source=nearest_source.source_bead,
+                nearest_distance=nearest_source.distance,
+                expected_rank=expected_source.rank,
+                expected_rank_source=expected_source.source_bead,
+                expected_rank_distance=expected_source.distance,
+            ),
+        )
+    return tuple(ambiguities)
+
+
+def _rank_source_segments(
+    chain: Chain,
+    point: Vector3,
+) -> tuple[_SourceSegmentCandidate, ...]:
+    point_segment = Segment(start=point, end=point)
+    unranked: list[tuple[float, float]] = []
+    for segment_index, (start, end) in enumerate(
+        zip(chain.nodes[:-1], chain.nodes[1:], strict=True),
+        start=1,
+    ):
+        closest = closest_segment_points(
+            point_segment,
+            Segment(start=start, end=end),
+        )
+        unranked.append(
+            (segment_index + closest.second_fraction, closest.distance),
+        )
+    return tuple(
+        _SourceSegmentCandidate(
+            rank=rank,
+            source_bead=source_bead,
+            distance=distance,
+        )
+        for rank, (source_bead, distance) in enumerate(
+            sorted(unranked, key=lambda item: (item[1], item[0])),
+            start=1,
+        )
+    )
+
+
+def _midpoint_between(first: Vector3, second: Vector3) -> Vector3:
+    return Vector3(
+        x=(first.x + second.x) * 0.5,
+        y=(first.y + second.y) * 0.5,
+        z=(first.z + second.z) * 0.5,
+    )
+
+
+def _max_oracle_obstacle_source_segment_rank(
+    ambiguities: tuple[OracleObstacleSourceSegmentAmbiguity, ...],
+) -> int:
+    if len(ambiguities) == 0:
+        return 1
+    return max(ambiguity.expected_rank for ambiguity in ambiguities)
 
 
 def _first_projection_trace(
@@ -1200,6 +1331,8 @@ def _format_report(records: tuple[RegressionRecord, ...]) -> str:
         "max oracle obstacle source delta | "
         "max oracle obstacle source delta chain | "
         "oracle obstacle source residual details | "
+        "max oracle source segment rank | "
+        "oracle source segment ambiguity details | "
         "oracle true-chain pair sequence | "
         "summary mismatch details | note |"
     )
@@ -1279,6 +1412,8 @@ def _format_record(record: RegressionRecord) -> str:
         f"{_format_optional_float(record.max_oracle_obstacle_source_delta)} | "
         f"{_format_optional_int(record.max_oracle_obstacle_source_delta_chain)} | "
         f"{_format_oracle_obstacle_source_residuals(record)} | "
+        f"{_format_optional_int(record.max_oracle_obstacle_source_segment_rank)} | "
+        f"{_format_oracle_source_segment_ambiguities(record)} | "
         f"{_format_int_sequence(record.oracle_true_chain_pair_sequence)} | "
         f"{_format_summary_field_details(record.summary_field_mismatch_details)} | "
         f"{record.note} |"
@@ -1338,6 +1473,37 @@ def _format_oracle_obstacle_source_residual(
         f"{_format_optional_float(residual.actual)}"
         f"!={_format_optional_float(residual.expected)}"
         f"(d={_format_optional_float(residual.delta)})"
+    )
+
+
+def _format_oracle_source_segment_ambiguities(record: RegressionRecord) -> str:
+    ambiguities = record.oracle_obstacle_source_segment_ambiguities
+    if ambiguities is None:
+        return "n/a"
+    if len(ambiguities) == 0:
+        return "none"
+    visible = ambiguities[:MAX_SOURCE_RESIDUAL_REPORT_DETAILS]
+    formatted = "; ".join(
+        _format_oracle_source_segment_ambiguity(ambiguity)
+        for ambiguity in visible
+    )
+    omitted_count = len(ambiguities) - len(visible)
+    if omitted_count == 0:
+        return formatted
+    return f"{formatted}; ... {omitted_count} more"
+
+
+def _format_oracle_source_segment_ambiguity(
+    ambiguity: OracleObstacleSourceSegmentAmbiguity,
+) -> str:
+    return (
+        f"{ambiguity.chain_index}: "
+        f"r{ambiguity.expected_rank} "
+        f"{_format_optional_float(ambiguity.expected_rank_source)}"
+        f"!={_format_optional_float(ambiguity.expected_source)} "
+        f"nearest={_format_optional_float(ambiguity.nearest_source)}"
+        f"(d={_format_optional_float(ambiguity.nearest_distance)}) "
+        f"chosen_d={_format_optional_float(ambiguity.expected_rank_distance)}"
     )
 
 

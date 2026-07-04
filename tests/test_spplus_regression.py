@@ -430,6 +430,40 @@ def test_write_benchmark_regression_report_when_blocked_trace_sequence_differs(
     assert "pyz1 retained blocked trace obstacle sequence" in text
 
 
+def test_write_benchmark_regression_report_when_oracle_source_uses_nonnearest_segment(
+    tmp_path: Path,
+) -> None:
+    report_path = tmp_path / "pyz1-benchmark-regression.md"
+
+    records = write_benchmark_regression_report(
+        RegressionRequest(
+            source_dir=SOURCE_Z1,
+            oracle_root=ORACLE_ROOT,
+            report_path=report_path,
+            modes=(RegressionMode.SPPLUS,),
+            benchmark_ids=("01",),
+        ),
+    )
+
+    text = report_path.read_text(encoding="utf-8")
+    assert records[0].max_oracle_obstacle_source_segment_rank == 8
+    assert records[0].oracle_obstacle_source_segment_ambiguities is not None
+    ambiguity_by_chain = {
+        ambiguity.chain_index: ambiguity
+        for ambiguity in records[0].oracle_obstacle_source_segment_ambiguities
+    }
+    assert ambiguity_by_chain[80].expected_rank == 2
+    assert 10.94 < ambiguity_by_chain[80].nearest_source < 10.95
+    assert ambiguity_by_chain[132].expected_rank == 8
+    assert ambiguity_by_chain[36].expected_rank == 4
+    assert 1.35 < ambiguity_by_chain[36].nearest_source < 1.36
+    assert "max oracle source segment rank" in text
+    assert "oracle source segment ambiguity details" in text
+    assert "80: r2" in text
+    assert "132: r8" in text
+    assert "36: r4" in text
+
+
 def test_write_benchmark_regression_report_when_source_beads_differ_reports_max_delta(
     tmp_path: Path,
 ) -> None:

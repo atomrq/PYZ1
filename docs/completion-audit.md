@@ -26,13 +26,13 @@ evidence still leaves scientific and scalability boundaries open.
 
 Latest gate artifacts:
 
-- `.omo/evidence/task-71-blocked-trace-source-order/pytest.txt`:
-  `124 passed`
-- `.omo/evidence/task-71-blocked-trace-source-order/ruff.txt`:
+- `.omo/evidence/task-72-oracle-source-ambiguity/pytest.txt`:
+  `125 passed`
+- `.omo/evidence/task-72-oracle-source-ambiguity/ruff.txt`:
   `All checks passed!`
-- `.omo/evidence/task-71-blocked-trace-source-order/basedpyright.txt`:
+- `.omo/evidence/task-72-oracle-source-ambiguity/basedpyright.txt`:
   `0 errors, 0 warnings, 0 notes`
-- `.omo/evidence/task-71-blocked-trace-source-order/package-smoke.txt`:
+- `.omo/evidence/task-72-oracle-source-ambiguity/package-smoke.txt`:
   `2 passed`
 - `.omo/evidence/task-68-winding-number-surface/default-spplus-01-05-convex-coverage.txt`:
   benchmark-04 default/SP+ are `passed`; benchmark-03 SP+ keeps
@@ -59,6 +59,12 @@ Latest gate artifacts:
   trace sequence is `(8,153,153,212,212,212,212,212,212)` versus oracle
   `(268,241,160,130)`, ruling out current blocked trace source carrying as the
   general oracle source/order rule
+- `.omo/evidence/task-72-oracle-source-ambiguity/regression-01-02-source-segment-ambiguity.txt`:
+  benchmark-01 oracle source assignment has max first-chain segment rank `8`
+  with ambiguous obstacle chains `(80,283,134,87,208,132,97,36)`;
+  benchmark-02 has max rank `5` with ambiguous chains
+  `(146,278,132,239,46,86,27,139,102)`, showing the hidden source rule is not
+  nearest-segment projection from obstacle midpoint
 - `.omo/evidence/task-57-ppa-nan-root/benchmark05-first-steps.txt`:
   benchmark-05 PPA+ first position update drives `mean_lpp` from
   `19.000003838046396` to `4089134097.2156291`
@@ -70,7 +76,7 @@ Latest gate artifacts:
 
 | Boundary | Current evidence | Completion evidence required |
 | --- | --- | --- |
-| Full default/SP+ numerical parity | Benchmark-04 default/SP+ now report `passed` using formatted summary parity plus SP geometry/pairing checks; benchmark-03 SP+ now matches first-chain obstacle sequence and reports zero node/pair mismatches, but task-66 records four source-bead residual details and a remaining max residual of `1.4679581658620817` plus summary/geometry mismatch; benchmark-01/02/05 remain `mismatch`; task-68 shows benchmark-01/02 oracle dumbbell obstacles are covered by a broader convex-hull candidate surface but with many extra candidates, task-69 shows the current source-gap/y-min convex selection still misses 11 benchmark-01 and 8 benchmark-02 oracle obstacles, task-70 records large oracle-obstacle source residuals even for covered oracle obstacles, and task-71 rules out current blocked trace source carrying as the general source/order rule; benchmark-05 oracle pairs are true-chain interactions outside dumbbell winding handling; the public Z1+ tree lacks `module-Z1.f90`; benchmark-06+ remain guarded | Reported `passed` status or documented scientifically acceptable tolerance for all intended default/SP+ cases |
+| Full default/SP+ numerical parity | Benchmark-04 default/SP+ now report `passed` using formatted summary parity plus SP geometry/pairing checks; benchmark-03 SP+ now matches first-chain obstacle sequence and reports zero node/pair mismatches, but task-66 records four source-bead residual details and a remaining max residual of `1.4679581658620817` plus summary/geometry mismatch; benchmark-01/02/05 remain `mismatch`; task-68 shows benchmark-01/02 oracle dumbbell obstacles are covered by a broader convex-hull candidate surface but with many extra candidates, task-69 shows the current source-gap/y-min convex selection still misses 11 benchmark-01 and 8 benchmark-02 oracle obstacles, task-70 records large oracle-obstacle source residuals even for covered oracle obstacles, task-71 rules out current blocked trace source carrying, and task-72 shows oracle source assignment often uses non-nearest first-chain segments; benchmark-05 oracle pairs are true-chain interactions outside dumbbell winding handling; the public Z1+ tree lacks `module-Z1.f90`; benchmark-06+ remain guarded | Reported `passed` status or documented scientifically acceptable tolerance for all intended default/SP+ cases |
 | Scalable all-14 default/SP+ regression | Benchmark-06 still timed out at 120 seconds even with bounds index and trace diagnostics disabled | All 14 benchmarks run with measured deltas or a deliberate documented tiered-regression contract accepted as final scope |
 | Full native PPA/PPA+ runtime parity | PPA+ benchmark-04 `Lpp` delta improved but remains `mismatch`; task-56 quick slice covers 01/04/05 under `max_node_count=1000`; task-57 shows 05 PPA+ is upstream-invalid because near-zero inter-chain WCA contact produces a first-step `mean_lpp` jump from `19.000003838046396` to `4089134097.2156291`, matching native Fortran `********` overflow in summary and coordinate output | Strict parity, accepted tolerance, or documented upstream-invalid fixture handling for every intended PPA/PPA+ benchmark |
 | Native `selfZ` implementation | CLI fails explicitly with not-implemented | Implemented `selfZ` reducer behavior and oracle parity evidence, or a final documented non-goal decision |
@@ -92,7 +98,8 @@ Latest gate artifacts:
    benchmark-01/02, task-71 shows the next reducer gap is the hidden source/order
    rule that maps covered oracle obstacles onto first-chain source beads; it is
    not nearest midpoint projection, one representative per source-gap group,
-   simple final-contour scaling, or current blocked-trace source carrying. For
+   simple final-contour scaling, current blocked-trace source carrying, or
+   nearest first-chain segment projection from obstacle midpoint. For
    benchmark-05, task-68 shows the next reducer gap is true-chain interaction
    handling, not dumbbell winding selection. Use task-62/task-68 winding
    diagnostics, task-63/64 sequence report fields, and oracle traces; do not
