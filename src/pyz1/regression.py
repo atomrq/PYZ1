@@ -74,6 +74,7 @@ SUMMARY_FIELD_NAMES: Final = (
 class RegressionMode(StrEnum):
     DEFAULT = "default"
     SPPLUS = "spplus"
+    SELFZ = "selfz"
 
 
 class RegressionStatus(StrEnum):
@@ -1067,7 +1068,7 @@ def _settings_for_mode(
     trace_diagnostics_enabled: bool = True,
 ) -> ReducerSettings:
     match mode:
-        case RegressionMode.DEFAULT:
+        case RegressionMode.DEFAULT | RegressionMode.SELFZ:
             return ReducerSettings(
                 trace_diagnostics_enabled=trace_diagnostics_enabled,
             )
@@ -1080,7 +1081,7 @@ def _settings_for_mode(
 
 def _summary_filename(mode: RegressionMode) -> str:
     match mode:
-        case RegressionMode.DEFAULT:
+        case RegressionMode.DEFAULT | RegressionMode.SELFZ:
             return "Z1+summary.dat"
         case RegressionMode.SPPLUS:
             return "Z1+summary.dat"
@@ -1092,7 +1093,7 @@ def _pairing_mismatch_count(
     expected_path: Path,
 ) -> int | None:
     match mode:
-        case RegressionMode.DEFAULT:
+        case RegressionMode.DEFAULT | RegressionMode.SELFZ:
             return None
         case RegressionMode.SPPLUS:
             comparison = compare_spplus_pairing(

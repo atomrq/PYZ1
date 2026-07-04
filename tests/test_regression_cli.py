@@ -36,9 +36,10 @@ def test_regression_cli_when_benchmark_requested_writes_report(
 
     assert result.returncode == 0, result.stdout + result.stderr
     text = report_path.read_text(encoding="utf-8")
-    assert "wrote 2 benchmark regression records" in result.stdout
+    assert "wrote 3 benchmark regression records" in result.stdout
     assert "| benchmark-04 | default | passed |" in text
     assert "| benchmark-04 | spplus | passed |" in text
+    assert "| benchmark-04 | selfz | passed |" in text
 
 
 def test_discover_benchmark_ids_when_root_has_mixed_entries_returns_sorted_ids(

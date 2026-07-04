@@ -30,16 +30,17 @@ def test_write_benchmark_regression_report_when_oracles_exist_lists_modes(
             source_dir=SOURCE_Z1,
             oracle_root=ORACLE_ROOT,
             report_path=report_path,
-            modes=(RegressionMode.DEFAULT, RegressionMode.SPPLUS),
+            modes=(RegressionMode.DEFAULT, RegressionMode.SPPLUS, RegressionMode.SELFZ),
             benchmark_ids=("04",),
         ),
     )
 
     text = report_path.read_text(encoding="utf-8")
-    assert len(records) == 2
-    assert "| benchmark-04 | default |" in text
+    assert len(records) == 3
     assert "| benchmark-04 | spplus | passed |" in text
+    assert "| benchmark-04 | selfz | passed |" in text
     assert tuple(record.status for record in records) == (
+        RegressionStatus.PASSED,
         RegressionStatus.PASSED,
         RegressionStatus.PASSED,
     )

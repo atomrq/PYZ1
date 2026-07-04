@@ -28,7 +28,7 @@ Run SP+ pairing mode:
 ulimit -n 1000000; micromamba run -n pyz1 python -m pyz1 -SP+ config.Z1
 ```
 
-Write a default/SP+ benchmark regression report:
+Write a default/SP+/selfZ benchmark regression report:
 
 ```bash
 ulimit -n 1000000; micromamba run -n pyz1 pyz1-benchmark-regression \
@@ -115,10 +115,10 @@ Current regression evidence is written to:
 
 That report classifies each public benchmark/mode as `passed`, `mismatch`, or
 `known-invalid`. The current clean-room reducer is not yet numerically
-equivalent to Z1+: `benchmark-01` through `benchmark-05` default/SP+ are
-reported as mismatches, and larger benchmark cases are performance-skipped by a
-transparent `node_count` guard until the reducer gets neighbor-list style
-acceleration.
+equivalent to Z1+: `benchmark-04` default/SP+/selfZ is reported as `passed`,
+`benchmark-01`, `benchmark-02`, `benchmark-03`, and `benchmark-05` remain
+`mismatch`, and larger benchmark cases are performance-skipped by a transparent
+`node_count` guard until the reducer gets neighbor-list style acceleration.
 
 ## Limitations
 
@@ -128,8 +128,9 @@ acceleration.
   drop-in replacement for Z1+ scientific production runs.
 - PPA/PPA+ has native Python execution and oracle-backed summary slices, but
   full benchmark-level runtime parity remains open.
-- `-selfZ` / `-0` is recognized but exits with an explicit not-implemented
-  error; it is not silently mapped onto the default reducer.
+- `-selfZ` / `-0` is recognized by the main package entrypoint but exits with
+  an explicit not-implemented error; selfZ oracle comparison is currently
+  available only through the benchmark regression report surface.
 - The first implementation intentionally avoids GPU, CUDA, CuPy, PyTorch,
   Numba, and accelerator-specific dependencies.
 

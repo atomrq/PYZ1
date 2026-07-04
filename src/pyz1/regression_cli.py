@@ -19,11 +19,12 @@ DEFAULT_REPORT_PATH: Final = Path("pyz1-benchmark-regression.md")
 DEFAULT_MODES: Final = (
     RegressionMode.DEFAULT,
     RegressionMode.SPPLUS,
+    RegressionMode.SELFZ,
 )
 
 app = typer.Typer(
     add_completion=False,
-    help="Write a pyz1 default/SP+ benchmark regression report.",
+    help="Write a pyz1 default/SP+/selfZ benchmark regression report.",
 )
 
 
@@ -40,7 +41,7 @@ def main(
         Path,
         typer.Option(
             "--oracle-root",
-            help="Z1+ default/SP+ oracle corpus root.",
+            help="Z1+ default/SP+/selfZ oracle corpus root.",
         ),
     ] = DEFAULT_ORACLE_ROOT,
     report_path: Annotated[
