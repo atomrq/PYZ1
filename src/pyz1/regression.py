@@ -93,6 +93,8 @@ class RegressionRecord:
     max_node_position_delta: float | None
     pyz1_core_node_count: int | None
     pyz1_final_node_count: int | None
+    pyz1_core_trace_node_count: int | None
+    pyz1_core_trace_ghost_nodes: int | None
     pyz1_core_accepted_blocked_moves: int | None
     pyz1_core_transient_blocked_nodes: int | None
     oracle_core_node_count: int | None
@@ -159,6 +161,8 @@ def _compare_benchmark_mode(
             max_node_position_delta=None,
             pyz1_core_node_count=None,
             pyz1_final_node_count=None,
+            pyz1_core_trace_node_count=None,
+            pyz1_core_trace_ghost_nodes=None,
             pyz1_core_accepted_blocked_moves=None,
             pyz1_core_transient_blocked_nodes=None,
             oracle_core_node_count=None,
@@ -182,6 +186,8 @@ def _compare_benchmark_mode(
             max_node_position_delta=None,
             pyz1_core_node_count=None,
             pyz1_final_node_count=None,
+            pyz1_core_trace_node_count=None,
+            pyz1_core_trace_ghost_nodes=None,
             pyz1_core_accepted_blocked_moves=None,
             pyz1_core_transient_blocked_nodes=None,
             oracle_core_node_count=None,
@@ -223,6 +229,8 @@ def _compare_benchmark_mode(
         max_node_position_delta=geometry_comparison.max_node_position_delta,
         pyz1_core_node_count=result.diagnostics.core_node_count,
         pyz1_final_node_count=result.diagnostics.final_node_count,
+        pyz1_core_trace_node_count=result.diagnostics.core_trace_node_count,
+        pyz1_core_trace_ghost_nodes=result.diagnostics.core_trace_ghost_node_count,
         pyz1_core_accepted_blocked_moves=(
             result.diagnostics.core_accepted_blocked_move_count
         ),
@@ -408,6 +416,7 @@ def _format_report(records: tuple[RegressionRecord, ...]) -> str:
             "summary field mismatches | pair mismatches | "
             "node count mismatches | max node position delta | "
             "pyz1 core nodes | pyz1 final nodes | "
+            "pyz1 core trace nodes | pyz1 core trace ghosts | "
             "pyz1 core accepted blocked moves | "
             "pyz1 core transient blocked nodes | "
             "oracle core nodes | oracle final nodes | "
@@ -417,7 +426,7 @@ def _format_report(records: tuple[RegressionRecord, ...]) -> str:
         (
             "| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | "
             "---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | "
-            "--- | --- |"
+            "---: | ---: | --- | --- |"
         ),
     ]
     lines.extend(_format_record(record) for record in records)
@@ -435,6 +444,8 @@ def _format_record(record: RegressionRecord) -> str:
         f"{_format_optional_float(record.max_node_position_delta)} | "
         f"{_format_optional_int(record.pyz1_core_node_count)} | "
         f"{_format_optional_int(record.pyz1_final_node_count)} | "
+        f"{_format_optional_int(record.pyz1_core_trace_node_count)} | "
+        f"{_format_optional_int(record.pyz1_core_trace_ghost_nodes)} | "
         f"{_format_optional_int(record.pyz1_core_accepted_blocked_moves)} | "
         f"{_format_optional_int(record.pyz1_core_transient_blocked_nodes)} | "
         f"{_format_optional_int(record.oracle_core_node_count)} | "

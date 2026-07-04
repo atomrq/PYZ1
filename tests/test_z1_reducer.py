@@ -216,6 +216,8 @@ def test_reduce_snapshot_when_benchmark_04_reports_reducer_diagnostics() -> None
     assert result.diagnostics.core_accepted_blocked_move_count == 9
     assert result.diagnostics.core_retained_blocked_node_count == 2
     assert result.diagnostics.core_transient_blocked_node_count == 7
+    assert result.diagnostics.core_trace_node_count == 17
+    assert result.diagnostics.core_trace_ghost_node_count == 7
 
 
 def test_reduce_snapshot_when_benchmark_04_matches_oracle_kink_source() -> None:

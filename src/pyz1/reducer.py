@@ -48,6 +48,8 @@ class ReducerResult:
 class ReducerDiagnostics:
     core_node_count: int
     final_node_count: int
+    core_trace_node_count: int
+    core_trace_ghost_node_count: int
     core_accepted_blocked_move_count: int
     core_retained_blocked_node_count: int
     core_transient_blocked_node_count: int
@@ -102,6 +104,9 @@ def reduce_snapshot(
         diagnostics=ReducerDiagnostics(
             core_node_count=sum(chain.node_count for chain in core_chains),
             final_node_count=sum(chain.node_count for chain in reduced_chains),
+            core_trace_node_count=sum(chain.node_count for chain in core_chains)
+            + core_trace.transient_blocked_node_count,
+            core_trace_ghost_node_count=core_trace.transient_blocked_node_count,
             core_accepted_blocked_move_count=(
                 core_trace.accepted_blocked_move_count
             ),
