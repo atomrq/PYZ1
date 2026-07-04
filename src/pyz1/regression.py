@@ -5,7 +5,12 @@ from enum import StrEnum
 from math import isclose, sqrt
 from typing import TYPE_CHECKING, Final
 
-from pyz1.geometry import GeometryBox, Segment, minimum_image_delta
+from pyz1.geometry import (
+    GeometryBox,
+    Segment,
+    closest_segment_points,
+    minimum_image_delta,
+)
 from pyz1.output_io import (
     format_shortest_path_text,
     format_summary_text,
@@ -104,6 +109,10 @@ class RegressionRecord:
     max_node_delta_node_index: int | None
     max_node_delta_actual_source_bead: float | None
     max_node_delta_expected_source_bead: float | None
+    max_node_actual_pair_fraction: float | None
+    max_node_actual_pair_distance: float | None
+    max_node_expected_pair_fraction: float | None
+    max_node_expected_pair_distance: float | None
     pyz1_core_node_count: int | None
     pyz1_final_node_count: int | None
     pyz1_core_trace_node_count: int | None
@@ -139,6 +148,16 @@ class ShortestPathGeometryComparison:
     max_node_delta_node_index: int | None
     max_node_delta_actual_source_bead: float | None
     max_node_delta_expected_source_bead: float | None
+    max_node_actual_pair_fraction: float | None
+    max_node_actual_pair_distance: float | None
+    max_node_expected_pair_fraction: float | None
+    max_node_expected_pair_distance: float | None
+
+
+@dataclass(frozen=True, slots=True)
+class _NodePairGeometry:
+    fraction: float
+    distance: float
 
 
 @dataclass(frozen=True, slots=True)
@@ -202,6 +221,10 @@ def _compare_benchmark_mode(
             max_node_delta_node_index=None,
             max_node_delta_actual_source_bead=None,
             max_node_delta_expected_source_bead=None,
+            max_node_actual_pair_fraction=None,
+            max_node_actual_pair_distance=None,
+            max_node_expected_pair_fraction=None,
+            max_node_expected_pair_distance=None,
             pyz1_core_node_count=None,
             pyz1_final_node_count=None,
             pyz1_core_trace_node_count=None,
@@ -245,6 +268,10 @@ def _compare_benchmark_mode(
             max_node_delta_node_index=None,
             max_node_delta_actual_source_bead=None,
             max_node_delta_expected_source_bead=None,
+            max_node_actual_pair_fraction=None,
+            max_node_actual_pair_distance=None,
+            max_node_expected_pair_fraction=None,
+            max_node_expected_pair_distance=None,
             pyz1_core_node_count=None,
             pyz1_final_node_count=None,
             pyz1_core_trace_node_count=None,
@@ -319,6 +346,14 @@ def _compare_benchmark_mode(
         ),
         max_node_delta_expected_source_bead=(
             geometry_comparison.max_node_delta_expected_source_bead
+        ),
+        max_node_actual_pair_fraction=geometry_comparison.max_node_actual_pair_fraction,
+        max_node_actual_pair_distance=geometry_comparison.max_node_actual_pair_distance,
+        max_node_expected_pair_fraction=(
+            geometry_comparison.max_node_expected_pair_fraction
+        ),
+        max_node_expected_pair_distance=(
+            geometry_comparison.max_node_expected_pair_distance
         ),
         pyz1_core_node_count=result.diagnostics.core_node_count,
         pyz1_final_node_count=result.diagnostics.final_node_count,
@@ -623,6 +658,8 @@ def _shortest_path_snapshot_geometry_comparison(
     max_delta_node_index: int | None = None
     max_delta_actual_source_bead: float | None = None
     max_delta_expected_source_bead: float | None = None
+    max_actual_pair_geometry: _NodePairGeometry | None = None
+    max_expected_pair_geometry: _NodePairGeometry | None = None
     box = GeometryBox(lengths=actual.box)
     shared_chain_count = min(actual.chain_count, expected.chain_count)
     for chain_index in range(shared_chain_count):
@@ -633,20 +670,23 @@ def _shortest_path_snapshot_geometry_comparison(
         )
         shared_node_count = min(actual_chain.node_count, expected_chain.node_count)
         for node_index in range(shared_node_count):
+            actual_node = actual_chain.nodes[node_index]
+            expected_node = expected_chain.nodes[node_index]
             delta = _periodic_node_position_delta(
-                actual_chain.nodes[node_index].position,
-                expected_chain.nodes[node_index].position,
+                actual_node.position,
+                expected_node.position,
                 box,
             )
             if max_delta_chain_index is None or delta > max_position_delta:
                 max_position_delta = delta
                 max_delta_chain_index = chain_index + 1
                 max_delta_node_index = node_index + 1
-                max_delta_actual_source_bead = (
-                    actual_chain.nodes[node_index].source_bead
-                )
-                max_delta_expected_source_bead = (
-                    expected_chain.nodes[node_index].source_bead
+                max_delta_actual_source_bead = actual_node.source_bead
+                max_delta_expected_source_bead = expected_node.source_bead
+                max_actual_pair_geometry = _node_pair_geometry(actual_node, actual)
+                max_expected_pair_geometry = _node_pair_geometry(
+                    expected_node,
+                    expected,
                 )
     return ShortestPathGeometryComparison(
         node_count_mismatches=node_count_mismatches,
@@ -655,6 +695,53 @@ def _shortest_path_snapshot_geometry_comparison(
         max_node_delta_node_index=max_delta_node_index,
         max_node_delta_actual_source_bead=max_delta_actual_source_bead,
         max_node_delta_expected_source_bead=max_delta_expected_source_bead,
+        max_node_actual_pair_fraction=(
+            max_actual_pair_geometry.fraction
+            if max_actual_pair_geometry is not None
+            else None
+        ),
+        max_node_actual_pair_distance=(
+            max_actual_pair_geometry.distance
+            if max_actual_pair_geometry is not None
+            else None
+        ),
+        max_node_expected_pair_fraction=(
+            max_expected_pair_geometry.fraction
+            if max_expected_pair_geometry is not None
+            else None
+        ),
+        max_node_expected_pair_distance=(
+            max_expected_pair_geometry.distance
+            if max_expected_pair_geometry is not None
+            else None
+        ),
+    )
+
+
+def _node_pair_geometry(
+    node: ShortestPathNode,
+    snapshot: ShortestPathSnapshot,
+) -> _NodePairGeometry | None:
+    if node.pair is None:
+        return None
+    pair_chain_index = node.pair.chain_index - 1
+    if pair_chain_index < 0 or pair_chain_index >= snapshot.chain_count:
+        return None
+    pair_chain = snapshot.chains[pair_chain_index]
+    pair_node_index = node.pair.node_index
+    if pair_node_index < 1 or pair_node_index >= pair_chain.node_count:
+        return None
+    pair_segment = Segment(
+        start=pair_chain.nodes[pair_node_index - 1].position,
+        end=pair_chain.nodes[pair_node_index].position,
+    )
+    closest = closest_segment_points(
+        Segment(start=node.position, end=node.position),
+        pair_segment,
+    )
+    return _NodePairGeometry(
+        fraction=closest.second_fraction,
+        distance=closest.distance,
     )
 
 
@@ -743,6 +830,10 @@ def _format_report(records: tuple[RegressionRecord, ...]) -> str:
             "max node delta chain | max node delta node | "
             "max node delta actual source | "
             "max node delta expected source | "
+            "max node actual pair fraction | "
+            "max node actual pair distance | "
+            "max node expected pair fraction | "
+            "max node expected pair distance | "
             "pyz1 core nodes | pyz1 final nodes | "
             "pyz1 core trace nodes | pyz1 core trace ghosts | "
             "pyz1 core accepted blocked moves | "
@@ -767,6 +858,7 @@ def _format_report(records: tuple[RegressionRecord, ...]) -> str:
             "| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | "
             "---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | "
             "---: | ---: | ---: | ---: | "
+            "---: | ---: | ---: | ---: | "
             "---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | "
             "---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- |"
         ),
@@ -788,6 +880,10 @@ def _format_record(record: RegressionRecord) -> str:
         f"{_format_optional_int(record.max_node_delta_node_index)} | "
         f"{_format_optional_float(record.max_node_delta_actual_source_bead)} | "
         f"{_format_optional_float(record.max_node_delta_expected_source_bead)} | "
+        f"{_format_optional_float(record.max_node_actual_pair_fraction)} | "
+        f"{_format_optional_float(record.max_node_actual_pair_distance)} | "
+        f"{_format_optional_float(record.max_node_expected_pair_fraction)} | "
+        f"{_format_optional_float(record.max_node_expected_pair_distance)} | "
         f"{_format_optional_int(record.pyz1_core_node_count)} | "
         f"{_format_optional_int(record.pyz1_final_node_count)} | "
         f"{_format_optional_int(record.pyz1_core_trace_node_count)} | "
