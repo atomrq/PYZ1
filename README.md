@@ -40,9 +40,11 @@ Write a PPA/PPA+ oracle coordinate fixture-health report:
 ```bash
 ulimit -n 1000000; micromamba run -n pyz1 pyz1-ppa-oracle-coordinates \
   --oracle-root tests/fixtures/z1plus_oracle/corpus-ppa-ppaplus-20260703 \
-  --report-path ppa-oracle-coordinate-report.md \
-  --benchmark-id 01 --benchmark-id 04 --benchmark-id 05
+  --report-path ppa-oracle-coordinate-report.md
 ```
+
+By default this discovers every `benchmark-*` directory under the oracle root.
+Pass `--benchmark-id` repeatedly to restrict the report to a smaller slice.
 
 Run the package-level integration smoke:
 

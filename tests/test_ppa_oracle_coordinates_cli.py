@@ -39,3 +39,32 @@ def test_ppa_oracle_coordinate_cli_when_mixed_corpus_writes_report(
     assert "| benchmark-01 | ppa | PPA.dat | parseable | 611 |" in text
     assert "| benchmark-05 | ppa | PPA.dat | missing | n/a |" in text
     assert "| benchmark-05 | ppaplus | PPA+.dat | invalid | n/a | 310 |" in text
+
+
+def test_ppa_oracle_coordinate_cli_when_ids_omitted_discovers_corpus(
+    tmp_path: Path,
+) -> None:
+    report_path = tmp_path / "ppa-oracle-coordinate-report.md"
+
+    result = subprocess.run(  # noqa: S603 - command is fixed package smoke.
+        [
+            sys.executable,
+            "-m",
+            "pyz1.ppa_oracle_coordinates_cli",
+            "--oracle-root",
+            str(PPA_ORACLE_ROOT),
+            "--report-path",
+            str(report_path),
+        ],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+
+    assert result.returncode == 0, result.stdout + result.stderr
+    text = report_path.read_text(encoding="utf-8")
+    assert "wrote 28 PPA oracle coordinate records" in result.stdout
+    assert "| benchmark-01 | ppa | PPA.dat | parseable | 611 |" in text
+    assert "| benchmark-06 | ppa | PPA.dat | missing | n/a |" in text
+    assert "| benchmark-11 | ppaplus | PPA+.dat | parseable |" in text
+    assert "| benchmark-14 | ppaplus | PPA+.dat | missing | n/a |" in text

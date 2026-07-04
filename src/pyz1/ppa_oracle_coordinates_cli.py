@@ -15,11 +15,6 @@ DEFAULT_ORACLE_ROOT: Final = Path(
     "tests/fixtures/z1plus_oracle/corpus-ppa-ppaplus-20260703",
 )
 DEFAULT_REPORT_PATH: Final = Path("ppa-oracle-coordinate-report.md")
-DEFAULT_BENCHMARK_IDS: Final = (
-    "01",
-    "04",
-    "05",
-)
 DEFAULT_MODES: Final = (
     PpaRegressionMode.STANDARD,
     PpaRegressionMode.ACCELERATED,
@@ -65,7 +60,7 @@ def main(
     requested_benchmark_ids = (
         tuple(benchmark_ids)
         if benchmark_ids is not None
-        else DEFAULT_BENCHMARK_IDS
+        else discover_benchmark_ids(oracle_root)
     )
     requested_modes = tuple(modes) if modes is not None else DEFAULT_MODES
     records = write_ppa_oracle_coordinate_report(
@@ -78,6 +73,14 @@ def main(
     )
     typer.echo(
         f"[pyz1] wrote {len(records)} PPA oracle coordinate records to {report_path}",
+    )
+
+
+def discover_benchmark_ids(oracle_root: Path) -> tuple[str, ...]:
+    return tuple(
+        path.name.removeprefix("benchmark-")
+        for path in sorted(oracle_root.glob("benchmark-*"))
+        if path.is_dir()
     )
 
 
