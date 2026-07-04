@@ -11,15 +11,15 @@ For a requirement-by-requirement completion verdict, see
 
 Latest local gate evidence:
 
-- `.omo/evidence/task-86-true-chain-pair-diagnostics/pytest.txt`:
+- `.omo/evidence/task-87-true-chain-contact-candidates/pytest.txt`:
   `137 passed`
 - `.omo/evidence/task-55-ppa-coverage/ppa-focused.txt`: `21 passed`
 - `.omo/evidence/task-57-ppa-nan-root/ppa-focused.txt`: `22 passed`
-- `.omo/evidence/task-86-true-chain-pair-diagnostics/ruff.txt`:
+- `.omo/evidence/task-87-true-chain-contact-candidates/ruff.txt`:
   `All checks passed!`
-- `.omo/evidence/task-86-true-chain-pair-diagnostics/basedpyright.txt`:
+- `.omo/evidence/task-87-true-chain-contact-candidates/basedpyright.txt`:
   `0 errors, 0 warnings, 0 notes`
-- `.omo/evidence/task-86-true-chain-pair-diagnostics/package-smoke.txt`:
+- `.omo/evidence/task-87-true-chain-contact-candidates/package-smoke.txt`:
   `1 passed`
 
 The package smoke runs `python -m pyz1` for default, SP+, selfZ, PPA, and PPA+
@@ -35,7 +35,7 @@ modes and checks the expected mode-specific output files.
 | Oracle fixture tooling and parity reporting | Oracle manifest tests, CLI help smoke, benchmark regression report tests, and logged oracle run metadata | `tests/test_oracle.py`, `tests/test_z1plus_parity.py`, `tests/test_spplus_regression.py` |
 | Native PPA/PPA+ slices | PPA mode tests, CLI mode tests, package-level smoke, WCA cell-list candidate generation, native PPA summary regression reporting, Z1+ PPA+ phase-stop regression, 12 parseable oracle coordinate-path summary parity cases, explicit Fortran-overflow known-invalid fixture handling, reusable oracle coordinate fixture status reports, a package script that discovers all oracle benchmark directories for coordinate fixture reporting, and an installed native PPA/PPA+ regression report surface | `tests/test_ppa.py`, `tests/test_ppa_regression.py`, `tests/test_ppa_oracle_coordinates.py`, `tests/test_ppa_oracle_coordinates_cli.py`, `tests/test_ppa_regression_cli.py`, `tests/test_cli_scaffold.py`, `tests/test_package_integration_smoke.py`, `.omo/evidence/task-46-ppa-summary-oracle-coverage/`, `.omo/evidence/task-47-ppa-neighbor-list/`, `.omo/evidence/task-48-ppa-native-regression/`, `.omo/evidence/task-49-ppa-lpp-debug/`, `.omo/evidence/task-78-ppa-oracle-coordinate-report/`, `.omo/evidence/task-79-ppa-oracle-coordinate-cli/`, `.omo/evidence/task-80-ppa-oracle-coordinate-discovery/`, `.omo/evidence/task-82-ppa-regression-cli/` |
 | Clean-room reducer | Geometry primitives, reducer diagnostics, benchmark-04 reducer structure, SP+ pairing, broad-phase/index blocker filtering, benchmark regression diagnostics for 01-05 under the default guard, a package script that discovers all default/SP+/selfZ oracle benchmark directories for regression reporting, and user-tunable node-count/trace-diagnostics guards | `tests/test_geometry.py`, `tests/test_z1_reducer.py`, `tests/test_spplus_regression.py`, `tests/test_regression_cli.py`, `.omo/evidence/task-53-reducer-index/`, `.omo/evidence/task-81-default-spplus-regression-cli/`, `.omo/evidence/task-83-selfz-regression-surface/`, `.omo/evidence/task-84-regression-cli-guards/` |
-| SP+ regression | Pairing comparison, max-node-delta localization, pair-segment geometry diagnostics, oracle summary source isolation, residual ghost-clearance tuning, CLI-driven full-corpus default/SP+/selfZ status reporting, trace-diagnostics guard control, and direct pyz1-vs-oracle true-chain pair sequence reporting | `tests/test_spplus_regression.py`, `tests/test_regression_cli.py`, `.omo/evidence/task-38-final-node-delta-location/`, `.omo/evidence/task-39-max-node-pair-geometry/`, `.omo/evidence/task-41-spplus-projection-direction/`, `.omo/evidence/task-50-spplus-residual/`, `.omo/evidence/task-81-default-spplus-regression-cli/`, `.omo/evidence/task-83-selfz-regression-surface/`, `.omo/evidence/task-84-regression-cli-guards/`, `.omo/evidence/task-86-true-chain-pair-diagnostics/` |
+| SP+ regression | Pairing comparison, max-node-delta localization, pair-segment geometry diagnostics, oracle summary source isolation, residual ghost-clearance tuning, CLI-driven full-corpus default/SP+/selfZ status reporting, trace-diagnostics guard control, direct pyz1-vs-oracle true-chain pair sequence reporting, and true-chain contact candidate diagnostics | `tests/test_spplus_regression.py`, `tests/test_regression_cli.py`, `.omo/evidence/task-38-final-node-delta-location/`, `.omo/evidence/task-39-max-node-pair-geometry/`, `.omo/evidence/task-41-spplus-projection-direction/`, `.omo/evidence/task-50-spplus-residual/`, `.omo/evidence/task-81-default-spplus-regression-cli/`, `.omo/evidence/task-83-selfz-regression-surface/`, `.omo/evidence/task-84-regression-cli-guards/`, `.omo/evidence/task-86-true-chain-pair-diagnostics/`, `.omo/evidence/task-87-true-chain-contact-candidates/` |
 | Package integration smoke | Real module entrypoint smoke for default, SP+, selfZ, PPA, and PPA+ | `tests/test_package_integration_smoke.py`, `.omo/evidence/task-57-ppa-nan-root/package-smoke.txt`, `.omo/evidence/task-85-selfz-execution/` |
 | `selfZ` execution and boundary | `-selfZ` writes Z1+ reducer output files through both installed and module package surfaces; selfZ oracle directories are covered by the benchmark regression report surface, while scientific parity remains open | `tests/test_cli_scaffold.py`, `tests/test_package_integration_smoke.py`, `tests/test_regression_cli.py`, `.omo/evidence/task-83-selfz-regression-surface/`, `.omo/evidence/task-85-selfz-execution/` |
 
@@ -464,6 +464,16 @@ true-chain pair sequence is `4`, while the Z1+ oracle sequence is `40,26`.
 This makes the benchmark-05 blocker directly visible in the report surface; it
 does not claim the true-chain interaction reducer has been solved.
 
+Task-87 adds true-chain contact candidate diagnostics to the same report
+surface. Evidence in
+`.omo/evidence/task-87-true-chain-contact-candidates/benchmark-05-spplus-true-chain-contacts.md`
+shows benchmark-05 SP+ still reports `mismatch`, with current pyz1 true-chain
+pair sequence `4`, true-chain contact candidates `6,40,26,12`, and oracle
+true-chain pair sequence `40,26`. This proves the oracle pair chains are present
+in a simple source-sorted contact candidate surface, but that surface is not
+yet selective enough to drive reducer behavior because it also contains extra
+candidates.
+
 ## Open Boundaries
 
 The following are intentionally not claimed complete:
@@ -473,8 +483,9 @@ The following are intentionally not claimed complete:
   PPA+ benchmark-04 is runnable and close in `Ne` while strict summary parity
   is still a `mismatch`.
 - default geometrical Z1+ numerical parity across all benchmarks
-  remains open; task-86 localizes benchmark-05 SP+ to pyz1 true-chain pair
-  `4` versus oracle true-chain pairs `40,26`.
+  remains open; task-87 localizes benchmark-05 SP+ further to candidate
+  selection/retention: candidates `6,40,26,12` include oracle `40,26`, but
+  current pyz1 still retains pair `4`.
 - scalable all-14 benchmark reducer regression without relying on a
   node-count performance guard; task-84 makes the guard user-tunable but does
   not prove full unguarded 06+ execution

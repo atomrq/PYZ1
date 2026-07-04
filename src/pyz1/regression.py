@@ -50,6 +50,7 @@ if TYPE_CHECKING:
 
 SOURCE_BEAD_TOLERANCE: Final = 1.0e-9
 SHORTEST_PATH_POSITION_TOLERANCE: Final = 1.0e-3
+MAX_TRUE_CHAIN_CONTACT_CANDIDATE_DISTANCE: Final = 0.3
 CORE_STAGE_NODE_FILENAME: Final = "Z1+NODES-best-match-step1-entry.dat"
 MAX_SOURCE_RESIDUAL_REPORT_DETAILS: Final = 12
 SUMMARY_FIELD_NAMES: Final = (
@@ -145,6 +146,14 @@ class OracleObstacleSourceSegmentAmbiguity:
 
 
 @dataclass(frozen=True, slots=True)
+class TrueChainContactCandidate:
+    chain_index: int
+    source_bead: float
+    other_source_bead: float
+    distance: float
+
+
+@dataclass(frozen=True, slots=True)
 class RegressionRecord:
     benchmark_id: str
     mode: RegressionMode
@@ -222,6 +231,10 @@ class RegressionRecord:
     pyz1_source_sequence_max_delta: float | None = None
     pyz1_source_sequence_residuals: tuple[SourceSequenceResidual, ...] | None = None
     pyz1_true_chain_pair_sequence: tuple[int, ...] | None = None
+    pyz1_true_chain_contact_candidate_sequence: tuple[int, ...] | None = None
+    pyz1_true_chain_contact_candidate_details: (
+        tuple[TrueChainContactCandidate, ...] | None
+    ) = None
     oracle_true_chain_pair_sequence: tuple[int, ...] | None = None
 
 
@@ -473,6 +486,7 @@ def _compare_benchmark_mode(
         result.diagnostics.core_trace_blocked_nodes,
     )
     first_projection = _first_projection_trace(result.diagnostics.projection_traces)
+    true_chain_contact_candidates = _true_chain_contact_candidates(snapshot)
     status = _status_from_output_comparison(
         _RegressionStatusInput(
             summary_field_mismatches=summary_field_mismatches,
@@ -686,6 +700,10 @@ def _compare_benchmark_mode(
             result.shortest_path,
             snapshot,
         ),
+        pyz1_true_chain_contact_candidate_sequence=tuple(
+            candidate.chain_index for candidate in true_chain_contact_candidates
+        ),
+        pyz1_true_chain_contact_candidate_details=true_chain_contact_candidates,
         oracle_true_chain_pair_sequence=(
             winding_candidate_coverage.oracle_true_chain_pair_sequence
         ),
@@ -1352,6 +1370,76 @@ def _has_true_chain_pair(snapshot: Snapshot, chain_index: int) -> bool:
     )
 
 
+def _true_chain_contact_candidates(
+    snapshot: Snapshot,
+) -> tuple[TrueChainContactCandidate, ...]:
+    if snapshot.chain_count <= 1:
+        return ()
+    box = GeometryBox(lengths=snapshot.box, shear=snapshot.shear or 0.0)
+    chains = tuple(unfold_chain(chain, box) for chain in snapshot.chains)
+    first_chain = chains[0]
+    if not first_chain.is_true_chain:
+        return ()
+    candidates = tuple(
+        candidate
+        for chain_index, chain in enumerate(chains[1:], start=2)
+        if chain.is_true_chain
+        for candidate in (_nearest_true_chain_contact(first_chain, chain, chain_index),)
+        if candidate is not None
+        and candidate.distance <= MAX_TRUE_CHAIN_CONTACT_CANDIDATE_DISTANCE
+    )
+    return tuple(
+        sorted(
+            candidates,
+            key=lambda candidate: (
+                candidate.source_bead,
+                candidate.distance,
+                candidate.chain_index,
+            ),
+        ),
+    )
+
+
+def _nearest_true_chain_contact(
+    first_chain: Chain,
+    other_chain: Chain,
+    other_chain_index: int,
+) -> TrueChainContactCandidate | None:
+    best_candidate: TrueChainContactCandidate | None = None
+    for first_segment_index, first_segment in enumerate(
+        _chain_segments(first_chain),
+        start=1,
+    ):
+        for other_segment_index, other_segment in enumerate(
+            _chain_segments(other_chain),
+            start=1,
+        ):
+            closest = closest_segment_points(first_segment, other_segment)
+            if (
+                best_candidate is not None
+                and closest.distance >= best_candidate.distance
+            ):
+                continue
+            best_candidate = TrueChainContactCandidate(
+                chain_index=other_chain_index,
+                source_bead=first_segment_index + closest.first_fraction,
+                other_source_bead=other_segment_index + closest.second_fraction,
+                distance=closest.distance,
+            )
+    return best_candidate
+
+
+def _chain_segments(chain: Chain) -> tuple[Segment, ...]:
+    return tuple(
+        Segment(start=first_node, end=second_node)
+        for first_node, second_node in zip(
+            chain.nodes[:-1],
+            chain.nodes[1:],
+            strict=True,
+        )
+    )
+
+
 def _oracle_default_source_sequence(
     request: RegressionRequest,
     benchmark_id: str,
@@ -1492,6 +1580,8 @@ def _format_report(records: tuple[RegressionRecord, ...]) -> str:
         "pyz1 source sequence max delta | "
         "pyz1 source sequence residual details | "
         "pyz1 true-chain pair sequence | "
+        "pyz1 true-chain contact candidate sequence | "
+        "pyz1 true-chain contact candidate details | "
         "oracle true-chain pair sequence | "
         "summary mismatch details | note |"
     )
@@ -1580,6 +1670,8 @@ def _format_record(record: RegressionRecord) -> str:
         f"{_format_optional_float(record.pyz1_source_sequence_max_delta)} | "
         f"{_format_source_sequence_residuals(record.pyz1_source_sequence_residuals)} | "
         f"{_format_int_sequence(record.pyz1_true_chain_pair_sequence)} | "
+        f"{_format_int_sequence(record.pyz1_true_chain_contact_candidate_sequence)} | "
+        f"{_format_true_chain_contact_candidates(record)} | "
         f"{_format_int_sequence(record.oracle_true_chain_pair_sequence)} | "
         f"{_format_summary_field_details(record.summary_field_mismatch_details)} | "
         f"{record.note} |"
@@ -1649,6 +1741,33 @@ def _format_source_sequence_residual(residual: SourceSequenceResidual) -> str:
         f"{_format_optional_float(residual.actual)}"
         f"!={_format_optional_float(residual.expected)}"
         f"(d={_format_optional_float(residual.delta)})"
+    )
+
+
+def _format_true_chain_contact_candidates(record: RegressionRecord) -> str:
+    candidates = record.pyz1_true_chain_contact_candidate_details
+    if candidates is None:
+        return "n/a"
+    if len(candidates) == 0:
+        return "none"
+    visible = candidates[:MAX_SOURCE_RESIDUAL_REPORT_DETAILS]
+    formatted = "; ".join(
+        _format_true_chain_contact_candidate(candidate) for candidate in visible
+    )
+    omitted_count = len(candidates) - len(visible)
+    if omitted_count == 0:
+        return formatted
+    return f"{formatted}; ... {omitted_count} more"
+
+
+def _format_true_chain_contact_candidate(
+    candidate: TrueChainContactCandidate,
+) -> str:
+    return (
+        f"{candidate.chain_index}: "
+        f"s={_format_optional_float(candidate.source_bead)} "
+        f"other={_format_optional_float(candidate.other_source_bead)} "
+        f"d={_format_optional_float(candidate.distance)}"
     )
 
 
