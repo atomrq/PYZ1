@@ -31,6 +31,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 CORE_STAGE_SUPPORT_MAX_LENGTH: Final = 2.2
+BLOCKED_KINK_CLEARANCE_FRACTION: Final = 0.1
 
 
 @dataclass(frozen=True, slots=True)
@@ -568,6 +569,16 @@ class _ProjectionResult:
     trace: ProjectionTrace
 
 
+@dataclass(frozen=True, slots=True)
+class _OrthogonalRelaxationInput:
+    projected: Vector3
+    direct_position: Vector3
+    responsible_segment: Segment
+    blocker_segment: Segment
+    reference_position: Vector3
+    minimum_normal_distance: float
+
+
 def _preserve_close_contacts(
     original_chains: tuple[Chain, ...],
     reduced_chains: tuple[Chain, ...],
@@ -828,36 +839,58 @@ def _relaxed_projected_position(
     if preserved.blocker_segment is None:
         return direct_position
     return _orthogonal_relaxed_projected_position(
-        projected=projected,
-        direct_position=direct_position,
-        responsible_segment=responsible_segment,
-        blocker_segment=preserved.blocker_segment,
-        reference_position=preserved.position,
+        _OrthogonalRelaxationInput(
+            projected=projected,
+            direct_position=direct_position,
+            responsible_segment=responsible_segment,
+            blocker_segment=preserved.blocker_segment,
+            reference_position=preserved.position,
+            minimum_normal_distance=(
+                preserved.ghost_clearance * BLOCKED_KINK_CLEARANCE_FRACTION
+            ),
+        ),
     )
 
 
 def _orthogonal_relaxed_projected_position(
-    *,
-    projected: Vector3,
-    direct_position: Vector3,
-    responsible_segment: Segment,
-    blocker_segment: Segment,
-    reference_position: Vector3,
+    relaxation_input: _OrthogonalRelaxationInput,
 ) -> Vector3:
     closest = closest_segment_points(
-        Segment(start=direct_position, end=direct_position),
-        responsible_segment,
+        Segment(
+            start=relaxation_input.direct_position,
+            end=relaxation_input.direct_position,
+        ),
+        relaxation_input.responsible_segment,
     )
-    normal_distance = _vector_distance(direct_position, closest.second_point)
+    normal_distance = _vector_distance(
+        relaxation_input.direct_position,
+        closest.second_point,
+    )
+    normal_distance = max(
+        normal_distance,
+        relaxation_input.minimum_normal_distance,
+    )
     if normal_distance <= GEOMETRY_TOLERANCE:
-        return direct_position
-    responsible_delta = _subtract(responsible_segment.end, responsible_segment.start)
-    blocker_delta = _subtract(blocker_segment.end, blocker_segment.start)
+        return relaxation_input.direct_position
+    responsible_delta = _subtract(
+        relaxation_input.responsible_segment.end,
+        relaxation_input.responsible_segment.start,
+    )
+    blocker_delta = _subtract(
+        relaxation_input.blocker_segment.end,
+        relaxation_input.blocker_segment.start,
+    )
     normal_direction = _cross(responsible_delta, blocker_delta)
     normal_length = sqrt(_dot(normal_direction, normal_direction))
     if normal_length <= GEOMETRY_TOLERANCE:
-        return direct_position
-    if _dot(normal_direction, _subtract(reference_position, projected)) < 0.0:
+        return relaxation_input.direct_position
+    if (
+        _dot(
+            normal_direction,
+            _subtract(relaxation_input.reference_position, relaxation_input.projected),
+        )
+        < 0.0
+    ):
         normal_direction = _scale(normal_direction, -1.0)
     return _add(
         closest.second_point,

@@ -313,7 +313,7 @@ def test_reduce_snapshot_when_benchmark_04_reports_projection_trace() -> None:
     )
     assert_vector_close(
         projection.projected_position,
-        Vector3(0.13223612401495088, -0.16016792780955832, 1.6149445400937987),
+        Vector3(0.13135083456283086, -0.16004159169478382, 1.6147851541270681),
     )
 
 

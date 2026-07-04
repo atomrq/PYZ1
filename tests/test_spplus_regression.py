@@ -41,7 +41,7 @@ def test_write_benchmark_regression_report_when_oracles_exist_lists_modes(
     assert "summary field mismatches" in text
     assert "max node position delta" in text
     assert "node count mismatches" in text
-    assert records[1].summary_field_mismatches == 2
+    assert records[1].summary_field_mismatches == 1
     assert records[1].node_count_mismatches == 0
     assert records[1].max_node_position_delta is not None
     assert records[1].max_node_position_delta < 0.001
@@ -71,8 +71,7 @@ def test_write_benchmark_regression_report_when_oracles_exist_lists_modes(
     assert records[1].pyz1_core_stage_source_bead_matches == 14
     assert records[1].pyz1_core_stage_source_bead_max_delta is not None
     assert 0.037 < records[1].pyz1_core_stage_source_bead_max_delta < 0.038
-    assert "ne_classical_coil: 10.486 != 10.485" in text
-    assert "ne_modified_coil: 643.254 != 641.605" in text
+    assert "ne_modified_coil: 641.051 != 641.605" in text
     assert "pyz1 core trace nodes" in text
     assert "pyz1 core transient blocked nodes" in text
     assert "pyz1 first trace blocker fraction" in text
@@ -151,7 +150,7 @@ def test_write_benchmark_regression_report_when_stats_log_exists_lists_core_diag
     assert "max node delta chain" in text
     assert "| 1 | 2 | 3.5 | 3.5 |" in text
     assert "max node actual pair fraction" in text
-    assert "| 0.733072 | 0.000958188 | 0.733114 | 0.00179606 |" in text
+    assert "| 0.733072 | 0.00186654 | 0.733114 | 0.00179606 |" in text
 
 
 def test_compare_spplus_pairing_when_pairing_differs_reports_mismatch() -> None:
@@ -208,8 +207,10 @@ def assert_benchmark_04_max_delta_pair_geometry(record: RegressionRecord) -> Non
     assert record.max_node_actual_pair_fraction is not None
     assert 0.732 < record.max_node_actual_pair_fraction < 0.734
     assert record.max_node_actual_pair_distance is not None
-    assert 0.0008 < record.max_node_actual_pair_distance < 0.0012
+    assert 0.0018 < record.max_node_actual_pair_distance < 0.0019
     assert record.max_node_expected_pair_fraction is not None
     assert 0.733 < record.max_node_expected_pair_fraction < 0.734
     assert record.max_node_expected_pair_distance is not None
     assert 0.0017 < record.max_node_expected_pair_distance < 0.0019
+    assert record.max_node_position_delta is not None
+    assert record.max_node_position_delta < 0.0005

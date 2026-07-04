@@ -254,6 +254,9 @@ Complete now:
 - native clean-room geometry primitives
 - native default reducer initial slice
 - native SP+ pairing output for retained kink nodes
+- native SP+ residual ghost-clearance rule reduces benchmark-04 final kink
+  max-position delta to `0.000441831629010637` and leaves one summary-field
+  mismatch, `ne_modified_coil`
 - benchmark regression report generation and transparent mismatch/skip status
 - package-level final integration smoke through `python -m pyz1` for default,
   SP+, PPA, and PPA+ modes
@@ -277,7 +280,8 @@ Not complete yet:
   with default accelerated settings and Z1+ phase stops, but strict summary
   parity is still a `mismatch`.
 - default geometrical Z1+ numerical parity for `Lpp`, `Z`, shortest-path
-  structure, and SP+ pairings.
+  structure, and SP+ pairings; benchmark-04 SP+ topology and pairings match,
+  but `ne_modified_coil` remains a summary mismatch.
 - scalable all-14 benchmark reducer regression without the current
   `node_count` performance guard.
 - self-entanglement (`selfZ`) behavior in the native reducer beyond the current
