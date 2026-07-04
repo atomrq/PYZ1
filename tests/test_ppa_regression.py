@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from math import nan
 from pathlib import Path
 
 from pyz1.ppa import PpaMode, PpaPhase, PpaSettings
@@ -7,6 +8,8 @@ from pyz1.ppa_regression import (
     PpaRegressionMode,
     PpaRegressionRequest,
     PpaRegressionSettingsOverride,
+    PpaRegressionStatus,
+    classify_ppa_summary_deltas,
     write_ppa_regression_report,
 )
 
@@ -69,6 +72,16 @@ def test_write_ppa_regression_report_when_default_ppaplus_runs_uses_z1plus_phase
 
     assert records[0].mean_shortest_path_contour_delta is not None
     assert records[0].mean_shortest_path_contour_delta < 1.0
+
+
+def test_classify_ppa_summary_deltas_when_output_has_nan_is_known_invalid() -> None:
+    status = classify_ppa_summary_deltas(
+        lpp_delta=nan,
+        ne_classical_delta=0.0,
+        ne_modified_delta=0.0,
+    )
+
+    assert status == PpaRegressionStatus.KNOWN_INVALID
 
 
 def _quick_settings(mode: PpaMode) -> PpaSettings:

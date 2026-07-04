@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import StrEnum
-from math import isclose
+from math import isclose, isfinite
 from typing import TYPE_CHECKING, Final
 
 from pyz1.output_io import format_summary_text, read_summary_file
@@ -144,7 +144,11 @@ def _compare_benchmark_mode(
         format_summary_text((actual_summary,)),
         summary_path.read_text(encoding="utf-8"),
     )
-    status = _status_from_deltas(lpp_delta, ne_classical_delta, ne_modified_delta)
+    status = classify_ppa_summary_deltas(
+        lpp_delta=lpp_delta,
+        ne_classical_delta=ne_classical_delta,
+        ne_modified_delta=ne_modified_delta,
+    )
     return PpaRegressionRecord(
         benchmark_id=benchmark_id,
         mode=mode,
@@ -155,7 +159,12 @@ def _compare_benchmark_mode(
         summary_field_mismatches=len(details),
         summary_field_mismatch_details=details,
         node_count=snapshot.node_count,
-        note=_note_for_status(status),
+        note=_note_for_deltas(
+            status=status,
+            lpp_delta=lpp_delta,
+            ne_classical_delta=ne_classical_delta,
+            ne_modified_delta=ne_modified_delta,
+        ),
     )
 
 
@@ -202,11 +211,18 @@ def _summary_filename(mode: PpaRegressionMode) -> str:
             return "PPA+summary.dat"
 
 
-def _status_from_deltas(
+def classify_ppa_summary_deltas(
+    *,
     lpp_delta: float,
     ne_classical_delta: float,
     ne_modified_delta: float,
 ) -> PpaRegressionStatus:
+    if not _summary_deltas_are_finite(
+        lpp_delta=lpp_delta,
+        ne_classical_delta=ne_classical_delta,
+        ne_modified_delta=ne_modified_delta,
+    ):
+        return PpaRegressionStatus.KNOWN_INVALID
     if (
         isclose(lpp_delta, 0.0, abs_tol=SUMMARY_TOLERANCE)
         and isclose(ne_classical_delta, 0.0, abs_tol=SUMMARY_TOLERANCE)
@@ -214,6 +230,35 @@ def _status_from_deltas(
     ):
         return PpaRegressionStatus.PASSED
     return PpaRegressionStatus.MISMATCH
+
+
+def _summary_deltas_are_finite(
+    *,
+    lpp_delta: float,
+    ne_classical_delta: float,
+    ne_modified_delta: float,
+) -> bool:
+    return (
+        isfinite(lpp_delta)
+        and isfinite(ne_classical_delta)
+        and isfinite(ne_modified_delta)
+    )
+
+
+def _note_for_deltas(
+    *,
+    status: PpaRegressionStatus,
+    lpp_delta: float,
+    ne_classical_delta: float,
+    ne_modified_delta: float,
+) -> str:
+    if not _summary_deltas_are_finite(
+        lpp_delta=lpp_delta,
+        ne_classical_delta=ne_classical_delta,
+        ne_modified_delta=ne_modified_delta,
+    ):
+        return "native PPA summary contains non-finite values"
+    return _note_for_status(status)
 
 
 def _note_for_status(status: PpaRegressionStatus) -> str:

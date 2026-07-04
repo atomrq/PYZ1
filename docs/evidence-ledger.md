@@ -13,11 +13,12 @@ Latest local gate evidence:
 
 - `.omo/evidence/task-53-reducer-index/spplus-focused.txt`: `6 passed`
 - `.omo/evidence/task-55-ppa-coverage/ppa-focused.txt`: `21 passed`
-- `.omo/evidence/task-55-ppa-coverage/pytest.txt`: `114 passed`
-- `.omo/evidence/task-55-ppa-coverage/ruff.txt`: `All checks passed!`
-- `.omo/evidence/task-55-ppa-coverage/basedpyright.txt`:
+- `.omo/evidence/task-56-ppa-nonfinite/ppa-regression-focused.txt`: `3 passed`
+- `.omo/evidence/task-56-ppa-nonfinite/pytest.txt`: `115 passed`
+- `.omo/evidence/task-56-ppa-nonfinite/ruff.txt`: `All checks passed!`
+- `.omo/evidence/task-56-ppa-nonfinite/basedpyright.txt`:
   `0 errors, 0 warnings, 0 notes`
-- `.omo/evidence/task-55-ppa-coverage/package-smoke.txt`: `2 passed`
+- `.omo/evidence/task-56-ppa-nonfinite/package-smoke.txt`: `2 passed`
 
 The package smoke runs `python -m pyz1` for default, SP+, PPA, and PPA+ modes
 and checks the expected mode-specific output files.
@@ -123,12 +124,13 @@ Current evidence from `.omo/evidence/task-49-ppa-lpp-debug/`:
   `Ne classical coil delta=7.55902839681513e-13`, and
   `Ne modified coil delta=3.027149435282842e-13`.
 
-Additional task-55 quick-regression coverage is in
-`.omo/evidence/task-55-ppa-coverage/ppa-01-04-05-quick-guard1000.txt`.
+Additional task-56 quick-regression coverage is in
+`.omo/evidence/task-56-ppa-nonfinite/ppa-01-04-05-quick-guard1000.txt`.
 That quick slice runs benchmark 01 and 04 PPA/PPA+ plus benchmark 05 PPA+ under
 `max_node_count=1000`. It remains a diagnostic slice, not a full parity claim:
-benchmark 05 PPA+ currently reports a non-finite `Lpp` delta and the default
-full PPA phase report remains too slow for the local gate.
+benchmark 05 PPA+ is classified as `known-invalid` because the native quick
+output reports non-finite `Lpp`, and the default full PPA phase report remains
+too slow for the local gate.
 
 ## Open Boundaries
 
