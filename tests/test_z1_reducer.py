@@ -242,6 +242,32 @@ def test_reduce_snapshot_when_benchmark_04_reports_core_trace_nodes() -> None:
     )
 
 
+def test_reduce_snapshot_when_benchmark_04_reports_projection_trace() -> None:
+    snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-04.Z1")
+
+    result = reduce_snapshot(snapshot, ReducerSettings(pairing_enabled=True))
+
+    projection = result.diagnostics.projection_traces[0]
+    assert projection.chain_index == 1
+    assert isclose(projection.source_bead, 3.5, abs_tol=FLOAT_TOLERANCE)
+    assert projection.responsible_chain_index == 2
+    assert projection.responsible_node_index == 1
+    assert projection.responsible_fraction is not None
+    assert isclose(
+        projection.responsible_fraction,
+        0.7216166636189375,
+        abs_tol=FLOAT_TOLERANCE,
+    )
+    assert_vector_close(
+        projection.initial_position,
+        Vector3(0.1293575, -0.030405000000000015, 1.72274),
+    )
+    assert_vector_close(
+        projection.projected_position,
+        Vector3(0.13546926812839769, -0.1612595499216397, 1.6015819545667802),
+    )
+
+
 def test_reduce_snapshot_when_benchmark_04_matches_oracle_kink_source() -> None:
     snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-04.Z1")
     oracle = read_shortest_path_file(

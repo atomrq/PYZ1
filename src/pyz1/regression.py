@@ -24,6 +24,7 @@ if TYPE_CHECKING:
 
     from pyz1.models import Vector3
     from pyz1.output_models import ShortestPathPair, ShortestPathSnapshot
+    from pyz1.reducer import ProjectionTrace
 
 LPP_TOLERANCE: Final = 1.0e-6
 Z_TOLERANCE: Final = 1.0e-6
@@ -97,6 +98,10 @@ class RegressionRecord:
     pyz1_core_trace_ghost_nodes: int | None
     pyz1_core_accepted_blocked_moves: int | None
     pyz1_core_transient_blocked_nodes: int | None
+    pyz1_projection_trace_count: int | None
+    pyz1_first_projection_responsible_chain: int | None
+    pyz1_first_projection_responsible_node: int | None
+    pyz1_first_projection_responsible_fraction: float | None
     oracle_core_node_count: int | None
     oracle_final_node_count: int | None
     oracle_core_crossings: int | None
@@ -165,6 +170,10 @@ def _compare_benchmark_mode(
             pyz1_core_trace_ghost_nodes=None,
             pyz1_core_accepted_blocked_moves=None,
             pyz1_core_transient_blocked_nodes=None,
+            pyz1_projection_trace_count=None,
+            pyz1_first_projection_responsible_chain=None,
+            pyz1_first_projection_responsible_node=None,
+            pyz1_first_projection_responsible_fraction=None,
             oracle_core_node_count=None,
             oracle_final_node_count=None,
             oracle_core_crossings=None,
@@ -190,6 +199,10 @@ def _compare_benchmark_mode(
             pyz1_core_trace_ghost_nodes=None,
             pyz1_core_accepted_blocked_moves=None,
             pyz1_core_transient_blocked_nodes=None,
+            pyz1_projection_trace_count=None,
+            pyz1_first_projection_responsible_chain=None,
+            pyz1_first_projection_responsible_node=None,
+            pyz1_first_projection_responsible_fraction=None,
             oracle_core_node_count=None,
             oracle_final_node_count=None,
             oracle_core_crossings=None,
@@ -215,6 +228,7 @@ def _compare_benchmark_mode(
         sp_path.read_text(encoding="utf-8"),
     )
     oracle_diagnostics = _oracle_reducer_diagnostics(oracle_dir / "log-stats.Z1")
+    first_projection = _first_projection_trace(result.diagnostics.projection_traces)
     status = _status_from_deltas(lpp_delta, z_delta, pairing_mismatches)
     return RegressionRecord(
         benchmark_id=benchmark_id,
@@ -236,6 +250,22 @@ def _compare_benchmark_mode(
         ),
         pyz1_core_transient_blocked_nodes=(
             result.diagnostics.core_transient_blocked_node_count
+        ),
+        pyz1_projection_trace_count=len(result.diagnostics.projection_traces),
+        pyz1_first_projection_responsible_chain=(
+            first_projection.responsible_chain_index
+            if first_projection is not None
+            else None
+        ),
+        pyz1_first_projection_responsible_node=(
+            first_projection.responsible_node_index
+            if first_projection is not None
+            else None
+        ),
+        pyz1_first_projection_responsible_fraction=(
+            first_projection.responsible_fraction
+            if first_projection is not None
+            else None
         ),
         oracle_core_node_count=(
             oracle_diagnostics.core_node_count
@@ -259,6 +289,14 @@ def _compare_benchmark_mode(
         ),
         note=_note_for_status(status),
     )
+
+
+def _first_projection_trace(
+    traces: tuple[ProjectionTrace, ...],
+) -> ProjectionTrace | None:
+    if len(traces) == 0:
+        return None
+    return traces[0]
 
 
 def _oracle_reducer_diagnostics(path: Path) -> Z1ReducerScanDiagnostics | None:
@@ -419,6 +457,8 @@ def _format_report(records: tuple[RegressionRecord, ...]) -> str:
             "pyz1 core trace nodes | pyz1 core trace ghosts | "
             "pyz1 core accepted blocked moves | "
             "pyz1 core transient blocked nodes | "
+            "pyz1 projection traces | pyz1 first projection chain | "
+            "pyz1 first projection node | pyz1 first projection fraction | "
             "oracle core nodes | oracle final nodes | "
             "oracle core crossings | oracle core ghosts | "
             "summary mismatch details | note |"
@@ -426,7 +466,7 @@ def _format_report(records: tuple[RegressionRecord, ...]) -> str:
         (
             "| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | "
             "---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | "
-            "---: | ---: | --- | --- |"
+            "---: | ---: | ---: | ---: | ---: | ---: | --- | --- |"
         ),
     ]
     lines.extend(_format_record(record) for record in records)
@@ -448,6 +488,10 @@ def _format_record(record: RegressionRecord) -> str:
         f"{_format_optional_int(record.pyz1_core_trace_ghost_nodes)} | "
         f"{_format_optional_int(record.pyz1_core_accepted_blocked_moves)} | "
         f"{_format_optional_int(record.pyz1_core_transient_blocked_nodes)} | "
+        f"{_format_optional_int(record.pyz1_projection_trace_count)} | "
+        f"{_format_optional_int(record.pyz1_first_projection_responsible_chain)} | "
+        f"{_format_optional_int(record.pyz1_first_projection_responsible_node)} | "
+        f"{_format_first_projection_fraction(record)} | "
         f"{_format_optional_int(record.oracle_core_node_count)} | "
         f"{_format_optional_int(record.oracle_final_node_count)} | "
         f"{_format_optional_int(record.oracle_core_crossings)} | "
@@ -467,6 +511,12 @@ def _format_optional_int(value: int | None) -> str:
     if value is None:
         return "n/a"
     return str(value)
+
+
+def _format_first_projection_fraction(record: RegressionRecord) -> str:
+    return _format_optional_float(
+        record.pyz1_first_projection_responsible_fraction,
+    )
 
 
 def _format_summary_field_details(

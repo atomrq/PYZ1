@@ -45,12 +45,19 @@ def test_write_benchmark_regression_report_when_oracles_exist_lists_modes(
     assert records[1].pyz1_core_transient_blocked_nodes == 7
     assert records[1].pyz1_core_trace_node_count == 17
     assert records[1].pyz1_core_trace_ghost_nodes == 7
+    assert records[1].pyz1_projection_trace_count == 1
+    assert records[1].pyz1_first_projection_responsible_chain == 2
+    assert records[1].pyz1_first_projection_responsible_node == 1
+    assert records[1].pyz1_first_projection_responsible_fraction is not None
+    assert 0.721 < records[1].pyz1_first_projection_responsible_fraction < 0.722
     assert records[1].oracle_core_node_count == 17
     assert records[1].oracle_core_ghost_nodes == 6
     assert "root_mean_squared_contour: 4.597 != 4.598" in text
     assert "ne_modified_coil: 654.152 != 641.605" in text
     assert "pyz1 core trace nodes" in text
     assert "pyz1 core transient blocked nodes" in text
+    assert "pyz1 projection traces" in text
+    assert "pyz1 first projection fraction" in text
     assert "oracle core ghosts" in text
 
 
@@ -89,13 +96,20 @@ def test_write_benchmark_regression_report_when_stats_log_exists_lists_core_diag
     assert records[0].pyz1_core_transient_blocked_nodes == 7
     assert records[0].pyz1_core_trace_node_count == 17
     assert records[0].pyz1_core_trace_ghost_nodes == 7
+    assert records[0].pyz1_projection_trace_count == 1
+    assert records[0].pyz1_first_projection_responsible_chain == 2
+    assert records[0].pyz1_first_projection_responsible_node == 1
     assert records[0].oracle_core_node_count == 17
     assert records[0].oracle_final_node_count == 11
     assert records[0].oracle_core_ghost_nodes == 6
     assert "pyz1 core nodes" in text
+    assert "pyz1 first projection fraction" in text
     assert "oracle core ghosts" in text
     assert "| benchmark-04 | spplus | mismatch |" in text
-    assert "| 10 | 11 | 17 | 7 | 9 | 7 | 17 | 11 | 1 | 6 |" in text
+    assert (
+        "| 10 | 11 | 17 | 7 | 9 | 7 | "
+        "1 | 2 | 1 | 0.721617 | 17 | 11 | 1 | 6 |"
+    ) in text
 
 
 def test_compare_spplus_pairing_when_pairing_differs_reports_mismatch() -> None:

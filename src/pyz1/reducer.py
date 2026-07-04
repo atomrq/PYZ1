@@ -52,10 +52,22 @@ class CoreTraceNode:
 
 
 @dataclass(frozen=True, slots=True)
+class ProjectionTrace:
+    chain_index: int
+    source_bead: float
+    initial_position: Vector3
+    projected_position: Vector3
+    responsible_chain_index: int | None
+    responsible_node_index: int | None
+    responsible_fraction: float | None
+
+
+@dataclass(frozen=True, slots=True)
 class ReducerDiagnostics:
     core_node_count: int
     final_node_count: int
     core_trace_blocked_nodes: tuple[tuple[CoreTraceNode, ...], ...]
+    projection_traces: tuple[ProjectionTrace, ...]
     core_trace_node_count: int
     core_trace_ghost_node_count: int
     core_accepted_blocked_move_count: int
@@ -67,6 +79,7 @@ class ReducerDiagnostics:
 class _PreservedChains:
     chains: tuple[Chain, ...]
     source_beads: tuple[tuple[float, ...], ...]
+    projection_traces: tuple[ProjectionTrace, ...]
 
 
 @dataclass(frozen=True, slots=True)
@@ -114,6 +127,7 @@ def reduce_snapshot(
             core_node_count=sum(chain.node_count for chain in core_chains),
             final_node_count=sum(chain.node_count for chain in reduced_chains),
             core_trace_blocked_nodes=core_trace.blocked_nodes,
+            projection_traces=preserved.projection_traces,
             core_trace_node_count=sum(chain.node_count for chain in core_chains)
             + core_trace.transient_blocked_node_count,
             core_trace_ghost_node_count=core_trace.transient_blocked_node_count,
@@ -356,6 +370,12 @@ class _PreservedKinkCandidate:
     shortcut: Segment | None
 
 
+@dataclass(frozen=True, slots=True)
+class _ProjectionResult:
+    candidate: _PreservedKinkCandidate
+    trace: ProjectionTrace
+
+
 def _preserve_close_contacts(
     original_chains: tuple[Chain, ...],
     reduced_chains: tuple[Chain, ...],
@@ -370,6 +390,7 @@ def _preserve_close_contacts(
             strict=True,
         )
     ]
+    projection_traces: list[ProjectionTrace] = []
     for chain_index, chain in enumerate(original_chains):
         if preserved_nodes[chain_index].node_count > MIN_CHAIN_NODE_COUNT:
             continue
@@ -383,11 +404,13 @@ def _preserve_close_contacts(
         preserved = _blocked_kink_candidate(original_chains, chain_index)
         if preserved is None:
             preserved = _contact_kink_candidate(chain, contact)
-        preserved = _project_to_responsible_segment(
+        projection = _project_to_responsible_segment(
             preserved,
             reduced_chains,
             chain_index,
         )
+        preserved = projection.candidate
+        projection_traces.append(projection.trace)
         preserved_nodes[chain_index] = _insert_preserved_node(
             reduced_chains[chain_index],
             preserved.position,
@@ -400,6 +423,7 @@ def _preserve_close_contacts(
     return _PreservedChains(
         chains=tuple(preserved_nodes),
         source_beads=tuple(tuple(chain_sources) for chain_sources in source_beads),
+        projection_traces=tuple(projection_traces),
     )
 
 
@@ -473,27 +497,92 @@ def _project_to_responsible_segment(
     preserved: _PreservedKinkCandidate,
     reduced_chains: tuple[Chain, ...],
     chain_index: int,
-) -> _PreservedKinkCandidate:
+) -> _ProjectionResult:
     if preserved.shortcut is None:
-        return preserved
+        return _ProjectionResult(
+            candidate=preserved,
+            trace=_projection_trace(
+                chain_index=chain_index,
+                preserved=preserved,
+                projected_position=preserved.position,
+                responsible_segment=None,
+            ),
+        )
     responsible_segment = _nearest_external_segment(
         preserved.position,
         reduced_chains,
         chain_index,
     )
     if responsible_segment is None:
-        return preserved
+        return _ProjectionResult(
+            candidate=preserved,
+            trace=_projection_trace(
+                chain_index=chain_index,
+                preserved=preserved,
+                projected_position=preserved.position,
+                responsible_segment=None,
+            ),
+        )
     projected = _segment_plane_intersection(
-        responsible_segment,
+        responsible_segment.segment,
         preserved.shortcut,
         preserved.position,
     )
     if projected is None:
-        return preserved
-    return _PreservedKinkCandidate(
+        return _ProjectionResult(
+            candidate=preserved,
+            trace=_projection_trace(
+                chain_index=chain_index,
+                preserved=preserved,
+                projected_position=preserved.position,
+                responsible_segment=responsible_segment,
+            ),
+        )
+    candidate = _PreservedKinkCandidate(
         position=projected,
         source_bead=preserved.source_bead,
         shortcut=preserved.shortcut,
+    )
+    return _ProjectionResult(
+        candidate=candidate,
+        trace=_projection_trace(
+            chain_index=chain_index,
+            preserved=preserved,
+            projected_position=projected,
+            responsible_segment=responsible_segment,
+        ),
+    )
+
+
+def _projection_trace(
+    *,
+    chain_index: int,
+    preserved: _PreservedKinkCandidate,
+    projected_position: Vector3,
+    responsible_segment: _IndexedSegment | None,
+) -> ProjectionTrace:
+    if responsible_segment is None:
+        return ProjectionTrace(
+            chain_index=chain_index + 1,
+            source_bead=preserved.source_bead,
+            initial_position=preserved.position,
+            projected_position=projected_position,
+            responsible_chain_index=None,
+            responsible_node_index=None,
+            responsible_fraction=None,
+        )
+    closest = closest_segment_points(
+        Segment(start=projected_position, end=projected_position),
+        responsible_segment.segment,
+    )
+    return ProjectionTrace(
+        chain_index=chain_index + 1,
+        source_bead=preserved.source_bead,
+        initial_position=preserved.position,
+        projected_position=projected_position,
+        responsible_chain_index=responsible_segment.chain_index,
+        responsible_node_index=responsible_segment.node_index,
+        responsible_fraction=closest.second_fraction,
     )
 
 
@@ -501,16 +590,26 @@ def _nearest_external_segment(
     position: Vector3,
     chains: tuple[Chain, ...],
     excluded_index: int,
-) -> Segment | None:
+) -> _IndexedSegment | None:
     point = Segment(start=position, end=position)
     return min(
         (
-            segment
-            for chain_index, chain in enumerate(chains)
-            if chain_index != excluded_index
-            for segment in _chain_segments(chain)
+            _IndexedSegment(
+                chain_index=chain_index,
+                node_index=node_index,
+                segment=Segment(start=first, end=second),
+            )
+            for chain_index, chain in enumerate(chains, start=1)
+            if chain_index != excluded_index + 1
+            for node_index, (first, second) in enumerate(
+                zip(chain.nodes[:-1], chain.nodes[1:], strict=True),
+                start=1,
+            )
         ),
-        key=lambda segment: segment_distance(point, segment),
+        key=lambda indexed_segment: segment_distance(
+            point,
+            indexed_segment.segment,
+        ),
         default=None,
     )
 
