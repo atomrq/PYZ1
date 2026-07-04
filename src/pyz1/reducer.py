@@ -1096,7 +1096,11 @@ def _true_chain_contact_candidates(
                 candidates.append(
                     _TrueChainContactCandidate(
                         chain_index=other_index + 1,
-                        node_index=other_segment_index + 1,
+                        node_index=_true_chain_contact_pair_node_index(
+                            chains,
+                            other_index,
+                            other_segment_index + 1.0 + closest.second_fraction,
+                        ),
                         position=closest.first_point,
                         source_bead=segment_index + 1.0 + closest.first_fraction,
                         distance=closest.distance,
@@ -1109,6 +1113,62 @@ def _true_chain_contact_sort_key(
     candidate: _TrueChainContactCandidate,
 ) -> tuple[float, float, int]:
     return (candidate.source_bead, candidate.distance, candidate.chain_index)
+
+
+def _true_chain_contact_pair_node_index(
+    chains: tuple[Chain, ...],
+    target_chain_index: int,
+    target_source_bead: float,
+) -> int:
+    previous_contact_count = sum(
+        1
+        for contact_source in _nearest_true_chain_contact_sources(
+            chains,
+            target_chain_index,
+        )
+        if contact_source < target_source_bead - GEOMETRY_TOLERANCE
+    )
+    return previous_contact_count + 2
+
+
+def _nearest_true_chain_contact_sources(
+    chains: tuple[Chain, ...],
+    target_chain_index: int,
+) -> tuple[float, ...]:
+    return tuple(
+        sorted(
+            source_bead
+            for other_chain_index, other_chain in enumerate(chains)
+            if other_chain_index != target_chain_index and other_chain.is_true_chain
+            for source_bead in (
+                _nearest_true_chain_contact_source(
+                    chains[target_chain_index],
+                    other_chain,
+                ),
+            )
+            if source_bead is not None
+        ),
+    )
+
+
+def _nearest_true_chain_contact_source(
+    target_chain: Chain,
+    other_chain: Chain,
+) -> float | None:
+    best_source_bead: float | None = None
+    best_distance = float("inf")
+    for target_segment_index, target_segment in enumerate(
+        _chain_segments(target_chain),
+    ):
+        for other_segment in _chain_segments(other_chain):
+            closest = closest_segment_points(target_segment, other_segment)
+            if closest.distance > TRUE_CHAIN_CONTACT_CANDIDATE_DISTANCE:
+                continue
+            if closest.distance >= best_distance:
+                continue
+            best_distance = closest.distance
+            best_source_bead = target_segment_index + 1.0 + closest.first_fraction
+    return best_source_bead
 
 
 def _select_true_chain_contact_cluster(
