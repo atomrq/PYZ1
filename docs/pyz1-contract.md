@@ -239,6 +239,9 @@ record measured deltas or an explicit skip reason. Current status is:
 
 ## Current Completion Boundary
 
+For the current requirement-by-requirement completion verdict, see
+`docs/completion-audit.md`.
+
 Complete now:
 
 - package scaffold and CLI entry

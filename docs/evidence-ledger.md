@@ -4,16 +4,19 @@ This ledger maps the clean-room reproduction requirements to current repo tests,
 local evidence artifacts, and known open boundaries. It is an index, not a
 parity claim.
 
+For a requirement-by-requirement completion verdict, see
+`docs/completion-audit.md`.
+
 ## Current Quality Gates
 
 Latest local gate evidence:
 
 - `.omo/evidence/task-53-reducer-index/spplus-focused.txt`: `6 passed`
-- `.omo/evidence/task-53-reducer-index/pytest.txt`: `113 passed`
-- `.omo/evidence/task-53-reducer-index/ruff.txt`: `All checks passed!`
-- `.omo/evidence/task-53-reducer-index/basedpyright.txt`:
+- `.omo/evidence/task-54-completion-audit/pytest.txt`: `113 passed`
+- `.omo/evidence/task-54-completion-audit/ruff.txt`: `All checks passed!`
+- `.omo/evidence/task-54-completion-audit/basedpyright.txt`:
   `0 errors, 0 warnings, 0 notes`
-- `.omo/evidence/task-53-reducer-index/package-smoke.txt`: `2 passed`
+- `.omo/evidence/task-54-completion-audit/package-smoke.txt`: `2 passed`
 
 The package smoke runs `python -m pyz1` for default, SP+, PPA, and PPA+ modes
 and checks the expected mode-specific output files.
@@ -37,7 +40,7 @@ and checks the expected mode-specific output files.
 The default benchmark regression guard now runs benchmarks 01-05 in default
 and SP+ modes. Benchmark 06 and larger cases remain `known-invalid` skips under
 the `node_count>1000` performance guard. Current scope evidence is in
-`.omo/evidence/task-52-reducer-broadphase/default-spplus-after-guard1000.txt`.
+`.omo/evidence/task-53-reducer-index/default-spplus-after-index.txt`.
 Task-53 adds a bounds index for reducer blocker candidates and an optional
 large-case trace-diagnostics skip, but benchmark-06 still timed out at 120
 seconds in `.omo/evidence/task-53-reducer-index/benchmark06-index-no-trace-timeout120.txt`;

@@ -96,4 +96,5 @@ acceleration.
   Numba, and accelerator-specific dependencies.
 
 See `docs/pyz1-contract.md` for the implementation contract and parity policy,
-and `docs/evidence-ledger.md` for the current test/evidence index.
+`docs/evidence-ledger.md` for the current test/evidence index, and
+`docs/completion-audit.md` for the current completion verdict.
