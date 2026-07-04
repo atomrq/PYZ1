@@ -221,6 +221,7 @@ class RegressionRecord:
     pyz1_source_sequence_mismatch_count: int | None = None
     pyz1_source_sequence_max_delta: float | None = None
     pyz1_source_sequence_residuals: tuple[SourceSequenceResidual, ...] | None = None
+    pyz1_true_chain_pair_sequence: tuple[int, ...] | None = None
     oracle_true_chain_pair_sequence: tuple[int, ...] | None = None
 
 
@@ -680,6 +681,10 @@ def _compare_benchmark_mode(
         pyz1_source_sequence_residuals=_source_sequence_residuals(
             pyz1_source_sequence,
             oracle_default_source_sequence,
+        ),
+        pyz1_true_chain_pair_sequence=_true_chain_pair_sequence(
+            result.shortest_path,
+            snapshot,
         ),
         oracle_true_chain_pair_sequence=(
             winding_candidate_coverage.oracle_true_chain_pair_sequence
@@ -1324,6 +1329,29 @@ def _obstacle_pair_chain_sequence(snapshot: ShortestPathSnapshot) -> tuple[int, 
     )
 
 
+def _true_chain_pair_sequence(
+    shortest_path: ShortestPathSnapshot,
+    source_snapshot: Snapshot,
+) -> tuple[int, ...]:
+    if shortest_path.chain_count == 0:
+        return ()
+    return tuple(
+        node.pair.chain_index
+        for node in shortest_path.chains[0].nodes
+        if node.is_entanglement
+        and node.pair is not None
+        and _has_true_chain_pair(source_snapshot, node.pair.chain_index)
+    )
+
+
+def _has_true_chain_pair(snapshot: Snapshot, chain_index: int) -> bool:
+    zero_based_index = chain_index - 1
+    return (
+        0 <= zero_based_index < snapshot.chain_count
+        and snapshot.chains[zero_based_index].is_true_chain
+    )
+
+
 def _oracle_default_source_sequence(
     request: RegressionRequest,
     benchmark_id: str,
@@ -1463,6 +1491,7 @@ def _format_report(records: tuple[RegressionRecord, ...]) -> str:
         "pyz1 source sequence mismatches | "
         "pyz1 source sequence max delta | "
         "pyz1 source sequence residual details | "
+        "pyz1 true-chain pair sequence | "
         "oracle true-chain pair sequence | "
         "summary mismatch details | note |"
     )
@@ -1550,6 +1579,7 @@ def _format_record(record: RegressionRecord) -> str:
         f"{_format_optional_int(record.pyz1_source_sequence_mismatch_count)} | "
         f"{_format_optional_float(record.pyz1_source_sequence_max_delta)} | "
         f"{_format_source_sequence_residuals(record.pyz1_source_sequence_residuals)} | "
+        f"{_format_int_sequence(record.pyz1_true_chain_pair_sequence)} | "
         f"{_format_int_sequence(record.oracle_true_chain_pair_sequence)} | "
         f"{_format_summary_field_details(record.summary_field_mismatch_details)} | "
         f"{record.note} |"
