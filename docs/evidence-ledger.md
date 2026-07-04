@@ -11,14 +11,14 @@ For a requirement-by-requirement completion verdict, see
 
 Latest local gate evidence:
 
-- `.omo/evidence/task-77-ppa-oracle-coordinate-status/pytest.txt`: `129 passed`
+- `.omo/evidence/task-78-ppa-oracle-coordinate-report/pytest.txt`: `130 passed`
 - `.omo/evidence/task-55-ppa-coverage/ppa-focused.txt`: `21 passed`
 - `.omo/evidence/task-57-ppa-nan-root/ppa-focused.txt`: `22 passed`
-- `.omo/evidence/task-77-ppa-oracle-coordinate-status/ruff.txt`:
+- `.omo/evidence/task-78-ppa-oracle-coordinate-report/ruff.txt`:
   `All checks passed!`
-- `.omo/evidence/task-77-ppa-oracle-coordinate-status/basedpyright.txt`:
+- `.omo/evidence/task-78-ppa-oracle-coordinate-report/basedpyright.txt`:
   `0 errors, 0 warnings, 0 notes`
-- `.omo/evidence/task-77-ppa-oracle-coordinate-status/package-smoke.txt`:
+- `.omo/evidence/task-78-ppa-oracle-coordinate-report/package-smoke.txt`:
   `2 passed`
 
 The package smoke runs `python -m pyz1` for default, SP+, PPA, and PPA+ modes
@@ -32,7 +32,7 @@ and checks the expected mode-specific output files.
 | Z1+ output parser/writer | Summary, SP/SP+, initconfig, value files, PPA, and PPA+ round-trip tests | `tests/test_output_io.py`, `tests/test_output_values.py`, `tests/test_initconfig_io.py` |
 | Summary and `Ne` estimators | Estimator unit tests plus oracle-SP-through-pyz1 summary parity for benchmark-04 SP+ | `tests/test_estimators.py`, `tests/test_summary.py`, `tests/test_spplus_regression.py`, `.omo/evidence/task-42-summary-ne-source/` |
 | Oracle fixture tooling and parity reporting | Oracle manifest tests, CLI help smoke, benchmark regression report tests, and logged oracle run metadata | `tests/test_oracle.py`, `tests/test_z1plus_parity.py`, `tests/test_spplus_regression.py` |
-| Native PPA/PPA+ slices | PPA mode tests, CLI mode tests, package-level smoke, WCA cell-list candidate generation, native PPA summary regression reporting, Z1+ PPA+ phase-stop regression, 12 parseable oracle coordinate-path summary parity cases, and one explicit Fortran-overflow known-invalid fixture | `tests/test_ppa.py`, `tests/test_ppa_regression.py`, `tests/test_cli_scaffold.py`, `tests/test_package_integration_smoke.py`, `.omo/evidence/task-46-ppa-summary-oracle-coverage/`, `.omo/evidence/task-47-ppa-neighbor-list/`, `.omo/evidence/task-48-ppa-native-regression/`, `.omo/evidence/task-49-ppa-lpp-debug/` |
+| Native PPA/PPA+ slices | PPA mode tests, CLI mode tests, package-level smoke, WCA cell-list candidate generation, native PPA summary regression reporting, Z1+ PPA+ phase-stop regression, 12 parseable oracle coordinate-path summary parity cases, explicit Fortran-overflow known-invalid fixture handling, and a reusable oracle coordinate fixture status report | `tests/test_ppa.py`, `tests/test_ppa_regression.py`, `tests/test_ppa_oracle_coordinates.py`, `tests/test_cli_scaffold.py`, `tests/test_package_integration_smoke.py`, `.omo/evidence/task-46-ppa-summary-oracle-coverage/`, `.omo/evidence/task-47-ppa-neighbor-list/`, `.omo/evidence/task-48-ppa-native-regression/`, `.omo/evidence/task-49-ppa-lpp-debug/`, `.omo/evidence/task-78-ppa-oracle-coordinate-report/` |
 | Clean-room reducer | Geometry primitives, reducer diagnostics, benchmark-04 reducer structure, SP+ pairing, broad-phase/index blocker filtering, and benchmark regression diagnostics for 01-05 under the default guard | `tests/test_geometry.py`, `tests/test_z1_reducer.py`, `tests/test_spplus_regression.py`, `.omo/evidence/task-53-reducer-index/` |
 | SP+ regression | Pairing comparison, max-node-delta localization, pair-segment geometry diagnostics, oracle summary source isolation, and residual ghost-clearance tuning | `tests/test_spplus_regression.py`, `.omo/evidence/task-38-final-node-delta-location/`, `.omo/evidence/task-39-max-node-pair-geometry/`, `.omo/evidence/task-41-spplus-projection-direction/`, `.omo/evidence/task-50-spplus-residual/` |
 | Package integration smoke | Real module entrypoint smoke for default, SP+, PPA, and PPA+ | `tests/test_package_integration_smoke.py`, `.omo/evidence/task-57-ppa-nan-root/package-smoke.txt` |
@@ -384,6 +384,14 @@ line 310 with `invalid float`. The PPA regression report now includes
 `oracle coordinate status`, `oracle coordinate error line`, and
 `oracle coordinate error reason` columns, so upstream-invalid coordinate
 fixtures are part of the same report surface as native summary mismatches.
+
+Task-78 adds a standalone oracle coordinate fixture report API that classifies
+coordinate paths without running native PPA. Evidence in
+`.omo/evidence/task-78-ppa-oracle-coordinate-report/ppa-01-04-05-oracle-coordinate-report.md`
+records a mixed-status slice: benchmark-01 and benchmark-04 PPA/PPA+ are
+`parseable` with node counts `611` and `50`, benchmark-05 PPA is `missing`, and
+benchmark-05 PPA+ is `invalid` at line 310 with `invalid float`. This makes the
+PPA oracle fixture health independently auditable before runtime parity work.
 
 ## Open Boundaries
 
