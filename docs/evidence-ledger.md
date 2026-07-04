@@ -11,15 +11,16 @@ For a requirement-by-requirement completion verdict, see
 
 Latest local gate evidence:
 
-- `.omo/evidence/task-66-source-bead-rule/focused-tests.txt`: `8 passed`
+- `.omo/evidence/task-67-obstacle-sequence-selection/spplus-regression.txt`:
+  `9 passed`
 - `.omo/evidence/task-55-ppa-coverage/ppa-focused.txt`: `21 passed`
 - `.omo/evidence/task-57-ppa-nan-root/ppa-focused.txt`: `22 passed`
-- `.omo/evidence/task-66-source-bead-rule/pytest.txt`: `119 passed`
-- `.omo/evidence/task-66-source-bead-rule/ruff.txt`:
+- `.omo/evidence/task-67-obstacle-sequence-selection/pytest.txt`: `120 passed`
+- `.omo/evidence/task-67-obstacle-sequence-selection/ruff.txt`:
   `All checks passed!`
-- `.omo/evidence/task-66-source-bead-rule/basedpyright.txt`:
+- `.omo/evidence/task-67-obstacle-sequence-selection/basedpyright.txt`:
   `0 errors, 0 warnings, 0 notes`
-- `.omo/evidence/task-66-source-bead-rule/package-smoke.txt`:
+- `.omo/evidence/task-67-obstacle-sequence-selection/package-smoke.txt`:
   `2 passed`
 
 The package smoke runs `python -m pyz1` for default, SP+, PPA, and PPA+ modes
@@ -154,6 +155,19 @@ records that benchmark-03 SP+ still has matching native/oracle obstacle sequence
 `(268, 241, 160, 130)`, but its four source residual details are
 `c1n2[268->268]`, `c1n3[241->241]`, `c1n4[160->160]`, and `c1n5[130->130]`;
 the largest remains `3.92204!=5.39(d=1.46796)`.
+
+Task-67 adds first-chain raw winding candidate coverage diagnostics to the
+benchmark regression report. Evidence in
+`.omo/evidence/task-67-obstacle-sequence-selection/default-spplus-01-05-winding-coverage.txt`
+shows benchmark-01 SP+ has `winding_count 41` but misses oracle obstacles
+`(128, 208, 36)`, benchmark-02 SP+ has `winding_count 30` but misses `(146,)`,
+benchmark-03 SP+ has `winding_count 8` and misses none, and benchmark-05 SP+
+has `winding_count 0` and misses `(40, 26)`. The paired probe
+`.omo/evidence/task-67-obstacle-sequence-selection/periodic-image-candidate-probe.txt`
+shows these missing oracle obstacles are not recovered by simple +/- box
+periodic image shifts. This makes the next reducer blocker explicit:
+benchmark-01/02/05 need a different winding/candidate geometry surface before
+selection-order tuning can close their SP+ pair sequences.
 
 ## Latest PPA/PPA+ Oracle Summary Coverage
 

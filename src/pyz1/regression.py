@@ -10,6 +10,7 @@ from pyz1.geometry import (
     Segment,
     closest_segment_points,
     minimum_image_delta,
+    unfold_chain,
 )
 from pyz1.output_io import (
     format_shortest_path_text,
@@ -22,7 +23,11 @@ from pyz1.output_models import (
     ShortestPathNode,
     ShortestPathSnapshot,
 )
-from pyz1.reducer import ReducerSettings, reduce_snapshot
+from pyz1.reducer import (
+    ReducerSettings,
+    reduce_snapshot,
+    winding_obstacle_candidate_chain_indices,
+)
 from pyz1.z1_io import read_z1_file
 from pyz1.z1_log import (
     Z1ReducerScanDiagnostics,
@@ -33,7 +38,7 @@ from pyz1.z1_log import (
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from pyz1.models import Vector3
+    from pyz1.models import Snapshot, Vector3
     from pyz1.output_models import ShortestPathPair
     from pyz1.reducer import CoreStageNode, CoreTraceNode, ProjectionTrace
 
@@ -156,6 +161,9 @@ class RegressionRecord:
     max_source_delta_chain_index: int | None = None
     max_source_delta_node_index: int | None = None
     source_bead_residuals: tuple[SourceBeadResidual, ...] | None = None
+    pyz1_winding_candidate_count: int | None = None
+    pyz1_winding_missing_oracle_sequence: tuple[int, ...] | None = None
+    pyz1_winding_extra_candidate_count: int | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -188,6 +196,13 @@ class CoreStageGeometryComparison:
     max_node_position_delta: float
     source_bead_matches: int
     source_bead_max_node_position_delta: float
+
+
+@dataclass(frozen=True, slots=True)
+class _WindingCandidateCoverage:
+    candidate_count: int
+    missing_oracle_sequence: tuple[int, ...]
+    extra_candidate_count: int
 
 
 @dataclass(frozen=True, slots=True)
@@ -355,6 +370,10 @@ def _compare_benchmark_mode(
         result.shortest_path,
         oracle_shortest_path,
     )
+    winding_candidate_coverage = _winding_candidate_coverage(
+        snapshot,
+        oracle_shortest_path,
+    )
     oracle_diagnostics = _oracle_reducer_diagnostics(oracle_dir / "log-stats.Z1")
     oracle_core_stage = _oracle_core_stage(oracle_dir / CORE_STAGE_NODE_FILENAME)
     pyz1_core_stage_comparison = _pyz1_core_stage_comparison(
@@ -510,6 +529,13 @@ def _compare_benchmark_mode(
         ),
         max_source_delta_node_index=geometry_comparison.max_source_delta_node_index,
         source_bead_residuals=geometry_comparison.source_bead_residuals,
+        pyz1_winding_candidate_count=winding_candidate_coverage.candidate_count,
+        pyz1_winding_missing_oracle_sequence=(
+            winding_candidate_coverage.missing_oracle_sequence
+        ),
+        pyz1_winding_extra_candidate_count=(
+            winding_candidate_coverage.extra_candidate_count
+        ),
     )
 
 
@@ -520,6 +546,30 @@ def _first_core_trace_node(
         if len(chain_nodes) > 0:
             return chain_nodes[0]
     return None
+
+
+def _winding_candidate_coverage(
+    snapshot: Snapshot,
+    oracle_shortest_path: ShortestPathSnapshot,
+) -> _WindingCandidateCoverage:
+    box = GeometryBox(lengths=snapshot.box, shear=snapshot.shear or 0.0)
+    chains = tuple(unfold_chain(chain, box) for chain in snapshot.chains)
+    candidate_sequence = winding_obstacle_candidate_chain_indices(chains, 0)
+    oracle_sequence = _obstacle_pair_chain_sequence(oracle_shortest_path)
+    candidate_set = set(candidate_sequence)
+    oracle_set = set(oracle_sequence)
+    return _WindingCandidateCoverage(
+        candidate_count=len(candidate_sequence),
+        missing_oracle_sequence=tuple(
+            chain_index
+            for chain_index in oracle_sequence
+            if chain_index not in candidate_set
+        ),
+        extra_candidate_count=sum(
+            chain_index not in oracle_set
+            for chain_index in candidate_sequence
+        ),
+    )
 
 
 def _first_projection_trace(
@@ -927,73 +977,59 @@ def _obstacle_pair_chain_sequence(snapshot: ShortestPathSnapshot) -> tuple[int, 
 
 
 def _format_report(records: tuple[RegressionRecord, ...]) -> str:
+    header = (
+        "| benchmark | mode | status | Lpp delta | Z delta | "
+        "summary field mismatches | pair mismatches | "
+        "node count mismatches | max node position delta | "
+        "max node delta chain | max node delta node | "
+        "max node delta actual source | "
+        "max node delta expected source | "
+        "max node source bead delta | "
+        "max source delta chain | "
+        "max source delta node | "
+        "source bead residual details | "
+        "max node actual pair fraction | "
+        "max node actual pair distance | "
+        "max node expected pair fraction | "
+        "max node expected pair distance | "
+        "pyz1 core nodes | pyz1 final nodes | "
+        "pyz1 core trace nodes | pyz1 core trace ghosts | "
+        "pyz1 core accepted blocked moves | "
+        "pyz1 core transient blocked nodes | "
+        "pyz1 first trace blocker chain | "
+        "pyz1 first trace blocker node | "
+        "pyz1 first trace shortcut fraction | "
+        "pyz1 first trace blocker fraction | "
+        "pyz1 first trace blocker distance | "
+        "pyz1 projection traces | pyz1 first projection chain | "
+        "pyz1 first projection node | pyz1 first projection fraction | "
+        "oracle core nodes | oracle final nodes | "
+        "oracle core crossings | oracle core ghosts | "
+        "oracle core stage nodes | "
+        "pyz1 core stage node count mismatches | "
+        "pyz1 core stage max node position delta | "
+        "pyz1 core stage source bead matches | "
+        "pyz1 core stage source bead max delta | "
+        "pyz1 obstacle pair sequence | "
+        "oracle obstacle pair sequence | "
+        "pyz1 winding candidates | "
+        "pyz1 winding missing oracle sequence | "
+        "pyz1 winding extra candidates | "
+        "summary mismatch details | note |"
+    )
     lines = [
         "# pyz1 Benchmark Regression",
         "",
-        (
-            "| benchmark | mode | status | Lpp delta | Z delta | "
-            "summary field mismatches | pair mismatches | "
-            "node count mismatches | max node position delta | "
-            "max node delta chain | max node delta node | "
-            "max node delta actual source | "
-            "max node delta expected source | "
-            "max node source bead delta | "
-            "max source delta chain | "
-            "max source delta node | "
-            "source bead residual details | "
-            "max node actual pair fraction | "
-            "max node actual pair distance | "
-            "max node expected pair fraction | "
-            "max node expected pair distance | "
-            "pyz1 core nodes | pyz1 final nodes | "
-            "pyz1 core trace nodes | pyz1 core trace ghosts | "
-            "pyz1 core accepted blocked moves | "
-            "pyz1 core transient blocked nodes | "
-            "pyz1 first trace blocker chain | "
-            "pyz1 first trace blocker node | "
-            "pyz1 first trace shortcut fraction | "
-            "pyz1 first trace blocker fraction | "
-            "pyz1 first trace blocker distance | "
-            "pyz1 projection traces | pyz1 first projection chain | "
-            "pyz1 first projection node | pyz1 first projection fraction | "
-            "oracle core nodes | oracle final nodes | "
-            "oracle core crossings | oracle core ghosts | "
-            "oracle core stage nodes | "
-            "pyz1 core stage node count mismatches | "
-            "pyz1 core stage max node position delta | "
-            "pyz1 core stage source bead matches | "
-            "pyz1 core stage source bead max delta | "
-            "pyz1 obstacle pair sequence | "
-            "oracle obstacle pair sequence | "
-            "summary mismatch details | note |"
-        ),
-        _format_report_separator(),
+        header,
+        _format_report_separator(header),
     ]
     lines.extend(_format_record(record) for record in records)
     return "\n".join(lines) + "\n"
 
 
-def _format_report_separator() -> str:
-    right_aligned_columns = (
-        False,
-        False,
-        False,
-        *([True] * 13),
-        False,
-        *([True] * 28),
-        False,
-        False,
-        False,
-        False,
-    )
-    return (
-        "| "
-        + " | ".join(
-            "---:" if right_aligned else "---"
-            for right_aligned in right_aligned_columns
-        )
-        + " |"
-    )
+def _format_report_separator(header: str) -> str:
+    column_count = len(header.strip().strip("|").split("|"))
+    return "| " + " | ".join("---" for _ in range(column_count)) + " |"
 
 
 def _format_record(record: RegressionRecord) -> str:
@@ -1043,6 +1079,9 @@ def _format_record(record: RegressionRecord) -> str:
         f"{_format_optional_float(record.pyz1_core_stage_source_bead_max_delta)} | "
         f"{_format_int_sequence(record.pyz1_obstacle_pair_sequence)} | "
         f"{_format_int_sequence(record.oracle_obstacle_pair_sequence)} | "
+        f"{_format_optional_int(record.pyz1_winding_candidate_count)} | "
+        f"{_format_int_sequence(record.pyz1_winding_missing_oracle_sequence)} | "
+        f"{_format_optional_int(record.pyz1_winding_extra_candidate_count)} | "
         f"{_format_summary_field_details(record.summary_field_mismatch_details)} | "
         f"{record.note} |"
     )

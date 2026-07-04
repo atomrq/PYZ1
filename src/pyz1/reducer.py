@@ -208,6 +208,16 @@ def write_reducer_outputs(directory: Path, result: ReducerResult) -> None:
     write_summary_outputs(directory, result.summary)
 
 
+def winding_obstacle_candidate_chain_indices(
+    chains: tuple[Chain, ...],
+    chain_index: int,
+) -> tuple[int, ...]:
+    return tuple(
+        candidate.chain_index
+        for candidate in _winding_obstacle_candidates(chains, chain_index)
+    )
+
+
 def _core_stage_nodes(
     shortest_path: ShortestPathSnapshot,
 ) -> tuple[tuple[CoreStageNode, ...], ...]:

@@ -224,6 +224,35 @@ def test_write_benchmark_regression_report_when_obstacle_sequence_matches_report
     assert "268,241,160,130" in text
 
 
+def test_write_benchmark_regression_report_when_winding_candidates_miss_oracle(
+    tmp_path: Path,
+) -> None:
+    report_path = tmp_path / "pyz1-benchmark-regression.md"
+
+    records = write_benchmark_regression_report(
+        RegressionRequest(
+            source_dir=SOURCE_Z1,
+            oracle_root=ORACLE_ROOT,
+            report_path=report_path,
+            modes=(RegressionMode.SPPLUS,),
+            benchmark_ids=("01", "03"),
+        ),
+    )
+
+    text = report_path.read_text(encoding="utf-8")
+    benchmark_01 = records[0]
+    benchmark_03 = records[1]
+    assert benchmark_01.pyz1_winding_candidate_count == 41
+    assert benchmark_01.pyz1_winding_missing_oracle_sequence == (128, 208, 36)
+    assert benchmark_01.pyz1_winding_extra_candidate_count == 31
+    assert benchmark_03.pyz1_winding_candidate_count == 8
+    assert benchmark_03.pyz1_winding_missing_oracle_sequence == ()
+    assert benchmark_03.pyz1_winding_extra_candidate_count == 4
+    assert "pyz1 winding candidates" in text
+    assert "pyz1 winding missing oracle sequence" in text
+    assert "128,208,36" in text
+
+
 def test_write_benchmark_regression_report_when_source_beads_differ_reports_max_delta(
     tmp_path: Path,
 ) -> None:
