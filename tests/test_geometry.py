@@ -13,6 +13,7 @@ from pyz1.geometry import (
     evaluate_node_move,
     minimum_image_delta,
     segment_distance,
+    segment_intersects_triangle,
     segments_cross_xy,
     unfold_chain,
 )
@@ -65,6 +66,38 @@ def test_segments_cross_xy_when_projections_intersect() -> None:
     crosses = segments_cross_xy(first, second)
 
     assert crosses is True
+
+
+def test_segment_intersects_triangle_when_segment_pierces_swept_area() -> None:
+    triangle = (
+        Vector3(0.0, 0.0, 0.0),
+        Vector3(0.0, 2.0, 0.0),
+        Vector3(1.0, 1.0, 0.0),
+    )
+    segment = Segment(
+        start=Vector3(0.5, 1.0, -1.0),
+        end=Vector3(0.5, 1.0, 1.0),
+    )
+
+    intersects = segment_intersects_triangle(segment, triangle)
+
+    assert intersects is True
+
+
+def test_segment_intersects_triangle_when_segment_is_above_area_is_false() -> None:
+    triangle = (
+        Vector3(0.0, 0.0, 0.0),
+        Vector3(0.0, 2.0, 0.0),
+        Vector3(1.0, 1.0, 0.0),
+    )
+    segment = Segment(
+        start=Vector3(0.5, 0.2, 1.0),
+        end=Vector3(0.5, 0.8, 1.0),
+    )
+
+    intersects = segment_intersects_triangle(segment, triangle)
+
+    assert intersects is False
 
 
 def test_evaluate_node_move_when_endpoint_is_targeted_rejects_move() -> None:
@@ -121,6 +154,26 @@ def test_evaluate_node_move_when_candidate_crosses_blocker_rejects_move() -> Non
 
     assert evaluation.accepted is False
     assert evaluation.reason == "crossing"
+
+
+def test_evaluate_node_move_when_projected_crossing_is_3d_separated() -> None:
+    chain = Chain(
+        (
+            Vector3(0.0, 0.0, 0.0),
+            Vector3(0.0, 2.0, 0.0),
+            Vector3(1.0, 1.0, 0.0),
+        ),
+    )
+    blocker = Segment(
+        start=Vector3(0.5, -0.2, 1.0),
+        end=Vector3(0.5, 0.8, 1.0),
+    )
+    move = NodeMove(node_index=1, position=Vector3(1.0, 0.0, 0.0))
+    context = MoveContext(blocking_segments=(blocker,))
+
+    evaluation = evaluate_node_move(chain, move, context)
+
+    assert evaluation.accepted is True
 
 
 def test_clean_collinear_kinks_when_path_has_redundant_nodes() -> None:

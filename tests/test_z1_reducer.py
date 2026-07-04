@@ -1,17 +1,16 @@
 from __future__ import annotations
 
 from math import isclose
-from typing import TYPE_CHECKING
+from pathlib import Path
 
 from pyz1.models import Chain, Snapshot, Vector3
 from pyz1.output_io import read_shortest_path_file, read_summary_file
 from pyz1.output_models import ShortestPathPair
 from pyz1.reducer import ReducerSettings, reduce_snapshot, write_reducer_outputs
-
-if TYPE_CHECKING:
-    from pathlib import Path
+from pyz1.z1_io import read_z1_file
 
 FLOAT_TOLERANCE = 1.0e-12
+SOURCE_Z1 = Path("/Users/jiaxm/Contents/CodexProjects/source_code/Z1+")
 
 
 def test_reduce_snapshot_when_single_bent_chain_has_no_blockers_straightens() -> None:
@@ -159,6 +158,21 @@ def test_write_reducer_outputs_when_result_is_available_writes_z1_files(
         result.summary.record.mean_shortest_path_contour,
         abs_tol=1.0e-3,
     )
+
+
+def test_reduce_snapshot_when_benchmark_04_matches_oracle_kink_structure() -> None:
+    snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-04.Z1")
+
+    result = reduce_snapshot(snapshot, ReducerSettings(pairing_enabled=True))
+
+    assert tuple(chain.node_count for chain in result.shortest_path.chains) == (
+        3,
+        2,
+        2,
+        2,
+        2,
+    )
+    assert result.summary.z_values == (1, 0, 0, 0, 0)
 
 
 def assert_vector_close(actual: Vector3, expected: Vector3) -> None:

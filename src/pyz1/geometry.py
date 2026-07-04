@@ -112,6 +112,25 @@ def segments_cross_xy(first: Segment, second: Segment) -> bool:
     )
 
 
+def segment_intersects_triangle(
+    segment: Segment,
+    triangle: tuple[Vector3, Vector3, Vector3],
+) -> bool:
+    triangle_origin = triangle[0]
+    first_edge = _subtract(triangle[1], triangle_origin)
+    second_edge = _subtract(triangle[2], triangle_origin)
+    normal = _cross(first_edge, second_edge)
+    segment_delta = _subtract(segment.end, segment.start)
+    denominator = _dot(normal, segment_delta)
+    if abs(denominator) <= GEOMETRY_TOLERANCE:
+        return False
+    fraction = _dot(normal, _subtract(triangle_origin, segment.start)) / denominator
+    if fraction < -GEOMETRY_TOLERANCE or fraction > 1.0 + GEOMETRY_TOLERANCE:
+        return False
+    intersection = _add(segment.start, _scale(segment_delta, fraction))
+    return _point_in_triangle(intersection, triangle)
+
+
 def evaluate_node_move(
     chain: Chain,
     move: NodeMove,
@@ -275,8 +294,7 @@ def _move_crosses_blocker(
         ),
     )
     return any(
-        segments_cross_xy(moved_segment, blocker)
-        or segment_distance(moved_segment, blocker) <= context.tolerance
+        segment_distance(moved_segment, blocker) <= context.tolerance
         for moved_segment in moved_segments
         for blocker in context.blocking_segments
     )
@@ -331,6 +349,35 @@ def _lerp(segment: Segment, fraction: float) -> Vector3:
 
 def _clamp(value: float) -> float:
     return min(max(value, 0.0), 1.0)
+
+
+def _point_in_triangle(
+    point: Vector3,
+    triangle: tuple[Vector3, Vector3, Vector3],
+) -> bool:
+    origin = triangle[0]
+    first_edge = _subtract(triangle[1], origin)
+    second_edge = _subtract(triangle[2], origin)
+    point_delta = _subtract(point, origin)
+    first_dot = _dot(first_edge, first_edge)
+    cross_dot = _dot(first_edge, second_edge)
+    second_dot = _dot(second_edge, second_edge)
+    point_first_dot = _dot(point_delta, first_edge)
+    point_second_dot = _dot(point_delta, second_edge)
+    denominator = first_dot * second_dot - cross_dot * cross_dot
+    if abs(denominator) <= GEOMETRY_TOLERANCE:
+        return False
+    first_coordinate = (
+        second_dot * point_first_dot - cross_dot * point_second_dot
+    ) / denominator
+    second_coordinate = (
+        first_dot * point_second_dot - cross_dot * point_first_dot
+    ) / denominator
+    return (
+        first_coordinate >= -GEOMETRY_TOLERANCE
+        and second_coordinate >= -GEOMETRY_TOLERANCE
+        and first_coordinate + second_coordinate <= 1.0 + GEOMETRY_TOLERANCE
+    )
 
 
 def _add(first: Vector3, second: Vector3) -> Vector3:
