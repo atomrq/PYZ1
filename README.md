@@ -77,9 +77,10 @@ Current regression evidence is written to:
 
 That report classifies each public benchmark/mode as `passed`, `mismatch`, or
 `known-invalid`. The current clean-room reducer is not yet numerically
-equivalent to Z1+: `benchmark-04` default/SP+ is reported as a mismatch, and
-larger benchmark cases are performance-skipped by a transparent `node_count`
-guard until the reducer gets neighbor-list style acceleration.
+equivalent to Z1+: `benchmark-01` through `benchmark-04` default/SP+ are
+reported as mismatches, and larger benchmark cases are performance-skipped by a
+transparent `node_count` guard until the reducer gets neighbor-list style
+acceleration.
 
 ## Limitations
 

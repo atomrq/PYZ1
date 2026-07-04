@@ -8,6 +8,7 @@ from pyz1.regression import (
     RegressionMode,
     RegressionRecord,
     RegressionRequest,
+    RegressionStatus,
     compare_spplus_pairing,
     write_benchmark_regression_report,
 )
@@ -151,6 +152,28 @@ def test_write_benchmark_regression_report_when_stats_log_exists_lists_core_diag
     assert "| 1 | 2 | 3.5 | 3.5 |" in text
     assert "max node actual pair fraction" in text
     assert "| 0.733072 | 0.00186654 | 0.733114 | 0.00179606 |" in text
+
+
+def test_write_benchmark_regression_report_when_default_guard_runs_611_node_cases(
+    tmp_path: Path,
+) -> None:
+    report_path = tmp_path / "pyz1-benchmark-regression.md"
+
+    records = write_benchmark_regression_report(
+        RegressionRequest(
+            source_dir=SOURCE_Z1,
+            oracle_root=ORACLE_ROOT,
+            report_path=report_path,
+            modes=(RegressionMode.SPPLUS,),
+            benchmark_ids=("01", "05"),
+        ),
+    )
+
+    assert records[0].status == RegressionStatus.MISMATCH
+    assert records[0].node_count_mismatches is not None
+    assert records[0].node_count_mismatches > 0
+    assert records[1].status == RegressionStatus.KNOWN_INVALID
+    assert records[1].note == "skipped: node_count>700"
 
 
 def test_compare_spplus_pairing_when_pairing_differs_reports_mismatch() -> None:

@@ -78,7 +78,7 @@ class RegressionRequest:
     report_path: Path
     modes: tuple[RegressionMode, ...]
     benchmark_ids: tuple[str, ...]
-    max_node_count: int = 500
+    max_node_count: int = 700
 
 
 @dataclass(frozen=True, slots=True)

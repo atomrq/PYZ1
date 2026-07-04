@@ -8,11 +8,12 @@ parity claim.
 
 Latest local gate evidence:
 
-- `.omo/evidence/task-50-spplus-residual/spplus-focused.txt`: `4 passed`
-- `.omo/evidence/task-50-spplus-residual/pytest.txt`: `111 passed`
-- `.omo/evidence/task-50-spplus-residual/ruff.txt`: `All checks passed!`
-- `.omo/evidence/task-50-spplus-residual/basedpyright.txt`:
+- `.omo/evidence/task-51-benchmark-scope/spplus-focused.txt`: `5 passed`
+- `.omo/evidence/task-51-benchmark-scope/pytest.txt`: `112 passed`
+- `.omo/evidence/task-51-benchmark-scope/ruff.txt`: `All checks passed!`
+- `.omo/evidence/task-51-benchmark-scope/basedpyright.txt`:
   `0 errors, 0 warnings, 0 notes`
+- `.omo/evidence/task-51-benchmark-scope/package-smoke.txt`: `2 passed`
 
 The package smoke runs `python -m pyz1` for default, SP+, PPA, and PPA+ modes
 and checks the expected mode-specific output files.
@@ -26,12 +27,17 @@ and checks the expected mode-specific output files.
 | Summary and `Ne` estimators | Estimator unit tests plus oracle-SP-through-pyz1 summary parity for benchmark-04 SP+ | `tests/test_estimators.py`, `tests/test_summary.py`, `tests/test_spplus_regression.py`, `.omo/evidence/task-42-summary-ne-source/` |
 | Oracle fixture tooling and parity reporting | Oracle manifest tests, CLI help smoke, benchmark regression report tests, and logged oracle run metadata | `tests/test_oracle.py`, `tests/test_z1plus_parity.py`, `tests/test_spplus_regression.py` |
 | Native PPA/PPA+ slices | PPA mode tests, CLI mode tests, package-level smoke, WCA cell-list candidate generation, native PPA summary regression reporting, Z1+ PPA+ phase-stop regression, 12 parseable oracle coordinate-path summary parity cases, and one explicit Fortran-overflow known-invalid fixture | `tests/test_ppa.py`, `tests/test_ppa_regression.py`, `tests/test_cli_scaffold.py`, `tests/test_package_integration_smoke.py`, `.omo/evidence/task-46-ppa-summary-oracle-coverage/`, `.omo/evidence/task-47-ppa-neighbor-list/`, `.omo/evidence/task-48-ppa-native-regression/`, `.omo/evidence/task-49-ppa-lpp-debug/` |
-| Clean-room reducer | Geometry primitives, reducer diagnostics, benchmark-04 reducer structure, SP+ pairing, and benchmark regression diagnostics | `tests/test_geometry.py`, `tests/test_z1_reducer.py`, `tests/test_spplus_regression.py` |
+| Clean-room reducer | Geometry primitives, reducer diagnostics, benchmark-04 reducer structure, SP+ pairing, and benchmark regression diagnostics for 01-04 under the default guard | `tests/test_geometry.py`, `tests/test_z1_reducer.py`, `tests/test_spplus_regression.py`, `.omo/evidence/task-51-benchmark-scope/` |
 | SP+ regression | Pairing comparison, max-node-delta localization, pair-segment geometry diagnostics, oracle summary source isolation, and residual ghost-clearance tuning | `tests/test_spplus_regression.py`, `.omo/evidence/task-38-final-node-delta-location/`, `.omo/evidence/task-39-max-node-pair-geometry/`, `.omo/evidence/task-41-spplus-projection-direction/`, `.omo/evidence/task-50-spplus-residual/` |
-| Package integration smoke | Real module entrypoint smoke for default, SP+, PPA, and PPA+ | `tests/test_package_integration_smoke.py`, `.omo/evidence/task-44-evidence-ledger/` |
+| Package integration smoke | Real module entrypoint smoke for default, SP+, PPA, and PPA+ | `tests/test_package_integration_smoke.py`, `.omo/evidence/task-51-benchmark-scope/package-smoke.txt` |
 | `selfZ` boundary | `-selfZ` is recognized and fails explicitly instead of silently running the default reducer | `tests/test_cli_scaffold.py`, `tests/test_package_integration_smoke.py`, `.omo/evidence/task-45-selfz-explicit-boundary/` |
 
 ## Latest SP+ Parity Measurements
+
+The default benchmark regression guard now runs benchmarks 01-04 in default
+and SP+ modes. Benchmark 05 and larger cases remain `known-invalid` skips under
+the `node_count>700` performance guard. Current scope evidence is in
+`.omo/evidence/task-51-benchmark-scope/default-spplus-after-guard700.txt`.
 
 Benchmark-04 SP+ regression remains classified as `mismatch`, but the current
 measured deltas are localized:
@@ -112,8 +118,8 @@ The following are intentionally not claimed complete:
   PPA+ benchmark-04 is runnable and close in `Ne`, but strict summary parity is
   still a `mismatch`.
 - default geometrical Z1+ numerical parity across all benchmarks
-- scalable all-14 benchmark reducer regression without the current node-count
-  performance guard
+- scalable all-14 benchmark reducer regression without the current
+  `node_count>700` performance guard
 - native self-entanglement (`selfZ`) behavior beyond the current explicit
   not-implemented CLI boundary
 - final user/developer documentation review for scientific parity caveats
