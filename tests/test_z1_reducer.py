@@ -206,6 +206,15 @@ def test_reduce_snapshot_when_benchmark_04_matches_oracle_kink_structure() -> No
     assert result.summary.z_values == (1, 0, 0, 0, 0)
 
 
+def test_reduce_snapshot_when_benchmark_04_reports_reducer_diagnostics() -> None:
+    snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-04.Z1")
+
+    result = reduce_snapshot(snapshot, ReducerSettings(pairing_enabled=True))
+
+    assert result.diagnostics.core_node_count == 10
+    assert result.diagnostics.final_node_count == 11
+
+
 def test_reduce_snapshot_when_benchmark_04_matches_oracle_kink_source() -> None:
     snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-04.Z1")
     oracle = read_shortest_path_file(

@@ -13,6 +13,11 @@ from pyz1.output_io import (
 )
 from pyz1.reducer import ReducerSettings, reduce_snapshot
 from pyz1.z1_io import read_z1_file
+from pyz1.z1_log import (
+    Z1ReducerScanDiagnostics,
+    read_z1_log_file,
+    reducer_scan_diagnostics,
+)
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -86,6 +91,10 @@ class RegressionRecord:
     pairing_mismatches: int | None
     node_count_mismatches: int | None
     max_node_position_delta: float | None
+    pyz1_core_node_count: int | None
+    pyz1_final_node_count: int | None
+    oracle_core_node_count: int | None
+    oracle_final_node_count: int | None
     note: str
 
 
@@ -144,6 +153,10 @@ def _compare_benchmark_mode(
             pairing_mismatches=None,
             node_count_mismatches=None,
             max_node_position_delta=None,
+            pyz1_core_node_count=None,
+            pyz1_final_node_count=None,
+            oracle_core_node_count=None,
+            oracle_final_node_count=None,
             note="missing source or oracle output",
         )
     snapshot = read_z1_file(source_path)
@@ -159,6 +172,10 @@ def _compare_benchmark_mode(
             pairing_mismatches=None,
             node_count_mismatches=None,
             max_node_position_delta=None,
+            pyz1_core_node_count=None,
+            pyz1_final_node_count=None,
+            oracle_core_node_count=None,
+            oracle_final_node_count=None,
             note=f"skipped: node_count>{request.max_node_count}",
         )
     result = reduce_snapshot(snapshot, _settings_for_mode(mode))
@@ -179,6 +196,7 @@ def _compare_benchmark_mode(
         result.shortest_path,
         sp_path.read_text(encoding="utf-8"),
     )
+    oracle_diagnostics = _oracle_reducer_diagnostics(oracle_dir / "log-stats.Z1")
     status = _status_from_deltas(lpp_delta, z_delta, pairing_mismatches)
     return RegressionRecord(
         benchmark_id=benchmark_id,
@@ -191,8 +209,26 @@ def _compare_benchmark_mode(
         pairing_mismatches=pairing_mismatches,
         node_count_mismatches=geometry_comparison.node_count_mismatches,
         max_node_position_delta=geometry_comparison.max_node_position_delta,
+        pyz1_core_node_count=result.diagnostics.core_node_count,
+        pyz1_final_node_count=result.diagnostics.final_node_count,
+        oracle_core_node_count=(
+            oracle_diagnostics.core_node_count
+            if oracle_diagnostics is not None
+            else None
+        ),
+        oracle_final_node_count=(
+            oracle_diagnostics.final_node_count
+            if oracle_diagnostics is not None
+            else None
+        ),
         note=_note_for_status(status),
     )
+
+
+def _oracle_reducer_diagnostics(path: Path) -> Z1ReducerScanDiagnostics | None:
+    if not path.exists():
+        return None
+    return reducer_scan_diagnostics(read_z1_log_file(path))
 
 
 def _settings_for_mode(mode: RegressionMode) -> ReducerSettings:
@@ -343,9 +379,14 @@ def _format_report(records: tuple[RegressionRecord, ...]) -> str:
             "| benchmark | mode | status | Lpp delta | Z delta | "
             "summary field mismatches | pair mismatches | "
             "node count mismatches | max node position delta | "
+            "pyz1 core nodes | pyz1 final nodes | "
+            "oracle core nodes | oracle final nodes | "
             "summary mismatch details | note |"
         ),
-        "| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- |",
+        (
+            "| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | "
+            "---: | ---: | ---: | ---: | --- | --- |"
+        ),
     ]
     lines.extend(_format_record(record) for record in records)
     return "\n".join(lines) + "\n"
@@ -360,6 +401,10 @@ def _format_record(record: RegressionRecord) -> str:
         f"{_format_optional_int(record.pairing_mismatches)} | "
         f"{_format_optional_int(record.node_count_mismatches)} | "
         f"{_format_optional_float(record.max_node_position_delta)} | "
+        f"{_format_optional_int(record.pyz1_core_node_count)} | "
+        f"{_format_optional_int(record.pyz1_final_node_count)} | "
+        f"{_format_optional_int(record.oracle_core_node_count)} | "
+        f"{_format_optional_int(record.oracle_final_node_count)} | "
         f"{_format_summary_field_details(record.summary_field_mismatch_details)} | "
         f"{record.note} |"
     )

@@ -41,6 +41,13 @@ class ReducerSettings:
 class ReducerResult:
     shortest_path: ShortestPathSnapshot
     summary: SummaryOutputs
+    diagnostics: ReducerDiagnostics
+
+
+@dataclass(frozen=True, slots=True)
+class ReducerDiagnostics:
+    core_node_count: int
+    final_node_count: int
 
 
 @dataclass(frozen=True, slots=True)
@@ -56,8 +63,8 @@ def reduce_snapshot(
     active_settings = settings or ReducerSettings()
     box = GeometryBox(lengths=snapshot.box, shear=snapshot.shear or 0.0)
     chains = tuple(unfold_chain(chain, box) for chain in snapshot.true_chains)
-    reduced_chains = _reduce_chains(chains, active_settings)
-    preserved = _preserve_close_contacts(chains, reduced_chains, active_settings)
+    core_chains = _reduce_chains(chains, active_settings)
+    preserved = _preserve_close_contacts(chains, core_chains, active_settings)
     reduced_chains = preserved.chains
     source_beads = preserved.source_beads
     pairings = (
@@ -80,6 +87,10 @@ def reduce_snapshot(
             original=snapshot,
             primitive_path=shortest_path,
             timestep=snapshot.label or 1,
+        ),
+        diagnostics=ReducerDiagnostics(
+            core_node_count=sum(chain.node_count for chain in core_chains),
+            final_node_count=sum(chain.node_count for chain in reduced_chains),
         ),
     )
 

@@ -34,8 +34,29 @@ class Z1Log:
     scan_records: tuple[Z1ScanRecord, ...]
 
 
+@dataclass(frozen=True, slots=True)
+class Z1ReducerScanDiagnostics:
+    core_node_count: int
+    final_node_count: int
+    core_mean_shortest_path_contour: float
+    final_mean_shortest_path_contour: float
+
+
 def read_z1_log_file(path: Path) -> Z1Log:
     return parse_z1_log_text(path.read_text(encoding="utf-8"))
+
+
+def reducer_scan_diagnostics(log: Z1Log) -> Z1ReducerScanDiagnostics | None:
+    if len(log.scan_records) == 0:
+        return None
+    final_record = log.scan_records[-1]
+    core_record = _core_scan_record(log.scan_records)
+    return Z1ReducerScanDiagnostics(
+        core_node_count=core_record.node_count,
+        final_node_count=final_record.node_count,
+        core_mean_shortest_path_contour=core_record.mean_shortest_path_contour,
+        final_mean_shortest_path_contour=final_record.mean_shortest_path_contour,
+    )
 
 
 def parse_z1_log_text(text: str) -> Z1Log:
@@ -51,6 +72,13 @@ def parse_z1_log_text(text: str) -> Z1Log:
 def _is_scan_record_line(line: str) -> bool:
     tokens = line.split()
     return len(tokens) > 1 and tokens[0] == "Z1+" and tokens[1].isdigit()
+
+
+def _core_scan_record(records: tuple[Z1ScanRecord, ...]) -> Z1ScanRecord:
+    final_record = records[-1]
+    if len(records) > 1 and records[-2].scan == final_record.scan:
+        return records[-2]
+    return final_record
 
 
 def _parse_scan_record(line_number: int, line: str) -> Z1ScanRecord:
