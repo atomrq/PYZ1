@@ -557,6 +557,8 @@ class _PreservedKinkCandidate:
     source_bead: float
     shortcut: Segment | None
     projection_normal: Segment | None
+    ghost_anchor: Vector3 | None
+    ghost_clearance: float | None
 
 
 @dataclass(frozen=True, slots=True)
@@ -647,11 +649,14 @@ def _blocked_kink_candidate(
     if not trace.blocked_moves:
         return None
     move = trace.blocked_moves[-1]
+    projection_normal = _blocked_projection_normal(chains, move.node)
     return _PreservedKinkCandidate(
         position=move.node.position,
         source_bead=move.node.source_bead,
         shortcut=move.shortcut,
-        projection_normal=_blocked_projection_normal(chains, move.node),
+        projection_normal=projection_normal,
+        ghost_anchor=_blocked_ghost_anchor(chains, move.node),
+        ghost_clearance=move.node.blocker_distance,
     )
 
 
@@ -676,6 +681,24 @@ def _blocked_projection_normal(
         _scale(blocker_delta, node.blocker_fraction),
     )
     return Segment(start=node.position, end=blocker_point)
+
+
+def _blocked_ghost_anchor(
+    chains: tuple[Chain, ...],
+    node: CoreTraceNode,
+) -> Vector3 | None:
+    if node.blocker_chain_index is None or node.blocker_node_index is None:
+        return None
+    blocker_chain = chains[node.blocker_chain_index - 1]
+    blocker_segment = Segment(
+        start=blocker_chain.nodes[node.blocker_node_index - 1],
+        end=blocker_chain.nodes[node.blocker_node_index],
+    )
+    closest = closest_segment_points(
+        Segment(start=node.position, end=node.position),
+        blocker_segment,
+    )
+    return closest.second_point
 
 
 def _candidate_trace_node(
@@ -704,6 +727,8 @@ def _contact_kink_candidate(
         source_bead=contact.segment_index + 1.5,
         shortcut=None,
         projection_normal=None,
+        ghost_anchor=None,
+        ghost_clearance=None,
     )
 
 
@@ -753,21 +778,38 @@ def _project_to_responsible_segment(
                 responsible_segment=responsible_segment,
             ),
         )
+    relaxed_projected = _relaxed_projected_position(projected, preserved)
     candidate = _PreservedKinkCandidate(
-        position=projected,
+        position=relaxed_projected,
         source_bead=preserved.source_bead,
         shortcut=preserved.shortcut,
         projection_normal=preserved.projection_normal,
+        ghost_anchor=preserved.ghost_anchor,
+        ghost_clearance=preserved.ghost_clearance,
     )
     return _ProjectionResult(
         candidate=candidate,
         trace=_projection_trace(
             chain_index=chain_index,
             preserved=preserved,
-            projected_position=projected,
+            projected_position=relaxed_projected,
             responsible_segment=responsible_segment,
         ),
     )
+
+
+def _relaxed_projected_position(
+    projected: Vector3,
+    preserved: _PreservedKinkCandidate,
+) -> Vector3:
+    if preserved.ghost_anchor is None or preserved.ghost_clearance is None:
+        return projected
+    anchor_direction = _subtract(preserved.ghost_anchor, projected)
+    anchor_distance = _vector_distance(projected, preserved.ghost_anchor)
+    if anchor_distance <= GEOMETRY_TOLERANCE:
+        return projected
+    offset = min(anchor_distance, preserved.ghost_clearance / sqrt(2.0))
+    return _add(projected, _scale(anchor_direction, offset / anchor_distance))
 
 
 def _projection_trace(

@@ -304,7 +304,7 @@ def test_reduce_snapshot_when_benchmark_04_reports_projection_trace() -> None:
     assert projection.responsible_fraction is not None
     assert isclose(
         projection.responsible_fraction,
-        0.7221116658876934,
+        0.7330720139506784,
         abs_tol=FLOAT_TOLERANCE,
     )
     assert_vector_close(
@@ -313,7 +313,7 @@ def test_reduce_snapshot_when_benchmark_04_reports_projection_trace() -> None:
     )
     assert_vector_close(
         projection.projected_position,
-        Vector3(0.13536991275801988, -0.1612181380318356, 1.6021666363965665),
+        Vector3(0.1330272081070645, -0.16124771978126742, 1.6151554491264273),
     )
 
 

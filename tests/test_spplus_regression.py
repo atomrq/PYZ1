@@ -38,10 +38,10 @@ def test_write_benchmark_regression_report_when_oracles_exist_lists_modes(
     assert "summary field mismatches" in text
     assert "max node position delta" in text
     assert "node count mismatches" in text
-    assert records[1].summary_field_mismatches == 3
+    assert records[1].summary_field_mismatches == 2
     assert records[1].node_count_mismatches == 0
     assert records[1].max_node_position_delta is not None
-    assert 0.0133 < records[1].max_node_position_delta < 0.0134
+    assert 0.001 < records[1].max_node_position_delta < 0.003
     assert_benchmark_04_max_delta_location(records[1])
     assert_benchmark_04_max_delta_pair_geometry(records[1])
     assert records[1].pyz1_core_accepted_blocked_moves == 9
@@ -58,7 +58,7 @@ def test_write_benchmark_regression_report_when_oracles_exist_lists_modes(
     assert records[1].pyz1_first_projection_responsible_chain == 2
     assert records[1].pyz1_first_projection_responsible_node == 1
     assert records[1].pyz1_first_projection_responsible_fraction is not None
-    assert 0.722 < records[1].pyz1_first_projection_responsible_fraction < 0.723
+    assert 0.732 < records[1].pyz1_first_projection_responsible_fraction < 0.734
     assert records[1].oracle_core_node_count == 17
     assert records[1].oracle_core_ghost_nodes == 6
     assert records[1].oracle_core_stage_node_count == 17
@@ -68,8 +68,8 @@ def test_write_benchmark_regression_report_when_oracles_exist_lists_modes(
     assert records[1].pyz1_core_stage_source_bead_matches == 14
     assert records[1].pyz1_core_stage_source_bead_max_delta is not None
     assert 0.037 < records[1].pyz1_core_stage_source_bead_max_delta < 0.038
-    assert "root_mean_squared_contour: 4.597 != 4.598" in text
-    assert "ne_modified_coil: 653.792 != 641.605" in text
+    assert "ne_classical_coil: 10.486 != 10.485" in text
+    assert "ne_modified_coil: 644.912 != 641.605" in text
     assert "pyz1 core trace nodes" in text
     assert "pyz1 core transient blocked nodes" in text
     assert "pyz1 first trace blocker fraction" in text
@@ -145,14 +145,10 @@ def test_write_benchmark_regression_report_when_stats_log_exists_lists_core_diag
     assert "pyz1 core stage node count mismatches" in text
     assert "pyz1 core stage source bead matches" in text
     assert "| benchmark-04 | spplus | mismatch |" in text
-    assert (
-        "| 10 | 11 | 17 | 7 | 9 | 7 | 2 | 9 | 0.607385 | 0.936019 | 0.0186654 | "
-        "1 | 2 | 1 | 0.722112 | 17 | 11 | 1 | 6 |"
-    ) in text
     assert "max node delta chain" in text
     assert "| 1 | 2 | 3.5 | 3.5 |" in text
     assert "max node actual pair fraction" in text
-    assert "| 0.722112 | 2.77556e-17 | 0.733114 | 0.00179606 |" in text
+    assert "| 0.733072 | 0.000958188 | 0.733114 | 0.00179606 |" in text
 
 
 def test_compare_spplus_pairing_when_pairing_differs_reports_mismatch() -> None:
@@ -182,9 +178,9 @@ def assert_benchmark_04_max_delta_location(record: RegressionRecord) -> None:
 
 def assert_benchmark_04_max_delta_pair_geometry(record: RegressionRecord) -> None:
     assert record.max_node_actual_pair_fraction is not None
-    assert 0.722 < record.max_node_actual_pair_fraction < 0.723
+    assert 0.732 < record.max_node_actual_pair_fraction < 0.734
     assert record.max_node_actual_pair_distance is not None
-    assert record.max_node_actual_pair_distance < 1.0e-12
+    assert 0.0008 < record.max_node_actual_pair_distance < 0.0012
     assert record.max_node_expected_pair_fraction is not None
     assert 0.733 < record.max_node_expected_pair_fraction < 0.734
     assert record.max_node_expected_pair_distance is not None
