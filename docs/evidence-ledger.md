@@ -11,14 +11,14 @@ For a requirement-by-requirement completion verdict, see
 
 Latest local gate evidence:
 
-- `.omo/evidence/task-75-source-sequence-delta/pytest.txt`: `128 passed`
+- `.omo/evidence/task-76-source-sequence-residuals/pytest.txt`: `128 passed`
 - `.omo/evidence/task-55-ppa-coverage/ppa-focused.txt`: `21 passed`
 - `.omo/evidence/task-57-ppa-nan-root/ppa-focused.txt`: `22 passed`
-- `.omo/evidence/task-75-source-sequence-delta/ruff.txt`:
+- `.omo/evidence/task-76-source-sequence-residuals/ruff.txt`:
   `All checks passed!`
-- `.omo/evidence/task-75-source-sequence-delta/basedpyright.txt`:
+- `.omo/evidence/task-76-source-sequence-residuals/basedpyright.txt`:
   `0 errors, 0 warnings, 0 notes`
-- `.omo/evidence/task-75-source-sequence-delta/package-smoke.txt`:
+- `.omo/evidence/task-76-source-sequence-residuals/package-smoke.txt`:
   `2 passed`
 
 The package smoke runs `python -m pyz1` for default, SP+, PPA, and PPA+ modes
@@ -282,6 +282,17 @@ explicit: benchmark-04 default/SP+ have `source_mismatches=0`, while benchmark
 01/02/03/05 report `13`, `10`, `4`, and `2` mismatches respectively. This makes
 the remaining default reducer source/order blocker directly regression-testable
 instead of relying only on residual detail columns.
+
+Task-76 expands the same source/order surface with per-index residual details.
+Evidence in
+`.omo/evidence/task-76-source-sequence-residuals/regression-01-05-source-sequence-residuals.txt`
+records each pyz1-vs-default-oracle source index as `actual!=expected(d=delta)`,
+including missing pyz1 entries when the oracle sequence is longer. This shows,
+for example, benchmark-01 default/SP+ match neither the first eight oracle
+source values nor the five trailing oracle-only values, while benchmark-04
+default/SP+ have an empty residual list. The report column
+`pyz1 source sequence residual details` makes future source/order changes
+observable at the exact source-index level.
 
 ## Latest PPA/PPA+ Oracle Summary Coverage
 

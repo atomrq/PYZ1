@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import StrEnum
+from itertools import zip_longest
 from math import sqrt
 from typing import TYPE_CHECKING, Final
 
@@ -116,6 +117,14 @@ class SourceBeadResidual:
 
 
 @dataclass(frozen=True, slots=True)
+class SourceSequenceResidual:
+    source_index: int
+    actual: float | None
+    expected: float | None
+    delta: float | None
+
+
+@dataclass(frozen=True, slots=True)
 class OracleObstacleSourceResidual:
     chain_index: int
     actual: float
@@ -210,6 +219,7 @@ class RegressionRecord:
     pyz1_source_sequence: tuple[float, ...] | None = None
     pyz1_source_sequence_mismatch_count: int | None = None
     pyz1_source_sequence_max_delta: float | None = None
+    pyz1_source_sequence_residuals: tuple[SourceSequenceResidual, ...] | None = None
     oracle_true_chain_pair_sequence: tuple[int, ...] | None = None
 
 
@@ -663,6 +673,10 @@ def _compare_benchmark_mode(
             oracle_default_source_sequence,
         ),
         pyz1_source_sequence_max_delta=_source_sequence_max_delta(
+            pyz1_source_sequence,
+            oracle_default_source_sequence,
+        ),
+        pyz1_source_sequence_residuals=_source_sequence_residuals(
             pyz1_source_sequence,
             oracle_default_source_sequence,
         ),
@@ -1364,6 +1378,32 @@ def _source_sequence_max_delta(
     return max(abs(actual[index] - expected[index]) for index in range(shared_count))
 
 
+def _source_sequence_residuals(
+    actual: tuple[float, ...],
+    expected: tuple[float, ...] | None,
+) -> tuple[SourceSequenceResidual, ...] | None:
+    if expected is None:
+        return None
+    return tuple(
+        SourceSequenceResidual(
+            source_index=index,
+            actual=actual_source,
+            expected=expected_source,
+            delta=(
+                abs(actual_source - expected_source)
+                if actual_source is not None and expected_source is not None
+                else None
+            ),
+        )
+        for index, (actual_source, expected_source) in enumerate(
+            zip_longest(actual, expected),
+        )
+        if actual_source is None
+        or expected_source is None
+        or abs(actual_source - expected_source) > SOURCE_BEAD_TOLERANCE
+    )
+
+
 def _format_report(records: tuple[RegressionRecord, ...]) -> str:
     header = (
         "| benchmark | mode | status | Lpp delta | Z delta | "
@@ -1421,6 +1461,7 @@ def _format_report(records: tuple[RegressionRecord, ...]) -> str:
         "pyz1 source sequence | "
         "pyz1 source sequence mismatches | "
         "pyz1 source sequence max delta | "
+        "pyz1 source sequence residual details | "
         "oracle true-chain pair sequence | "
         "summary mismatch details | note |"
     )
@@ -1507,6 +1548,7 @@ def _format_record(record: RegressionRecord) -> str:
         f"{_format_float_sequence(record.pyz1_source_sequence)} | "
         f"{_format_optional_int(record.pyz1_source_sequence_mismatch_count)} | "
         f"{_format_optional_float(record.pyz1_source_sequence_max_delta)} | "
+        f"{_format_source_sequence_residuals(record.pyz1_source_sequence_residuals)} | "
         f"{_format_int_sequence(record.oracle_true_chain_pair_sequence)} | "
         f"{_format_summary_field_details(record.summary_field_mismatch_details)} | "
         f"{record.note} |"
@@ -1553,6 +1595,30 @@ def _format_oracle_source_sequence_default_match(
     record: RegressionRecord,
 ) -> str:
     return _format_optional_bool(record.oracle_mode_source_sequence_matches_default)
+
+
+def _format_source_sequence_residuals(
+    residuals: tuple[SourceSequenceResidual, ...] | None,
+) -> str:
+    if residuals is None:
+        return "n/a"
+    if len(residuals) == 0:
+        return "none"
+    visible = residuals[:MAX_SOURCE_RESIDUAL_REPORT_DETAILS]
+    formatted = "; ".join(_format_source_sequence_residual(item) for item in visible)
+    omitted_count = len(residuals) - len(visible)
+    if omitted_count == 0:
+        return formatted
+    return f"{formatted}; ... {omitted_count} more"
+
+
+def _format_source_sequence_residual(residual: SourceSequenceResidual) -> str:
+    return (
+        f"{residual.source_index}: "
+        f"{_format_optional_float(residual.actual)}"
+        f"!={_format_optional_float(residual.expected)}"
+        f"(d={_format_optional_float(residual.delta)})"
+    )
 
 
 def _format_convex_selected_missing_sequence(record: RegressionRecord) -> str:

@@ -565,6 +565,23 @@ def test_write_benchmark_regression_report_when_pyz1_sources_differ_from_default
     )
     assert records[0].pyz1_source_sequence_mismatch_count == 13
     assert records[0].pyz1_source_sequence_max_delta == 4.51
+    assert records[0].pyz1_source_sequence_residuals is not None
+    assert tuple(
+        (
+            residual.source_index,
+            residual.actual,
+            residual.expected,
+            residual.delta,
+        )
+        for residual in records[0].pyz1_source_sequence_residuals[:3]
+    ) == (
+        (0, 2.5, 1.4, 1.1),
+        (1, 3.5, 1.79, 1.71),
+        (2, 4.5, 2.19, 2.31),
+    )
+    assert records[0].pyz1_source_sequence_residuals[-1].source_index == 12
+    assert records[0].pyz1_source_sequence_residuals[-1].actual is None
+    assert records[0].pyz1_source_sequence_residuals[-1].expected == 10.08
     assert records[1].pyz1_source_sequence == (
         2.5,
         3.5,
@@ -580,6 +597,9 @@ def test_write_benchmark_regression_report_when_pyz1_sources_differ_from_default
     assert "pyz1 source sequence" in text
     assert "pyz1 source sequence mismatches" in text
     assert "pyz1 source sequence max delta" in text
+    assert "pyz1 source sequence residual details" in text
+    assert "0: 2.5!=1.4(d=1.1)" in text
+    assert "8: n/a!=6.74(d=n/a)" in text
 
 
 def test_write_benchmark_regression_report_when_source_beads_differ_reports_max_delta(
