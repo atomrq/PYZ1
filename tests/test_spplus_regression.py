@@ -154,7 +154,7 @@ def test_write_benchmark_regression_report_when_stats_log_exists_lists_core_diag
     assert "| 0.733072 | 0.00186654 | 0.733114 | 0.00179606 |" in text
 
 
-def test_write_benchmark_regression_report_when_default_guard_runs_611_node_cases(
+def test_write_benchmark_regression_report_when_default_guard_runs_medium_cases(
     tmp_path: Path,
 ) -> None:
     report_path = tmp_path / "pyz1-benchmark-regression.md"
@@ -165,7 +165,7 @@ def test_write_benchmark_regression_report_when_default_guard_runs_611_node_case
             oracle_root=ORACLE_ROOT,
             report_path=report_path,
             modes=(RegressionMode.SPPLUS,),
-            benchmark_ids=("01", "05"),
+            benchmark_ids=("01", "06"),
         ),
     )
 
@@ -173,7 +173,29 @@ def test_write_benchmark_regression_report_when_default_guard_runs_611_node_case
     assert records[0].node_count_mismatches is not None
     assert records[0].node_count_mismatches > 0
     assert records[1].status == RegressionStatus.KNOWN_INVALID
-    assert records[1].note == "skipped: node_count>700"
+    assert records[1].note == "skipped: node_count>1000"
+
+
+def test_write_benchmark_regression_report_when_default_guard_runs_1000_node_case(
+    tmp_path: Path,
+) -> None:
+    report_path = tmp_path / "pyz1-benchmark-regression.md"
+
+    records = write_benchmark_regression_report(
+        RegressionRequest(
+            source_dir=SOURCE_Z1,
+            oracle_root=ORACLE_ROOT,
+            report_path=report_path,
+            modes=(RegressionMode.SPPLUS,),
+            benchmark_ids=("05", "06"),
+        ),
+    )
+
+    assert records[0].status == RegressionStatus.MISMATCH
+    assert records[0].node_count_mismatches is not None
+    assert records[0].node_count_mismatches > 0
+    assert records[1].status == RegressionStatus.KNOWN_INVALID
+    assert records[1].note == "skipped: node_count>1000"
 
 
 def test_compare_spplus_pairing_when_pairing_differs_reports_mismatch() -> None:

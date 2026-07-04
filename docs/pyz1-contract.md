@@ -230,11 +230,11 @@ The report is an evidence artifact, not a parity claim. It must classify each
 checked benchmark/mode as `passed`, `mismatch`, or `known-invalid`, and it must
 record measured deltas or an explicit skip reason. Current status is:
 
-- `benchmark-01` through `benchmark-04` default and SP+ are classified as
+- `benchmark-01` through `benchmark-05` default and SP+ are classified as
   `mismatch`.
 - SP+ structural comparison counts mismatched `other-chain other-node` pairs.
-- `benchmark-05` and larger benchmark/mode entries are classified as
-  `known-invalid` under the current `node_count>700` performance guard until
+- `benchmark-06` and larger benchmark/mode entries are classified as
+  `known-invalid` under the current `node_count>1000` performance guard until
   the reducer has a scalable neighbor-candidate implementation.
 
 ## Current Completion Boundary
@@ -259,8 +259,8 @@ Complete now:
   max-position delta to `0.000441831629010637` and leaves one summary-field
   mismatch, `ne_modified_coil`
 - benchmark regression report generation and transparent mismatch/skip status
-- default/SP+ benchmark regression runs public benchmarks 01-04 under the
-  default `node_count>700` performance guard and records measured deltas for
+- default/SP+ benchmark regression runs public benchmarks 01-05 under the
+  default `node_count>1000` performance guard and records measured deltas for
   each runnable mismatch
 - package-level final integration smoke through `python -m pyz1` for default,
   SP+, PPA, and PPA+ modes
@@ -287,7 +287,7 @@ Not complete yet:
   structure, and SP+ pairings; benchmark-04 SP+ topology and pairings match,
   but `ne_modified_coil` remains a summary mismatch.
 - scalable all-14 benchmark reducer regression without the current
-  `node_count>700` performance guard.
+  `node_count>1000` performance guard.
 - self-entanglement (`selfZ`) behavior in the native reducer beyond the current
   explicit not-implemented boundary.
 - final user/developer documentation review for scientific parity caveats.

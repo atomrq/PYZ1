@@ -107,6 +107,12 @@ class _CoreTraceDiagnostics:
     transient_blocked_node_count: int
 
 
+@dataclass(frozen=True, slots=True)
+class _Bounds:
+    lower: Vector3
+    upper: Vector3
+
+
 def reduce_snapshot(
     snapshot: Snapshot,
     settings: ReducerSettings | None = None,
@@ -297,10 +303,20 @@ def _reduce_chain_once(chain: Chain, context: MoveContext) -> Chain:
             node_index = max(1, node_index - 1)
             continue
         candidate = _candidate_position(current, node_index)
+        move_context = MoveContext(
+            blocking_segments=_candidate_move_blockers(
+                context.blocking_segments,
+                current,
+                node_index,
+                candidate,
+                context.tolerance,
+            ),
+            tolerance=context.tolerance,
+        )
         evaluation = evaluate_node_move(
             current,
             NodeMove(node_index=node_index, position=candidate),
-            context,
+            move_context,
         )
         if evaluation.accepted:
             current = Chain(
@@ -322,7 +338,12 @@ def _shortcut_is_clear(
     return not any(
         segment_distance(shortcut, blocker) <= context.tolerance
         or segment_intersects_triangle(blocker, swept_triangle)
-        for blocker in context.blocking_segments
+        for blocker in _candidate_shortcut_blockers(
+            context.blocking_segments,
+            shortcut,
+            swept_triangle,
+            context.tolerance,
+        )
     )
 
 
@@ -342,6 +363,115 @@ def _candidate_position(chain: Chain, node_index: int) -> Vector3:
         x=(previous_node.x + next_node.x) * 0.5,
         y=(previous_node.y + next_node.y) * 0.5,
         z=(previous_node.z + next_node.z) * 0.5,
+    )
+
+
+def _candidate_shortcut_blockers(
+    blockers: tuple[Segment, ...],
+    shortcut: Segment,
+    swept_triangle: tuple[Vector3, Vector3, Vector3],
+    tolerance: float,
+) -> tuple[Segment, ...]:
+    shortcut_bounds = _segment_bounds(shortcut, tolerance)
+    triangle_bounds = _triangle_bounds(swept_triangle, tolerance)
+    return tuple(
+        blocker
+        for blocker in blockers
+        if _segment_may_block(blocker, shortcut_bounds, triangle_bounds)
+    )
+
+
+def _candidate_indexed_shortcut_blockers(
+    blockers: tuple[_IndexedSegment, ...],
+    shortcut: Segment,
+    swept_triangle: tuple[Vector3, Vector3, Vector3],
+    tolerance: float,
+) -> tuple[_IndexedSegment, ...]:
+    shortcut_bounds = _segment_bounds(shortcut, tolerance)
+    triangle_bounds = _triangle_bounds(swept_triangle, tolerance)
+    return tuple(
+        blocker
+        for blocker in blockers
+        if _segment_may_block(blocker.segment, shortcut_bounds, triangle_bounds)
+    )
+
+
+def _candidate_move_blockers(
+    blockers: tuple[Segment, ...],
+    chain: Chain,
+    node_index: int,
+    candidate: Vector3,
+    tolerance: float,
+) -> tuple[Segment, ...]:
+    first_bounds = _segment_bounds(
+        Segment(start=chain.nodes[node_index - 1], end=candidate),
+        tolerance,
+    )
+    second_bounds = _segment_bounds(
+        Segment(start=candidate, end=chain.nodes[node_index + 1]),
+        tolerance,
+    )
+    return tuple(
+        blocker
+        for blocker in blockers
+        if _bounds_overlap(_segment_bounds(blocker), first_bounds)
+        or _bounds_overlap(_segment_bounds(blocker), second_bounds)
+    )
+
+
+def _segment_may_block(
+    segment: Segment,
+    shortcut_bounds: _Bounds,
+    triangle_bounds: _Bounds,
+) -> bool:
+    bounds = _segment_bounds(segment)
+    return _bounds_overlap(bounds, shortcut_bounds) or _bounds_overlap(
+        bounds,
+        triangle_bounds,
+    )
+
+
+def _segment_bounds(segment: Segment, padding: float = 0.0) -> _Bounds:
+    return _Bounds(
+        lower=Vector3(
+            x=min(segment.start.x, segment.end.x) - padding,
+            y=min(segment.start.y, segment.end.y) - padding,
+            z=min(segment.start.z, segment.end.z) - padding,
+        ),
+        upper=Vector3(
+            x=max(segment.start.x, segment.end.x) + padding,
+            y=max(segment.start.y, segment.end.y) + padding,
+            z=max(segment.start.z, segment.end.z) + padding,
+        ),
+    )
+
+
+def _triangle_bounds(
+    triangle: tuple[Vector3, Vector3, Vector3],
+    padding: float,
+) -> _Bounds:
+    return _Bounds(
+        lower=Vector3(
+            x=min(point.x for point in triangle) - padding,
+            y=min(point.y for point in triangle) - padding,
+            z=min(point.z for point in triangle) - padding,
+        ),
+        upper=Vector3(
+            x=max(point.x for point in triangle) + padding,
+            y=max(point.y for point in triangle) + padding,
+            z=max(point.z for point in triangle) + padding,
+        ),
+    )
+
+
+def _bounds_overlap(first: _Bounds, second: _Bounds) -> bool:
+    return not (
+        first.upper.x < second.lower.x
+        or second.upper.x < first.lower.x
+        or first.upper.y < second.lower.y
+        or second.upper.y < first.lower.y
+        or first.upper.z < second.lower.z
+        or second.upper.z < first.lower.z
     )
 
 
@@ -485,16 +615,30 @@ def _blocked_move_trace(
             current[node_index].position,
             current[node_index + 1].position,
         )
-        contact = _blocked_contact(shortcut, swept_triangle, indexed_blockers)
+        local_indexed_blockers = _candidate_indexed_shortcut_blockers(
+            indexed_blockers,
+            shortcut,
+            swept_triangle,
+            GEOMETRY_TOLERANCE,
+        )
+        contact = _blocked_contact(shortcut, swept_triangle, local_indexed_blockers)
         if contact is None:
             current = (*current[:node_index], *current[node_index + 1 :])
             node_index = max(1, node_index - 1)
             continue
         candidate = _candidate_trace_node(current, node_index)
+        current_chain = Chain(tuple(node.position for node in current))
+        local_blockers = _candidate_move_blockers(
+            blockers,
+            current_chain,
+            node_index,
+            candidate.position,
+            GEOMETRY_TOLERANCE,
+        )
         evaluation = evaluate_node_move(
-            Chain(tuple(node.position for node in current)),
+            current_chain,
             NodeMove(node_index=node_index, position=candidate.position),
-            MoveContext(blockers),
+            MoveContext(local_blockers),
         )
         if evaluation.accepted:
             accepted_moves.append((candidate, shortcut, contact))
