@@ -130,11 +130,11 @@ def run(
     if not parsed.input_file.exists():
         typer.echo(str(InputFileMissingError(path=parsed.input_file)))
         raise typer.Exit(code=2)
-    if parsed.self_entanglement:
-        typer.echo("pyz1 selfZ mode is not implemented yet.")
+    if parsed.self_entanglement and parsed.mode != "selfz":
+        typer.echo(f"pyz1 {parsed.mode} selfZ mode is not implemented yet.")
         raise typer.Exit(code=3)
 
-    if parsed.mode in ("default", "spplus"):
+    if parsed.mode in ("default", "spplus", "selfz"):
         _run_default_mode(parsed)
         return
     if parsed.mode in ("ppa", "ppaplus"):
@@ -169,10 +169,11 @@ def _parse_args(args: tuple[str, ...]) -> ParsedCli:
             typer.echo(f"unexpected argument: {arg}")
             raise typer.Exit(code=2)
         input_file = Path(arg)
+    parsed_mode = "selfz" if self_entanglement and mode == "default" else mode
     return ParsedCli(
         input_file=input_file,
         clean=clean,
-        mode=mode,
+        mode=parsed_mode,
         self_entanglement=self_entanglement,
     )
 

@@ -308,9 +308,10 @@ Complete now:
   and large custom regression runs can skip expensive trace diagnostics while
   preserving reducer/summary/SP comparison
 - package-level final integration smoke through `python -m pyz1` for default,
-  SP+, PPA, and PPA+ modes
-- explicit CLI failure for `-selfZ` / `-0` so the unsupported self-entanglement
-  path cannot be confused with default reducer output
+  SP+, selfZ, PPA, and PPA+ modes
+- package-level selfZ execution through `pyz1 -selfZ` / `python -m pyz1 -selfZ`
+  that writes Z1+ reducer output files while leaving selfZ scientific parity to
+  the benchmark regression report
 - PPA/PPA+ summary parity for all currently parseable oracle coordinate-path
   fixtures, with Fortran-overflow coordinates tracked as known-invalid
 - native PPA/PPA+ WCA force path uses deterministic periodic cell-list candidate
@@ -343,6 +344,6 @@ Not complete yet:
   benchmark-06+ are still guarded for scalability.
 - scalable all-14 benchmark reducer regression without the current
   `node_count>1000` performance guard.
-- self-entanglement (`selfZ`) behavior in the native reducer beyond the current
-  explicit not-implemented boundary.
+- self-entanglement (`selfZ`) scientific parity beyond the current clean-room
+  reducer execution surface.
 - final user/developer documentation review for scientific parity caveats.

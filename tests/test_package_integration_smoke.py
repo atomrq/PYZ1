@@ -54,6 +54,19 @@ def test_package_entrypoint_when_modes_run_writes_expected_outputs(
             expected_files=("Z1+SP.dat", "Z1+summary.dat", "Lpp_values.dat"),
         ),
         PackageSmokeCase(
+            name="selfz",
+            mode_args=("-selfZ",),
+            stdout_fragment="completed selfz",
+            expected_files=(
+                "Z1+SP.dat",
+                "Z1+summary.dat",
+                "Ree_values.dat",
+                "Lpp_values.dat",
+                "N_values.dat",
+                "Z_values.dat",
+            ),
+        ),
+        PackageSmokeCase(
             name="ppa",
             mode_args=("-PPA",),
             stdout_fragment="completed ppa",
@@ -89,23 +102,3 @@ def test_package_entrypoint_when_modes_run_writes_expected_outputs(
         assert smoke_case.stdout_fragment in result.stdout
         for filename in smoke_case.expected_files:
             assert (case_dir / filename).exists()
-
-
-def test_package_entrypoint_when_selfz_requested_fails_explicitly(
-    tmp_path: Path,
-) -> None:
-    input_path = tmp_path / "config.Z1"
-    _ = input_path.write_text(NEWLINE.join(SMOKE_INPUT) + NEWLINE, encoding="utf-8")
-
-    result = subprocess.run(  # noqa: S603 - command is fixed package smoke.
-        [sys.executable, "-m", "pyz1", "-selfZ", str(input_path)],
-        cwd=tmp_path,
-        check=False,
-        capture_output=True,
-        text=True,
-    )
-
-    assert result.returncode == 3
-    assert "selfZ mode is not implemented" in result.stdout
-    assert not (tmp_path / "Z1+SP.dat").exists()
-    assert not (tmp_path / "Z1+summary.dat").exists()

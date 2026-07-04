@@ -11,19 +11,19 @@ For a requirement-by-requirement completion verdict, see
 
 Latest local gate evidence:
 
-- `.omo/evidence/task-84-regression-cli-guards/pytest.txt`:
-  `138 passed`
+- `.omo/evidence/task-85-selfz-execution/pytest.txt`:
+  `137 passed`
 - `.omo/evidence/task-55-ppa-coverage/ppa-focused.txt`: `21 passed`
 - `.omo/evidence/task-57-ppa-nan-root/ppa-focused.txt`: `22 passed`
-- `.omo/evidence/task-84-regression-cli-guards/ruff.txt`:
+- `.omo/evidence/task-85-selfz-execution/ruff.txt`:
   `All checks passed!`
-- `.omo/evidence/task-84-regression-cli-guards/basedpyright.txt`:
+- `.omo/evidence/task-85-selfz-execution/basedpyright.txt`:
   `0 errors, 0 warnings, 0 notes`
-- `.omo/evidence/task-84-regression-cli-guards/package-smoke.txt`:
-  `2 passed`
+- `.omo/evidence/task-85-selfz-execution/package-smoke.txt`:
+  `1 passed`
 
-The package smoke runs `python -m pyz1` for default, SP+, PPA, and PPA+ modes
-and checks the expected mode-specific output files.
+The package smoke runs `python -m pyz1` for default, SP+, selfZ, PPA, and PPA+
+modes and checks the expected mode-specific output files.
 
 ## Requirement Coverage
 
@@ -36,8 +36,8 @@ and checks the expected mode-specific output files.
 | Native PPA/PPA+ slices | PPA mode tests, CLI mode tests, package-level smoke, WCA cell-list candidate generation, native PPA summary regression reporting, Z1+ PPA+ phase-stop regression, 12 parseable oracle coordinate-path summary parity cases, explicit Fortran-overflow known-invalid fixture handling, reusable oracle coordinate fixture status reports, a package script that discovers all oracle benchmark directories for coordinate fixture reporting, and an installed native PPA/PPA+ regression report surface | `tests/test_ppa.py`, `tests/test_ppa_regression.py`, `tests/test_ppa_oracle_coordinates.py`, `tests/test_ppa_oracle_coordinates_cli.py`, `tests/test_ppa_regression_cli.py`, `tests/test_cli_scaffold.py`, `tests/test_package_integration_smoke.py`, `.omo/evidence/task-46-ppa-summary-oracle-coverage/`, `.omo/evidence/task-47-ppa-neighbor-list/`, `.omo/evidence/task-48-ppa-native-regression/`, `.omo/evidence/task-49-ppa-lpp-debug/`, `.omo/evidence/task-78-ppa-oracle-coordinate-report/`, `.omo/evidence/task-79-ppa-oracle-coordinate-cli/`, `.omo/evidence/task-80-ppa-oracle-coordinate-discovery/`, `.omo/evidence/task-82-ppa-regression-cli/` |
 | Clean-room reducer | Geometry primitives, reducer diagnostics, benchmark-04 reducer structure, SP+ pairing, broad-phase/index blocker filtering, benchmark regression diagnostics for 01-05 under the default guard, a package script that discovers all default/SP+/selfZ oracle benchmark directories for regression reporting, and user-tunable node-count/trace-diagnostics guards | `tests/test_geometry.py`, `tests/test_z1_reducer.py`, `tests/test_spplus_regression.py`, `tests/test_regression_cli.py`, `.omo/evidence/task-53-reducer-index/`, `.omo/evidence/task-81-default-spplus-regression-cli/`, `.omo/evidence/task-83-selfz-regression-surface/`, `.omo/evidence/task-84-regression-cli-guards/` |
 | SP+ regression | Pairing comparison, max-node-delta localization, pair-segment geometry diagnostics, oracle summary source isolation, residual ghost-clearance tuning, CLI-driven full-corpus default/SP+/selfZ status reporting, and trace-diagnostics guard control | `tests/test_spplus_regression.py`, `tests/test_regression_cli.py`, `.omo/evidence/task-38-final-node-delta-location/`, `.omo/evidence/task-39-max-node-pair-geometry/`, `.omo/evidence/task-41-spplus-projection-direction/`, `.omo/evidence/task-50-spplus-residual/`, `.omo/evidence/task-81-default-spplus-regression-cli/`, `.omo/evidence/task-83-selfz-regression-surface/`, `.omo/evidence/task-84-regression-cli-guards/` |
-| Package integration smoke | Real module entrypoint smoke for default, SP+, PPA, and PPA+ | `tests/test_package_integration_smoke.py`, `.omo/evidence/task-57-ppa-nan-root/package-smoke.txt` |
-| `selfZ` boundary | `-selfZ` is recognized and fails explicitly instead of silently running the default reducer; selfZ oracle directories are covered by the benchmark regression report surface | `tests/test_cli_scaffold.py`, `tests/test_package_integration_smoke.py`, `tests/test_regression_cli.py`, `.omo/evidence/task-45-selfz-explicit-boundary/`, `.omo/evidence/task-83-selfz-regression-surface/` |
+| Package integration smoke | Real module entrypoint smoke for default, SP+, selfZ, PPA, and PPA+ | `tests/test_package_integration_smoke.py`, `.omo/evidence/task-57-ppa-nan-root/package-smoke.txt`, `.omo/evidence/task-85-selfz-execution/` |
+| `selfZ` execution and boundary | `-selfZ` writes Z1+ reducer output files through both installed and module package surfaces; selfZ oracle directories are covered by the benchmark regression report surface, while scientific parity remains open | `tests/test_cli_scaffold.py`, `tests/test_package_integration_smoke.py`, `tests/test_regression_cli.py`, `.omo/evidence/task-83-selfz-regression-surface/`, `.omo/evidence/task-85-selfz-execution/` |
 
 ## Latest SP+ Parity Measurements
 
@@ -442,6 +442,18 @@ shows `--trace-diagnostics-max-node-count 1` keeps benchmark-04 SP+ at
 `passed` while disabling expensive pyz1 trace counters
 (`pyz1 core trace nodes=10`, ghosts `0`, accepted blocked moves `0`).
 
+## Latest selfZ Package Execution Evidence
+
+Task-85 promotes `-selfZ` from an explicit package-entrypoint failure to a
+runnable clean-room reducer surface. Evidence in
+`.omo/evidence/task-85-selfz-execution/script-run/` and
+`.omo/evidence/task-85-selfz-execution/module-run/` shows both installed
+`pyz1 -selfZ config.Z1` and `python -m pyz1 -selfZ config.Z1` print
+`[pyz1] completed selfz` and write `Z1+SP.dat`, `Z1+summary.dat`,
+`Ree_values.dat`, `Lpp_values.dat`, `N_values.dat`, and `Z_values.dat`.
+This is package execution evidence, not a new selfZ parity claim; benchmark
+parity remains governed by the default/SP+/selfZ regression report.
+
 ## Open Boundaries
 
 The following are intentionally not claimed complete:
@@ -454,7 +466,8 @@ The following are intentionally not claimed complete:
 - scalable all-14 benchmark reducer regression without relying on a
   node-count performance guard; task-84 makes the guard user-tunable but does
   not prove full unguarded 06+ execution
-- native self-entanglement (`selfZ`) package execution beyond the current
-  explicit not-implemented CLI boundary; task-83 covers selfZ oracle comparison
-  only through the regression report surface
+- native self-entanglement (`selfZ`) scientific parity beyond the current
+  clean-room reducer execution surface; task-85 proves package execution, while
+  task-83 still records benchmark-01/02/03/05 selfZ mismatches and 06+ guarded
+  cases
 - final user/developer documentation review for scientific parity caveats

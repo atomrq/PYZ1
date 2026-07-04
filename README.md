@@ -28,6 +28,12 @@ Run SP+ pairing mode:
 ulimit -n 1000000; micromamba run -n pyz1 python -m pyz1 -SP+ config.Z1
 ```
 
+Run selfZ execution mode:
+
+```bash
+ulimit -n 1000000; micromamba run -n pyz1 python -m pyz1 -selfZ config.Z1
+```
+
 Write a default/SP+/selfZ benchmark regression report:
 
 ```bash
@@ -131,9 +137,9 @@ equivalent to Z1+: `benchmark-04` default/SP+/selfZ is reported as `passed`,
   drop-in replacement for Z1+ scientific production runs.
 - PPA/PPA+ has native Python execution and oracle-backed summary slices, but
   full benchmark-level runtime parity remains open.
-- `-selfZ` / `-0` is recognized by the main package entrypoint but exits with
-  an explicit not-implemented error; selfZ oracle comparison is currently
-  available only through the benchmark regression report surface.
+- `-selfZ` / `-0` has a package execution surface, but selfZ scientific parity
+  follows the same clean-room reducer limitations as the default/SP+ path and
+  must be judged through the benchmark regression report.
 - The first implementation intentionally avoids GPU, CUDA, CuPy, PyTorch,
   Numba, and accelerator-specific dependencies.
 
