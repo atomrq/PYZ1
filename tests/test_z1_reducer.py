@@ -287,7 +287,7 @@ def test_reduce_snapshot_when_benchmark_04_reports_core_stage_nodes() -> None:
     ) == 7
     assert_vector_close(
         stage_nodes[0][1].position,
-        Vector3(0.1293575, -0.030405000000000015, 1.72274),
+        result.diagnostics.projection_traces[0].projected_position,
     )
 
 

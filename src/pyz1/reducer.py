@@ -103,6 +103,19 @@ class _CoreTraceDiagnostics:
     transient_blocked_node_count: int
 
 
+@dataclass(frozen=True, slots=True)
+class _ProjectedCoreStageNode:
+    chain_index: int
+    source_bead: float
+    position: Vector3
+
+
+@dataclass(frozen=True, slots=True)
+class _CoreStageBuildContext:
+    chain_index: int
+    projected_nodes: tuple[_ProjectedCoreStageNode, ...]
+
+
 def reduce_snapshot(
     snapshot: Snapshot,
     settings: ReducerSettings | None = None,
@@ -142,6 +155,7 @@ def reduce_snapshot(
             core_stage_nodes=_core_stage_nodes(
                 shortest_path,
                 core_trace.blocked_nodes,
+                preserved.projection_traces,
             ),
             core_trace_blocked_nodes=core_trace.blocked_nodes,
             projection_traces=preserved.projection_traces,
@@ -168,16 +182,39 @@ def write_reducer_outputs(directory: Path, result: ReducerResult) -> None:
 def _core_stage_nodes(
     shortest_path: ShortestPathSnapshot,
     trace_nodes: tuple[tuple[CoreTraceNode, ...], ...],
+    projection_traces: tuple[ProjectionTrace, ...],
 ) -> tuple[tuple[CoreStageNode, ...], ...]:
+    projected_nodes = _projected_core_stage_nodes(projection_traces)
     return tuple(
-        _core_stage_chain_nodes(chain, trace_nodes[chain_index])
+        _core_stage_chain_nodes(
+            chain,
+            trace_nodes[chain_index],
+            _CoreStageBuildContext(
+                chain_index=chain_index + 1,
+                projected_nodes=projected_nodes,
+            ),
+        )
         for chain_index, chain in enumerate(shortest_path.chains)
+    )
+
+
+def _projected_core_stage_nodes(
+    projection_traces: tuple[ProjectionTrace, ...],
+) -> tuple[_ProjectedCoreStageNode, ...]:
+    return tuple(
+        _ProjectedCoreStageNode(
+            chain_index=trace.chain_index,
+            source_bead=trace.source_bead,
+            position=trace.projected_position,
+        )
+        for trace in projection_traces
     )
 
 
 def _core_stage_chain_nodes(
     chain: ShortestPathChain,
     trace_nodes: tuple[CoreTraceNode, ...],
+    context: _CoreStageBuildContext,
 ) -> tuple[CoreStageNode, ...]:
     endpoint_nodes = (
         CoreStageNode(
@@ -193,7 +230,7 @@ def _core_stage_chain_nodes(
     )
     transient_nodes = tuple(
         CoreStageNode(
-            position=node.position,
+            position=_core_stage_trace_position(node, context),
             source_bead=node.source_bead,
             transient=True,
         )
@@ -206,6 +243,25 @@ def _core_stage_chain_nodes(
             key=lambda node: node.source_bead,
         ),
     )
+
+
+def _core_stage_trace_position(
+    node: CoreTraceNode,
+    context: _CoreStageBuildContext,
+) -> Vector3:
+    projected = next(
+        (
+            projected_node
+            for projected_node in context.projected_nodes
+            if projected_node.chain_index == context.chain_index
+            and abs(projected_node.source_bead - node.source_bead)
+            <= GEOMETRY_TOLERANCE
+        ),
+        None,
+    )
+    if projected is None:
+        return node.position
+    return projected.position
 
 
 def _reduce_chains(
