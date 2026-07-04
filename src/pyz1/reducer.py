@@ -871,25 +871,34 @@ def _preserve_close_contacts(
         )
         if contact is None:
             continue
-        preserved = _blocked_kink_candidate(original_chains, chain_index)
-        if preserved is None:
-            preserved = _contact_kink_candidate(chain, contact)
-        projection = _project_to_responsible_segment(
-            preserved,
-            reduced_chains,
+        candidates = _blocked_kink_candidates(
+            original_chains,
             chain_index,
+            multiple_enabled=_has_dumbbell_obstacles(original_chains),
         )
-        preserved = projection.candidate
-        projection_traces.append(projection.trace)
-        preserved_nodes[chain_index] = _insert_preserved_node(
+        if len(candidates) == 0:
+            candidates = (_contact_kink_candidate(chain, contact),)
+        projections = tuple(
+            _project_to_responsible_segment(
+                candidate,
+                reduced_chains,
+                chain_index,
+            )
+            for candidate in candidates
+        )
+        projected_candidates = tuple(
+            projection.candidate for projection in projections
+        )
+        projection_traces.extend(projection.trace for projection in projections)
+        preserved_nodes[chain_index] = _insert_preserved_nodes(
             reduced_chains[chain_index],
-            preserved.position,
+            projected_candidates,
         )
-        source_beads[chain_index] = [
-            source_beads[chain_index][0],
-            preserved.source_bead,
-            source_beads[chain_index][-1],
-        ]
+        source_beads[chain_index] = (
+            [source_beads[chain_index][0]]
+            + [candidate.source_bead for candidate in projected_candidates]
+            + [source_beads[chain_index][-1]]
+        )
     return _PreservedChains(
         chains=tuple(preserved_nodes),
         source_beads=tuple(tuple(chain_sources) for chain_sources in source_beads),
@@ -920,14 +929,46 @@ def _closest_lower_index_contact(
     return best_contact
 
 
-def _blocked_kink_candidate(
+def _blocked_kink_candidates(
     chains: tuple[Chain, ...],
     chain_index: int,
-) -> _PreservedKinkCandidate | None:
+    *,
+    multiple_enabled: bool,
+) -> tuple[_PreservedKinkCandidate, ...]:
     trace = _blocked_move_trace(chains, chain_index)
-    if not trace.blocked_moves:
-        return None
-    move = trace.blocked_moves[-1]
+    if len(trace.blocked_moves) == 0:
+        return ()
+    if not multiple_enabled:
+        return (_blocked_kink_candidate(chains, trace.blocked_moves[-1]),)
+    return tuple(
+        _blocked_kink_candidate(chains, move)
+        for move in _unique_retained_blocked_moves(trace.blocked_moves)
+    )
+
+
+def _unique_retained_blocked_moves(
+    moves: tuple[_BlockedTraceMove, ...],
+) -> tuple[_BlockedTraceMove, ...]:
+    selected: list[_BlockedTraceMove] = []
+    selected_source_beads: set[float] = set()
+    for move in moves:
+        if not move.node.retained:
+            continue
+        if move.node.source_bead in selected_source_beads:
+            continue
+        selected.append(move)
+        selected_source_beads.add(move.node.source_bead)
+    return tuple(selected)
+
+
+def _has_dumbbell_obstacles(chains: tuple[Chain, ...]) -> bool:
+    return any(not chain.is_true_chain for chain in chains)
+
+
+def _blocked_kink_candidate(
+    chains: tuple[Chain, ...],
+    move: _BlockedTraceMove,
+) -> _PreservedKinkCandidate:
     projection_normal = _blocked_projection_normal(chains, move.node)
     return _PreservedKinkCandidate(
         position=move.node.position,
@@ -1241,11 +1282,17 @@ def _segment_plane_intersection(
     return _add(segment.start, _scale(segment_delta, fraction))
 
 
-def _insert_preserved_node(
+def _insert_preserved_nodes(
     reduced_chain: Chain,
-    node: Vector3,
+    preserved: tuple[_PreservedKinkCandidate, ...],
 ) -> Chain:
-    return Chain((reduced_chain.nodes[0], node, reduced_chain.nodes[-1]))
+    return Chain(
+        (
+            reduced_chain.nodes[0],
+            *(candidate.position for candidate in preserved),
+            reduced_chain.nodes[-1],
+        ),
+    )
 
 
 def _midpoint(segment: Segment) -> Vector3:

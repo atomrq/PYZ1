@@ -242,8 +242,10 @@ record measured deltas or an explicit skip reason. Current status is:
   shortest-path tolerance.
 - `benchmark-01`, `benchmark-02`, `benchmark-03`, and `benchmark-05` default
   and SP+ are classified as `mismatch`. For benchmark-01/02/03, two-node
-  obstacle chains are now retained in native SP output and participate as
-  blockers; the remaining gap is true-chain multi-obstacle kink preservation.
+  obstacle chains are now retained in native SP output, participate as
+  blockers, and contribute retained blocked-move obstacle kinks; the remaining
+  gap is exact Z1+ obstacle-kink placement, source-bead selection, and SP+
+  pairing.
 - SP+ structural comparison counts mismatched `other-chain other-node` pairs.
 - `benchmark-06` and larger benchmark/mode entries are classified as
   `known-invalid` under the current `node_count>1000` performance guard until
@@ -277,8 +279,10 @@ Complete now:
   pass/fail criterion
 - native default/SP+ reducer retains two-node dumbbells in `Z1+SP.dat` and uses
   them as blockers while summary statistics still count only true chains;
-  benchmark-01/02/03 node-count mismatches drop to 12/9/3 after this contract
-  alignment, but the true-chain obstacle kink sequence still mismatches Z1+
+  retained blocked-move trace nodes are now written as multiple obstacle kinks
+  for dumbbell-obstacle snapshots; benchmark-01/02/03 node-count mismatches
+  drop to 5/3/1 after this contract alignment, but the true-chain obstacle kink
+  sequence still mismatches Z1+
 - benchmark regression report generation and transparent mismatch/skip status
 - default/SP+ benchmark regression runs public benchmarks 01-05 under the
   default `node_count>1000` performance guard and records measured deltas for
@@ -311,9 +315,9 @@ Not complete yet:
 - default geometrical Z1+ numerical parity for `Lpp`, `Z`, shortest-path
   structure, and SP+ pairings; benchmark-04 default/SP+ now pass the local
   report contract, benchmark-01/02/03 now preserve two-node obstacle chains in
-  SP output but still miss the true-chain multi-obstacle kink sequence,
-  benchmark-05 still mismatches, and benchmark-06+ are still guarded for
-  scalability.
+  SP output and write retained blocked-move obstacle kinks but still miss exact
+  Z1+ obstacle-kink placement/source beads/pairings, benchmark-05 still
+  mismatches, and benchmark-06+ are still guarded for scalability.
 - scalable all-14 benchmark reducer regression without the current
   `node_count>1000` performance guard.
 - self-entanglement (`selfZ`) behavior in the native reducer beyond the current

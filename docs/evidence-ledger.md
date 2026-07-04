@@ -11,15 +11,15 @@ For a requirement-by-requirement completion verdict, see
 
 Latest local gate evidence:
 
-- `.omo/evidence/task-60-benchmark01-reducer/focused-after-dumbbells.txt`:
-  `20 passed`
+- `.omo/evidence/task-61-obstacle-kinks/green-reducer-tests-retained.txt`:
+  `15 passed`
 - `.omo/evidence/task-55-ppa-coverage/ppa-focused.txt`: `21 passed`
 - `.omo/evidence/task-57-ppa-nan-root/ppa-focused.txt`: `22 passed`
-- `.omo/evidence/task-60-benchmark01-reducer/pytest.txt`: `115 passed`
-- `.omo/evidence/task-60-benchmark01-reducer/ruff.txt`: `All checks passed!`
-- `.omo/evidence/task-60-benchmark01-reducer/basedpyright.txt`:
+- `.omo/evidence/task-61-obstacle-kinks/pytest.txt`: `116 passed`
+- `.omo/evidence/task-61-obstacle-kinks/ruff.txt`: `All checks passed!`
+- `.omo/evidence/task-61-obstacle-kinks/basedpyright.txt`:
   `0 errors, 0 warnings, 0 notes`
-- `.omo/evidence/task-60-benchmark01-reducer/package-smoke.txt`: `2 passed`
+- `.omo/evidence/task-61-obstacle-kinks/package-smoke.txt`: `2 passed`
 
 The package smoke runs `python -m pyz1` for default, SP+, PPA, and PPA+ modes
 and checks the expected mode-specific output files.
@@ -87,6 +87,15 @@ remain `mismatch`, but their `node_count_mismatches` drop from hundreds to
 12/9/3 because the 300 two-node obstacle chains are now present in the native
 SP output. The remaining benchmark-01/02/03 gap is the true-chain multi-obstacle
 kink sequence, not missing obstacle output.
+
+Task-61 preserves retained blocked-move trace nodes as multiple obstacle kinks
+when a snapshot contains two-node dumbbell obstacles. Evidence in
+`.omo/evidence/task-61-obstacle-kinks/default-spplus-01-05-retained.txt` shows
+benchmark-04 default/SP+ remain `passed`, benchmark-05 returns to the task-60
+mismatch level, and benchmark-01/02/03 default/SP+ node-count mismatches shrink
+again to 5/3/1. These cases are still mismatches: the native reducer does not
+yet reproduce the full Z1+ obstacle-kink positions, source beads, or SP+
+pairings.
 
 ## Latest PPA/PPA+ Oracle Summary Coverage
 
