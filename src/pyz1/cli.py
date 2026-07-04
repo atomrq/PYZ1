@@ -14,7 +14,7 @@ from pyz1.ppa import (
     standard_ppa_settings,
     write_ppa_outputs,
 )
-from pyz1.reducer import reduce_snapshot, write_reducer_outputs
+from pyz1.reducer import ReducerSettings, reduce_snapshot, write_reducer_outputs
 from pyz1.z1_io import read_z1_file
 
 COMPATIBILITY_HELP: Final = """
@@ -127,7 +127,7 @@ def run(
         typer.echo(str(InputFileMissingError(path=parsed.input_file)))
         raise typer.Exit(code=2)
 
-    if parsed.mode == "default":
+    if parsed.mode in ("default", "spplus"):
         _run_default_mode(parsed)
         return
     if parsed.mode in ("ppa", "ppaplus"):
@@ -173,8 +173,9 @@ def _run_default_mode(parsed: ParsedCli) -> None:
         typer.echo("default mode requires an input file")
         raise typer.Exit(code=2)
     snapshot = read_z1_file(parsed.input_file)
-    write_reducer_outputs(Path.cwd(), reduce_snapshot(snapshot))
-    typer.echo("[pyz1] completed default")
+    settings = ReducerSettings(pairing_enabled=parsed.mode == "spplus")
+    write_reducer_outputs(Path.cwd(), reduce_snapshot(snapshot, settings))
+    typer.echo(f"[pyz1] completed {parsed.mode}")
 
 
 def _run_ppa_mode(parsed: ParsedCli) -> None:

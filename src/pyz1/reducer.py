@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from math import sqrt
 from typing import TYPE_CHECKING
 
 from pyz1.geometry import (
@@ -17,6 +18,7 @@ from pyz1.output_io import write_shortest_path_file
 from pyz1.output_models import (
     ShortestPathChain,
     ShortestPathNode,
+    ShortestPathPair,
     ShortestPathSnapshot,
 )
 from pyz1.summary import SummaryOutputs, build_summary_outputs, write_summary_outputs
@@ -28,6 +30,7 @@ if TYPE_CHECKING:
 @dataclass(frozen=True, slots=True)
 class ReducerSettings:
     max_sweeps: int = 16
+    pairing_enabled: bool = False
 
 
 @dataclass(frozen=True, slots=True)
@@ -44,8 +47,17 @@ def reduce_snapshot(
     box = GeometryBox(lengths=snapshot.box, shear=snapshot.shear or 0.0)
     chains = tuple(unfold_chain(chain, box) for chain in snapshot.true_chains)
     reduced_chains = _reduce_chains(chains, active_settings)
+    pairings = (
+        _build_pairings(reduced_chains) if active_settings.pairing_enabled else ()
+    )
     shortest_path = ShortestPathSnapshot(
-        chains=tuple(_to_shortest_path_chain(chain) for chain in reduced_chains),
+        chains=tuple(
+            _to_shortest_path_chain(
+                chain,
+                pairings[chain_index] if pairings else (),
+            )
+            for chain_index, chain in enumerate(reduced_chains)
+        ),
         box=snapshot.box,
     )
     return ReducerResult(
@@ -140,15 +152,79 @@ def _chain_segments(chain: Chain) -> tuple[Segment, ...]:
     )
 
 
-def _to_shortest_path_chain(chain: Chain) -> ShortestPathChain:
+@dataclass(frozen=True, slots=True)
+class _IndexedNode:
+    chain_index: int
+    node_index: int
+    position: Vector3
+
+
+def _build_pairings(
+    chains: tuple[Chain, ...],
+) -> tuple[tuple[ShortestPathPair | None, ...], ...]:
+    indexed_nodes = tuple(
+        _IndexedNode(
+            chain_index=chain_index,
+            node_index=node_index,
+            position=node,
+        )
+        for chain_index, chain in enumerate(chains, start=1)
+        for node_index, node in enumerate(chain.nodes, start=1)
+    )
+    return tuple(
+        tuple(
+            _pair_for_node(chain_index, node_index, node, indexed_nodes, chain)
+            for node_index, node in enumerate(chain.nodes)
+        )
+        for chain_index, chain in enumerate(chains, start=1)
+    )
+
+
+def _pair_for_node(
+    chain_index: int,
+    node_index: int,
+    node: Vector3,
+    indexed_nodes: tuple[_IndexedNode, ...],
+    chain: Chain,
+) -> ShortestPathPair | None:
+    if node_index == 0 or node_index == chain.node_count - 1:
+        return None
+    nearest = min(
+        (
+            indexed_node
+            for indexed_node in indexed_nodes
+            if indexed_node.chain_index != chain_index
+        ),
+        key=lambda indexed_node: _distance(node, indexed_node.position),
+        default=None,
+    )
+    if nearest is None:
+        return None
+    return ShortestPathPair(
+        chain_index=nearest.chain_index,
+        node_index=nearest.node_index,
+    )
+
+
+def _to_shortest_path_chain(
+    chain: Chain,
+    pairings: tuple[ShortestPathPair | None, ...],
+) -> ShortestPathChain:
     return ShortestPathChain(
         nodes=tuple(
             ShortestPathNode(
                 position=node,
                 source_bead=float(node_index + 1),
                 is_entanglement=0 < node_index < chain.node_count - 1,
-                pair=None,
+                pair=pairings[node_index] if pairings else None,
             )
             for node_index, node in enumerate(chain.nodes)
         ),
     )
+
+
+def _distance(first: Vector3, second: Vector3) -> float:
+    dx = first.x - second.x
+    dy = first.y - second.y
+    dz = first.z - second.z
+    return sqrt(dx * dx + dy * dy + dz * dz)

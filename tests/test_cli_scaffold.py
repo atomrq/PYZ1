@@ -77,16 +77,32 @@ def test_default_analysis_mode_writes_z1_outputs(
     assert (tmp_path / "Z1+summary.dat").exists()
 
 
-def test_spplus_analysis_mode_fails_clearly_until_pairing_exists(
+def test_spplus_analysis_mode_writes_pairing_columns(
     tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     input_path = tmp_path / "config.Z1"
-    _ = input_path.write_text("1\n10 10 10\n3\n0 0 0\n1 0 0\n2 0 0\n", encoding="utf-8")
+    _ = input_path.write_text(
+        (
+            "2\n"
+            "10 10 10\n"
+            "3 3\n"
+            "0 0 0\n"
+            "0 2 0\n"
+            "1 1 0\n"
+            "0.5 1.8 0\n"
+            "0.5 0.8 0\n"
+            "0.5 -0.2 0\n"
+        ),
+        encoding="utf-8",
+    )
 
+    monkeypatch.chdir(tmp_path)
     result = CliRunner().invoke(app, ["-SP+", str(input_path)], prog_name="pyz1")
 
-    assert result.exit_code != 0
-    assert "spplus mode is not implemented yet" in result.stdout
+    assert result.exit_code == 0
+    assert "completed spplus" in result.stdout
+    assert " 2 1\n" in (tmp_path / "Z1+SP.dat").read_text(encoding="utf-8")
 
 
 def test_ppa_mode_writes_ppa_outputs(
