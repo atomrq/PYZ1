@@ -27,6 +27,7 @@ from pyz1.reducer import (
     ReducerSettings,
     convex_selected_winding_obstacle_chain_indices,
     convex_winding_obstacle_candidate_chain_indices,
+    convex_winding_obstacle_candidate_sources,
     reduce_snapshot,
     winding_obstacle_candidate_chain_indices,
 )
@@ -38,6 +39,7 @@ from pyz1.z1_log import (
 )
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
     from pathlib import Path
 
     from pyz1.models import Snapshot, Vector3
@@ -113,6 +115,14 @@ class SourceBeadResidual:
 
 
 @dataclass(frozen=True, slots=True)
+class OracleObstacleSourceResidual:
+    chain_index: int
+    actual: float
+    expected: float
+    delta: float
+
+
+@dataclass(frozen=True, slots=True)
 class RegressionRecord:
     benchmark_id: str
     mode: RegressionMode
@@ -172,6 +182,11 @@ class RegressionRecord:
     pyz1_convex_selected_winding_sequence: tuple[int, ...] | None = None
     pyz1_convex_selected_missing_oracle_sequence: tuple[int, ...] | None = None
     pyz1_convex_selected_extra_count: int | None = None
+    max_oracle_obstacle_source_delta: float | None = None
+    max_oracle_obstacle_source_delta_chain: int | None = None
+    oracle_obstacle_source_residuals: (
+        tuple[OracleObstacleSourceResidual, ...] | None
+    ) = None
     oracle_true_chain_pair_sequence: tuple[int, ...] | None = None
 
 
@@ -218,6 +233,9 @@ class _WindingCandidateCoverage:
     convex_selected_sequence: tuple[int, ...]
     convex_selected_missing_oracle_sequence: tuple[int, ...]
     convex_selected_extra_count: int
+    max_oracle_obstacle_source_delta: float
+    max_oracle_obstacle_source_delta_chain: int | None
+    oracle_obstacle_source_residuals: tuple[OracleObstacleSourceResidual, ...]
     oracle_true_chain_pair_sequence: tuple[int, ...]
 
 
@@ -570,6 +588,15 @@ def _compare_benchmark_mode(
         pyz1_convex_selected_extra_count=(
             winding_candidate_coverage.convex_selected_extra_count
         ),
+        max_oracle_obstacle_source_delta=(
+            winding_candidate_coverage.max_oracle_obstacle_source_delta
+        ),
+        max_oracle_obstacle_source_delta_chain=(
+            winding_candidate_coverage.max_oracle_obstacle_source_delta_chain
+        ),
+        oracle_obstacle_source_residuals=(
+            winding_candidate_coverage.oracle_obstacle_source_residuals
+        ),
         oracle_true_chain_pair_sequence=(
             winding_candidate_coverage.oracle_true_chain_pair_sequence
         ),
@@ -600,7 +627,15 @@ def _winding_candidate_coverage(
         chains,
         0,
     )
+    convex_sources = {
+        source.chain_index: source.source_bead
+        for source in convex_winding_obstacle_candidate_sources(chains, 0)
+    }
     oracle_sequence = _obstacle_pair_chain_sequence(oracle_shortest_path)
+    oracle_source_residuals = _oracle_obstacle_source_residuals(
+        oracle_shortest_path,
+        convex_sources,
+    )
     candidate_set = set(candidate_sequence)
     convex_candidate_set = set(convex_candidate_sequence)
     convex_selected_set = set(convex_selected_sequence)
@@ -636,12 +671,59 @@ def _winding_candidate_coverage(
             chain_index not in oracle_set
             for chain_index in convex_selected_sequence
         ),
+        max_oracle_obstacle_source_delta=_max_oracle_obstacle_source_delta(
+            oracle_source_residuals,
+        ),
+        max_oracle_obstacle_source_delta_chain=(
+            _max_oracle_obstacle_source_delta_chain(oracle_source_residuals)
+        ),
+        oracle_obstacle_source_residuals=oracle_source_residuals,
         oracle_true_chain_pair_sequence=tuple(
             chain_index
             for chain_index in oracle_sequence
             if chains[chain_index - 1].is_true_chain
         ),
     )
+
+
+def _oracle_obstacle_source_residuals(
+    oracle_shortest_path: ShortestPathSnapshot,
+    candidate_sources: Mapping[int, float],
+) -> tuple[OracleObstacleSourceResidual, ...]:
+    if oracle_shortest_path.chain_count == 0:
+        return ()
+    residuals: list[OracleObstacleSourceResidual] = []
+    for node in oracle_shortest_path.chains[0].nodes:
+        if node.pair is None:
+            continue
+        candidate_source = candidate_sources.get(node.pair.chain_index)
+        if candidate_source is None:
+            continue
+        residuals.append(
+            OracleObstacleSourceResidual(
+                chain_index=node.pair.chain_index,
+                actual=candidate_source,
+                expected=node.source_bead,
+                delta=abs(candidate_source - node.source_bead),
+            ),
+        )
+    return tuple(residuals)
+
+
+def _max_oracle_obstacle_source_delta(
+    residuals: tuple[OracleObstacleSourceResidual, ...],
+) -> float:
+    if len(residuals) == 0:
+        return 0.0
+    return max(residual.delta for residual in residuals)
+
+
+def _max_oracle_obstacle_source_delta_chain(
+    residuals: tuple[OracleObstacleSourceResidual, ...],
+) -> int | None:
+    if len(residuals) == 0:
+        return None
+    return max(residuals, key=lambda residual: residual.delta).chain_index
 
 
 def _first_projection_trace(
@@ -1093,6 +1175,9 @@ def _format_report(records: tuple[RegressionRecord, ...]) -> str:
         "pyz1 convex selected winding sequence | "
         "pyz1 convex selected missing oracle sequence | "
         "pyz1 convex selected extra candidates | "
+        "max oracle obstacle source delta | "
+        "max oracle obstacle source delta chain | "
+        "oracle obstacle source residual details | "
         "oracle true-chain pair sequence | "
         "summary mismatch details | note |"
     )
@@ -1167,6 +1252,9 @@ def _format_record(record: RegressionRecord) -> str:
         f"{_format_int_sequence(record.pyz1_convex_selected_winding_sequence)} | "
         f"{_format_convex_selected_missing_sequence(record)} | "
         f"{_format_optional_int(record.pyz1_convex_selected_extra_count)} | "
+        f"{_format_optional_float(record.max_oracle_obstacle_source_delta)} | "
+        f"{_format_optional_int(record.max_oracle_obstacle_source_delta_chain)} | "
+        f"{_format_oracle_obstacle_source_residuals(record)} | "
         f"{_format_int_sequence(record.oracle_true_chain_pair_sequence)} | "
         f"{_format_summary_field_details(record.summary_field_mismatch_details)} | "
         f"{record.note} |"
@@ -1195,6 +1283,34 @@ def _format_int_sequence(values: tuple[int, ...] | None) -> str:
 
 def _format_convex_selected_missing_sequence(record: RegressionRecord) -> str:
     return _format_int_sequence(record.pyz1_convex_selected_missing_oracle_sequence)
+
+
+def _format_oracle_obstacle_source_residuals(record: RegressionRecord) -> str:
+    residuals = record.oracle_obstacle_source_residuals
+    if residuals is None:
+        return "n/a"
+    if len(residuals) == 0:
+        return "none"
+    visible = residuals[:MAX_SOURCE_RESIDUAL_REPORT_DETAILS]
+    formatted = "; ".join(
+        _format_oracle_obstacle_source_residual(residual)
+        for residual in visible
+    )
+    omitted_count = len(residuals) - len(visible)
+    if omitted_count == 0:
+        return formatted
+    return f"{formatted}; ... {omitted_count} more"
+
+
+def _format_oracle_obstacle_source_residual(
+    residual: OracleObstacleSourceResidual,
+) -> str:
+    return (
+        f"{residual.chain_index}: "
+        f"{_format_optional_float(residual.actual)}"
+        f"!={_format_optional_float(residual.expected)}"
+        f"(d={_format_optional_float(residual.delta)})"
+    )
 
 
 def _format_source_bead_residuals(

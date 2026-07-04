@@ -11,14 +11,14 @@ For a requirement-by-requirement completion verdict, see
 
 Latest local gate evidence:
 
-- `.omo/evidence/task-69-convex-selection-order/pytest.txt`: `122 passed`
+- `.omo/evidence/task-70-oracle-source-order/pytest.txt`: `123 passed`
 - `.omo/evidence/task-55-ppa-coverage/ppa-focused.txt`: `21 passed`
 - `.omo/evidence/task-57-ppa-nan-root/ppa-focused.txt`: `22 passed`
-- `.omo/evidence/task-69-convex-selection-order/ruff.txt`:
+- `.omo/evidence/task-70-oracle-source-order/ruff.txt`:
   `All checks passed!`
-- `.omo/evidence/task-69-convex-selection-order/basedpyright.txt`:
+- `.omo/evidence/task-70-oracle-source-order/basedpyright.txt`:
   `0 errors, 0 warnings, 0 notes`
-- `.omo/evidence/task-69-convex-selection-order/package-smoke.txt`:
+- `.omo/evidence/task-70-oracle-source-order/package-smoke.txt`:
   `2 passed`
 
 The package smoke runs `python -m pyz1` for default, SP+, PPA, and PPA+ modes
@@ -198,6 +198,24 @@ obstacles respectively. The paired source probes
 and `.omo/evidence/task-69-convex-selection-order/wrapped-vs-unfolded-source.md`
 show the remaining blocker is source/order semantics for obstacle placement,
 not just convex membership or simple periodic image shifting.
+
+Task-70 adds oracle-obstacle source residual diagnostics to the benchmark
+regression report. Evidence in
+`.omo/evidence/task-70-oracle-source-order/oracle-source-projection-probe.md`
+shows oracle SP node positions are close to the paired obstacle midpoints, but
+their oracle source beads are not explained by nearest midpoint projection; for
+benchmark-01, pair chain 80 reports oracle source `2.19` while the same
+convex candidate midpoint projects to source `10.943640568161117`. The contour
+probe in
+`.omo/evidence/task-70-oracle-source-order/oracle-source-contour-probe.md`
+also rules out a simple final-SP-contour reparameterization. The generated
+report artifact
+`.omo/evidence/task-70-oracle-source-order/regression-01-02-oracle-source-residuals.txt`
+records benchmark-01 max oracle-obstacle source residual
+`8.753640568161117` at chain 80 and benchmark-02 max residual
+`1.3252898191386155` at chain 146. This moves the benchmark-01/02 blocker from
+candidate coverage to the hidden source/order rule that maps obstacle contacts
+onto first-chain source beads.
 
 ## Latest PPA/PPA+ Oracle Summary Coverage
 

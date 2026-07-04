@@ -57,6 +57,12 @@ class ReducerResult:
 
 
 @dataclass(frozen=True, slots=True)
+class WindingObstacleSource:
+    chain_index: int
+    source_bead: float
+
+
+@dataclass(frozen=True, slots=True)
 class CoreTraceNode:
     position: Vector3
     source_bead: float
@@ -239,6 +245,19 @@ def convex_selected_winding_obstacle_chain_indices(
         for candidate in _select_small_winding_obstacles(
             _convex_winding_obstacle_candidates(chains, chain_index),
         )
+    )
+
+
+def convex_winding_obstacle_candidate_sources(
+    chains: tuple[Chain, ...],
+    chain_index: int,
+) -> tuple[WindingObstacleSource, ...]:
+    return tuple(
+        WindingObstacleSource(
+            chain_index=candidate.chain_index,
+            source_bead=candidate.source_bead,
+        )
+        for candidate in _convex_winding_obstacle_candidates(chains, chain_index)
     )
 
 

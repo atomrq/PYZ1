@@ -341,6 +341,40 @@ def test_write_benchmark_regression_report_when_convex_selection_misses_oracle(
     assert "pyz1 convex selected missing oracle sequence" in text
 
 
+def test_write_benchmark_regression_report_when_oracle_obstacle_sources_differ(
+    tmp_path: Path,
+) -> None:
+    report_path = tmp_path / "pyz1-benchmark-regression.md"
+
+    records = write_benchmark_regression_report(
+        RegressionRequest(
+            source_dir=SOURCE_Z1,
+            oracle_root=ORACLE_ROOT,
+            report_path=report_path,
+            modes=(RegressionMode.SPPLUS,),
+            benchmark_ids=("01", "02"),
+        ),
+    )
+
+    text = report_path.read_text(encoding="utf-8")
+    benchmark_01 = records[0]
+    benchmark_02 = records[1]
+    assert benchmark_01.max_oracle_obstacle_source_delta is not None
+    assert 8.753 < benchmark_01.max_oracle_obstacle_source_delta < 8.754
+    assert benchmark_01.max_oracle_obstacle_source_delta_chain == 80
+    assert benchmark_01.oracle_obstacle_source_residuals is not None
+    assert tuple(
+        residual.chain_index
+        for residual in benchmark_01.oracle_obstacle_source_residuals[:3]
+    ) == (95, 20, 80)
+    assert benchmark_02.max_oracle_obstacle_source_delta is not None
+    assert 1.325 < benchmark_02.max_oracle_obstacle_source_delta < 1.326
+    assert benchmark_02.max_oracle_obstacle_source_delta_chain == 146
+    assert "max oracle obstacle source delta" in text
+    assert "oracle obstacle source residual details" in text
+    assert "80: 10.9436!=2.19(d=8.75364)" in text
+
+
 def test_write_benchmark_regression_report_when_source_beads_differ_reports_max_delta(
     tmp_path: Path,
 ) -> None:
