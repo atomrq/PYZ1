@@ -224,6 +224,30 @@ def test_write_benchmark_regression_report_when_obstacle_sequence_matches_report
     assert "268,241,160,130" in text
 
 
+def test_write_benchmark_regression_report_when_source_beads_differ_reports_max_delta(
+    tmp_path: Path,
+) -> None:
+    report_path = tmp_path / "pyz1-benchmark-regression.md"
+
+    records = write_benchmark_regression_report(
+        RegressionRequest(
+            source_dir=SOURCE_Z1,
+            oracle_root=ORACLE_ROOT,
+            report_path=report_path,
+            modes=(RegressionMode.SPPLUS,),
+            benchmark_ids=("03",),
+        ),
+    )
+
+    text = report_path.read_text(encoding="utf-8")
+    assert records[0].max_node_source_bead_delta is not None
+    assert 1.467 < records[0].max_node_source_bead_delta < 1.468
+    assert records[0].max_source_delta_chain_index == 1
+    assert records[0].max_source_delta_node_index == 5
+    assert "max node source bead delta" in text
+    assert "max source delta chain" in text
+
+
 def test_compare_spplus_pairing_when_pairing_differs_reports_mismatch() -> None:
     original = _spplus_snapshot_text().replace(
         "1       2       1",

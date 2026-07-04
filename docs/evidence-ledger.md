@@ -11,15 +11,17 @@ For a requirement-by-requirement completion verdict, see
 
 Latest local gate evidence:
 
-- `.omo/evidence/task-64-obstacle-candidates/focused-tests-final.txt`:
-  `23 passed`
+- `.omo/evidence/task-65-benchmark03-source-geometry/focused-tests.txt`:
+  `24 passed`
 - `.omo/evidence/task-55-ppa-coverage/ppa-focused.txt`: `21 passed`
 - `.omo/evidence/task-57-ppa-nan-root/ppa-focused.txt`: `22 passed`
-- `.omo/evidence/task-64-obstacle-candidates/pytest.txt`: `118 passed`
-- `.omo/evidence/task-64-obstacle-candidates/ruff.txt`: `All checks passed!`
-- `.omo/evidence/task-64-obstacle-candidates/basedpyright.txt`:
+- `.omo/evidence/task-65-benchmark03-source-geometry/pytest.txt`: `119 passed`
+- `.omo/evidence/task-65-benchmark03-source-geometry/ruff.txt`:
+  `All checks passed!`
+- `.omo/evidence/task-65-benchmark03-source-geometry/basedpyright.txt`:
   `0 errors, 0 warnings, 0 notes`
-- `.omo/evidence/task-64-obstacle-candidates/package-smoke.txt`: `2 passed`
+- `.omo/evidence/task-65-benchmark03-source-geometry/package-smoke.txt`:
+  `2 passed`
 
 The package smoke runs `python -m pyz1` for default, SP+, PPA, and PPA+ modes
 and checks the expected mode-specific output files.
@@ -129,6 +131,15 @@ shows benchmark-03 SP+ now has `node_count_mismatches=0`,
 `(268, 241, 160, 130)`. Benchmark-03 SP+ remains a `mismatch` because summary
 fields and final geometry/source-bead values still differ; benchmark-01/02/05
 remain mismatches, and benchmark-04 default/SP+ remain passed.
+
+Task-65 adds explicit source-bead residual diagnostics to the benchmark
+regression report. Evidence in
+`.omo/evidence/task-65-benchmark03-source-geometry/default-spplus-01-05-source-deltas.txt`
+shows benchmark-03 SP+ still has matching node/pair/obstacle sequence values,
+but its largest source-bead residual is `1.4679581658620817` at chain 1 node 5.
+The same report surfaces larger source-bead residuals for benchmark-01/02/05,
+so future reducer work can track source-coordinate progress directly instead
+of inferring it from the max-position-delta node.
 
 ## Latest PPA/PPA+ Oracle Summary Coverage
 

@@ -247,9 +247,10 @@ record measured deltas or an explicit skip reason. Current status is:
   a guarded small-winding obstacle candidate path: benchmark-03 SP+ now has
   zero first-chain node-count and SP+ pair mismatches with matching
   `(268, 241, 160, 130)` native/oracle obstacle sequences, but it still
-  differs in summary fields and final geometry/source-bead placement.
-  Benchmark-01/02 still need the broader multi-obstacle placement/source-bead
-  and SP+ pairing rule.
+  differs in summary fields and final geometry/source-bead placement. Task-65
+  adds explicit max source-bead residual reporting; benchmark-03 SP+ currently
+  reports `1.4679581658620817` at chain 1 node 5. Benchmark-01/02 still need
+  the broader multi-obstacle placement/source-bead and SP+ pairing rule.
 - SP+ structural comparison counts mismatched `other-chain other-node` pairs.
 - `benchmark-06` and larger benchmark/mode entries are classified as
   `known-invalid` under the current `node_count>1000` performance guard until
@@ -295,6 +296,8 @@ Complete now:
 - benchmark regression report generation and transparent mismatch/skip status
 - benchmark regression rows include SP+ native/oracle first-chain obstacle pair
   sequences, giving the obstacle-placement work a stable diagnostic surface
+- benchmark regression rows include max source-bead residual location and
+  magnitude, making source-coordinate reconstruction a first-class diagnostic
 - guarded small-winding obstacle candidates align benchmark-03 SP+ first-chain
   node count and obstacle pair sequence with the oracle while keeping
   benchmark-01/02 guarded for further placement work
@@ -330,8 +333,10 @@ Not complete yet:
   structure, and SP+ pairings; benchmark-04 default/SP+ now pass the local
   report contract, benchmark-03 SP+ now matches first-chain node count and
   obstacle pair sequence but still differs in summary fields and
-  geometry/source-bead placement, and benchmark-01/02 still miss exact Z1+
-  obstacle-kink placement/source beads/pairings. The public Z1+ source tree does
+  geometry/source-bead placement; task-65 records the current benchmark-03 SP+
+  max source-bead residual as `1.4679581658620817` at chain 1 node 5, and
+  benchmark-01/02 still miss exact Z1+ obstacle-kink placement/source
+  beads/pairings. The public Z1+ source tree does
   not include `module-Z1.f90`, so further clean-room reducer work must be driven
   by papers, oracle output, and documented diagnostics rather than direct
   translation of the missing reducer source. Benchmark-05 still mismatches, and

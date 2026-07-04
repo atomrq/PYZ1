@@ -140,6 +140,9 @@ class RegressionRecord:
     note: str
     pyz1_obstacle_pair_sequence: tuple[int, ...] | None = None
     oracle_obstacle_pair_sequence: tuple[int, ...] | None = None
+    max_node_source_bead_delta: float | None = None
+    max_source_delta_chain_index: int | None = None
+    max_source_delta_node_index: int | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -150,6 +153,9 @@ class ShortestPathGeometryComparison:
     max_node_delta_node_index: int | None
     max_node_delta_actual_source_bead: float | None
     max_node_delta_expected_source_bead: float | None
+    max_node_source_bead_delta: float
+    max_source_delta_chain_index: int | None
+    max_source_delta_node_index: int | None
     max_node_actual_pair_fraction: float | None
     max_node_actual_pair_distance: float | None
     max_node_expected_pair_fraction: float | None
@@ -484,6 +490,11 @@ def _compare_benchmark_mode(
         oracle_obstacle_pair_sequence=_obstacle_pair_chain_sequence(
             oracle_shortest_path,
         ),
+        max_node_source_bead_delta=geometry_comparison.max_node_source_bead_delta,
+        max_source_delta_chain_index=(
+            geometry_comparison.max_source_delta_chain_index
+        ),
+        max_source_delta_node_index=geometry_comparison.max_source_delta_node_index,
     )
 
 
@@ -689,6 +700,9 @@ def _shortest_path_snapshot_geometry_comparison(
     max_delta_node_index: int | None = None
     max_delta_actual_source_bead: float | None = None
     max_delta_expected_source_bead: float | None = None
+    max_source_bead_delta = 0.0
+    max_source_delta_chain_index: int | None = None
+    max_source_delta_node_index: int | None = None
     max_actual_pair_geometry: _NodePairGeometry | None = None
     max_expected_pair_geometry: _NodePairGeometry | None = None
     box = GeometryBox(lengths=actual.box)
@@ -703,6 +717,16 @@ def _shortest_path_snapshot_geometry_comparison(
         for node_index in range(shared_node_count):
             actual_node = actual_chain.nodes[node_index]
             expected_node = expected_chain.nodes[node_index]
+            source_bead_delta = abs(
+                actual_node.source_bead - expected_node.source_bead,
+            )
+            if (
+                max_source_delta_chain_index is None
+                or source_bead_delta > max_source_bead_delta
+            ):
+                max_source_bead_delta = source_bead_delta
+                max_source_delta_chain_index = chain_index + 1
+                max_source_delta_node_index = node_index + 1
             delta = _periodic_node_position_delta(
                 actual_node.position,
                 expected_node.position,
@@ -726,6 +750,9 @@ def _shortest_path_snapshot_geometry_comparison(
         max_node_delta_node_index=max_delta_node_index,
         max_node_delta_actual_source_bead=max_delta_actual_source_bead,
         max_node_delta_expected_source_bead=max_delta_expected_source_bead,
+        max_node_source_bead_delta=max_source_bead_delta,
+        max_source_delta_chain_index=max_source_delta_chain_index,
+        max_source_delta_node_index=max_source_delta_node_index,
         max_node_actual_pair_fraction=(
             max_actual_pair_geometry.fraction
             if max_actual_pair_geometry is not None
@@ -873,6 +900,9 @@ def _format_report(records: tuple[RegressionRecord, ...]) -> str:
             "max node delta chain | max node delta node | "
             "max node delta actual source | "
             "max node delta expected source | "
+            "max node source bead delta | "
+            "max source delta chain | "
+            "max source delta node | "
             "max node actual pair fraction | "
             "max node actual pair distance | "
             "max node expected pair fraction | "
@@ -902,6 +932,7 @@ def _format_report(records: tuple[RegressionRecord, ...]) -> str:
         (
             "| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | "
             "---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | "
+            "---: | ---: | ---: | "
             "---: | ---: | ---: | ---: | "
             "---: | ---: | ---: | ---: | "
             "---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | "
@@ -926,6 +957,9 @@ def _format_record(record: RegressionRecord) -> str:
         f"{_format_optional_int(record.max_node_delta_node_index)} | "
         f"{_format_optional_float(record.max_node_delta_actual_source_bead)} | "
         f"{_format_optional_float(record.max_node_delta_expected_source_bead)} | "
+        f"{_format_optional_float(record.max_node_source_bead_delta)} | "
+        f"{_format_optional_int(record.max_source_delta_chain_index)} | "
+        f"{_format_optional_int(record.max_source_delta_node_index)} | "
         f"{_format_optional_float(record.max_node_actual_pair_fraction)} | "
         f"{_format_optional_float(record.max_node_actual_pair_distance)} | "
         f"{_format_optional_float(record.max_node_expected_pair_fraction)} | "
