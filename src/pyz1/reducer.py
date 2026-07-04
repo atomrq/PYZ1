@@ -40,6 +40,7 @@ TRUE_CHAIN_CONTACT_CANDIDATE_DISTANCE: Final = 0.3
 TRUE_CHAIN_CONTACT_CLUSTER_SOURCE_RADIUS: Final = 1.0
 TRUE_CHAIN_CONTACT_CLUSTER_MIN_CANDIDATES: Final = 2
 TRUE_CHAIN_CONTACT_HALF_BEAD_SNAP_FRACTION: Final = 0.75
+TRUE_CHAIN_CONTACT_HALF_BEAD_SNAP_SOURCE_OFFSET: Final = 0.4
 TRUE_CHAIN_REPEATED_SINGLE_TARGET_MIN_CANDIDATES: Final = 3
 TRUE_CHAIN_REPEATED_SINGLE_TARGET_MAX_FIRST_SOURCE: Final = 2.0
 TRUE_CHAIN_REPEATED_SINGLE_TARGET_SOURCE_SNAP_OFFSET: Final = 1.5
@@ -1676,7 +1677,13 @@ def _snap_first_true_chain_contact_source(
         < TRUE_CHAIN_CONTACT_HALF_BEAD_SNAP_FRACTION
     ):
         return candidates
-    return (replace(first, source_bead=source_anchor + 0.5), second)
+    return (
+        replace(
+            first,
+            source_bead=source_anchor + TRUE_CHAIN_CONTACT_HALF_BEAD_SNAP_SOURCE_OFFSET,
+        ),
+        second,
+    )
 
 
 def _true_chain_contact_kink_candidate(
