@@ -21,6 +21,23 @@ if TYPE_CHECKING:
 
 LPP_TOLERANCE: Final = 1.0e-6
 Z_TOLERANCE: Final = 1.0e-6
+SUMMARY_FIELD_NAMES: Final = (
+    "timestep",
+    "true_chain_count",
+    "mean_original_beads",
+    "mean_squared_end_to_end",
+    "mean_shortest_path_contour",
+    "mean_entanglements",
+    "coil_tube_diameter",
+    "coil_tube_step_length",
+    "root_mean_squared_contour",
+    "ne_classical_kink",
+    "ne_modified_kink",
+    "ne_classical_coil",
+    "ne_modified_coil",
+    "mean_original_bond_length",
+    "original_bead_density",
+)
 
 
 class RegressionMode(StrEnum):
@@ -50,6 +67,13 @@ class PairingComparison:
 
 
 @dataclass(frozen=True, slots=True)
+class SummaryFieldMismatch:
+    field_name: str
+    actual: str
+    expected: str
+
+
+@dataclass(frozen=True, slots=True)
 class RegressionRecord:
     benchmark_id: str
     mode: RegressionMode
@@ -57,6 +81,7 @@ class RegressionRecord:
     lpp_delta: float | None
     z_delta: float | None
     summary_field_mismatches: int | None
+    summary_field_mismatch_details: tuple[SummaryFieldMismatch, ...] | None
     pairing_mismatches: int | None
     note: str
 
@@ -106,6 +131,7 @@ def _compare_benchmark_mode(
             lpp_delta=None,
             z_delta=None,
             summary_field_mismatches=None,
+            summary_field_mismatch_details=None,
             pairing_mismatches=None,
             note="missing source or oracle output",
         )
@@ -118,6 +144,7 @@ def _compare_benchmark_mode(
             lpp_delta=None,
             z_delta=None,
             summary_field_mismatches=None,
+            summary_field_mismatch_details=None,
             pairing_mismatches=None,
             note=f"skipped: node_count>{request.max_node_count}",
         )
@@ -129,10 +156,11 @@ def _compare_benchmark_mode(
         - oracle_summary.mean_shortest_path_contour,
     )
     z_delta = abs(actual_summary.mean_entanglements - oracle_summary.mean_entanglements)
-    summary_field_mismatches = _summary_field_mismatch_count(
+    summary_field_mismatch_details = _summary_field_mismatches(
         format_summary_text((actual_summary,)),
         summary_path.read_text(encoding="utf-8"),
     )
+    summary_field_mismatches = len(summary_field_mismatch_details)
     pairing_mismatches = _pairing_mismatch_count(mode, result.shortest_path, sp_path)
     status = _status_from_deltas(lpp_delta, z_delta, pairing_mismatches)
     return RegressionRecord(
@@ -142,6 +170,7 @@ def _compare_benchmark_mode(
         lpp_delta=lpp_delta,
         z_delta=z_delta,
         summary_field_mismatches=summary_field_mismatches,
+        summary_field_mismatch_details=summary_field_mismatch_details,
         pairing_mismatches=pairing_mismatches,
         note=_note_for_status(status),
     )
@@ -179,14 +208,38 @@ def _pairing_mismatch_count(
             return comparison.mismatched_pair_count
 
 
-def _summary_field_mismatch_count(actual_text: str, expected_text: str) -> int:
+def _summary_field_mismatches(
+    actual_text: str,
+    expected_text: str,
+) -> tuple[SummaryFieldMismatch, ...]:
     actual_fields = actual_text.split()
     expected_fields = expected_text.split()
     shared_count = min(len(actual_fields), len(expected_fields))
-    return abs(len(actual_fields) - len(expected_fields)) + sum(
-        actual_fields[index] != expected_fields[index]
+    mismatches = tuple(
+        SummaryFieldMismatch(
+            field_name=_summary_field_name(index),
+            actual=actual_fields[index],
+            expected=expected_fields[index],
+        )
         for index in range(shared_count)
+        if actual_fields[index] != expected_fields[index]
     )
+    if len(actual_fields) == len(expected_fields):
+        return mismatches
+    return (
+        *mismatches,
+        SummaryFieldMismatch(
+            field_name="field_count",
+            actual=str(len(actual_fields)),
+            expected=str(len(expected_fields)),
+        ),
+    )
+
+
+def _summary_field_name(index: int) -> str:
+    if index < len(SUMMARY_FIELD_NAMES):
+        return SUMMARY_FIELD_NAMES[index]
+    return f"field_{index + 1}"
 
 
 def _status_from_deltas(
@@ -231,9 +284,10 @@ def _format_report(records: tuple[RegressionRecord, ...]) -> str:
         "",
         (
             "| benchmark | mode | status | Lpp delta | Z delta | "
-            "summary field mismatches | pair mismatches | note |"
+            "summary field mismatches | pair mismatches | "
+            "summary mismatch details | note |"
         ),
-        "| --- | --- | --- | ---: | ---: | ---: | ---: | --- |",
+        "| --- | --- | --- | ---: | ---: | ---: | ---: | --- | --- |",
     ]
     lines.extend(_format_record(record) for record in records)
     return "\n".join(lines) + "\n"
@@ -245,7 +299,9 @@ def _format_record(record: RegressionRecord) -> str:
         f"{record.status.value} | {_format_optional_float(record.lpp_delta)} | "
         f"{_format_optional_float(record.z_delta)} | "
         f"{_format_optional_int(record.summary_field_mismatches)} | "
-        f"{_format_optional_int(record.pairing_mismatches)} | {record.note} |"
+        f"{_format_optional_int(record.pairing_mismatches)} | "
+        f"{_format_summary_field_details(record.summary_field_mismatch_details)} | "
+        f"{record.note} |"
     )
 
 
@@ -259,3 +315,16 @@ def _format_optional_int(value: int | None) -> str:
     if value is None:
         return "n/a"
     return str(value)
+
+
+def _format_summary_field_details(
+    details: tuple[SummaryFieldMismatch, ...] | None,
+) -> str:
+    if details is None:
+        return "n/a"
+    if len(details) == 0:
+        return "none"
+    return "; ".join(
+        f"{detail.field_name}: {detail.actual} != {detail.expected}"
+        for detail in details
+    )
