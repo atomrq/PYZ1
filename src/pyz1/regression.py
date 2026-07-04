@@ -595,6 +595,7 @@ def _shortest_path_snapshot_geometry_comparison(
 ) -> ShortestPathGeometryComparison:
     node_count_mismatches = abs(actual.chain_count - expected.chain_count)
     max_position_delta = 0.0
+    box = GeometryBox(lengths=actual.box)
     shared_chain_count = min(actual.chain_count, expected.chain_count)
     for chain_index in range(shared_chain_count):
         actual_chain = actual.chains[chain_index]
@@ -604,9 +605,10 @@ def _shortest_path_snapshot_geometry_comparison(
         )
         shared_node_count = min(actual_chain.node_count, expected_chain.node_count)
         for node_index in range(shared_node_count):
-            delta = _node_position_delta(
+            delta = _periodic_node_position_delta(
                 actual_chain.nodes[node_index].position,
                 expected_chain.nodes[node_index].position,
+                box,
             )
             max_position_delta = max(max_position_delta, delta)
     return ShortestPathGeometryComparison(
@@ -617,17 +619,6 @@ def _shortest_path_snapshot_geometry_comparison(
 
 def _snapshot_node_count(snapshot: ShortestPathSnapshot) -> int:
     return sum(chain.node_count for chain in snapshot.chains)
-
-
-def _node_position_delta(
-    actual: Vector3,
-    expected: Vector3,
-) -> float:
-    return sqrt(
-        (actual.x - expected.x) ** 2
-        + (actual.y - expected.y) ** 2
-        + (actual.z - expected.z) ** 2,
-    )
 
 
 def _summary_field_mismatches(

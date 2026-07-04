@@ -59,12 +59,12 @@ def test_write_benchmark_regression_report_when_oracles_exist_lists_modes(
     assert records[1].oracle_core_node_count == 17
     assert records[1].oracle_core_ghost_nodes == 6
     assert records[1].oracle_core_stage_node_count == 17
-    assert records[1].pyz1_core_stage_node_count_mismatches == 6
+    assert records[1].pyz1_core_stage_node_count_mismatches == 0
     assert records[1].pyz1_core_stage_max_node_position_delta is not None
-    assert 4.2 < records[1].pyz1_core_stage_max_node_position_delta < 4.3
-    assert records[1].pyz1_core_stage_source_bead_matches == 11
+    assert 0.037 < records[1].pyz1_core_stage_max_node_position_delta < 0.038
+    assert records[1].pyz1_core_stage_source_bead_matches == 14
     assert records[1].pyz1_core_stage_source_bead_max_delta is not None
-    assert 0.0133 < records[1].pyz1_core_stage_source_bead_max_delta < 0.0134
+    assert 0.037 < records[1].pyz1_core_stage_source_bead_max_delta < 0.038
     assert "root_mean_squared_contour: 4.597 != 4.598" in text
     assert "ne_modified_coil: 653.792 != 641.605" in text
     assert "pyz1 core trace nodes" in text
@@ -127,12 +127,12 @@ def test_write_benchmark_regression_report_when_stats_log_exists_lists_core_diag
     assert records[0].oracle_final_node_count == 11
     assert records[0].oracle_core_ghost_nodes == 6
     assert records[0].oracle_core_stage_node_count == 17
-    assert records[0].pyz1_core_stage_node_count_mismatches == 6
+    assert records[0].pyz1_core_stage_node_count_mismatches == 0
     assert records[0].pyz1_core_stage_max_node_position_delta is not None
-    assert 4.2 < records[0].pyz1_core_stage_max_node_position_delta < 4.3
-    assert records[0].pyz1_core_stage_source_bead_matches == 11
+    assert 0.037 < records[0].pyz1_core_stage_max_node_position_delta < 0.038
+    assert records[0].pyz1_core_stage_source_bead_matches == 14
     assert records[0].pyz1_core_stage_source_bead_max_delta is not None
-    assert 0.0133 < records[0].pyz1_core_stage_source_bead_max_delta < 0.0134
+    assert 0.037 < records[0].pyz1_core_stage_source_bead_max_delta < 0.038
     assert "pyz1 core nodes" in text
     assert "pyz1 first projection fraction" in text
     assert "oracle core ghosts" in text

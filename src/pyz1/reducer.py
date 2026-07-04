@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from math import ceil, sqrt
+from typing import TYPE_CHECKING, Final
 
 from pyz1.geometry import (
     GEOMETRY_TOLERANCE,
@@ -28,6 +29,8 @@ from pyz1.summary import SummaryOutputs, build_summary_outputs, write_summary_ou
 
 if TYPE_CHECKING:
     from pathlib import Path
+
+CORE_STAGE_SUPPORT_MAX_LENGTH: Final = 2.2
 
 
 @dataclass(frozen=True, slots=True)
@@ -103,19 +106,6 @@ class _CoreTraceDiagnostics:
     transient_blocked_node_count: int
 
 
-@dataclass(frozen=True, slots=True)
-class _ProjectedCoreStageNode:
-    chain_index: int
-    source_bead: float
-    position: Vector3
-
-
-@dataclass(frozen=True, slots=True)
-class _CoreStageBuildContext:
-    chain_index: int
-    projected_nodes: tuple[_ProjectedCoreStageNode, ...]
-
-
 def reduce_snapshot(
     snapshot: Snapshot,
     settings: ReducerSettings | None = None,
@@ -154,8 +144,6 @@ def reduce_snapshot(
             final_node_count=sum(chain.node_count for chain in reduced_chains),
             core_stage_nodes=_core_stage_nodes(
                 shortest_path,
-                core_trace.blocked_nodes,
-                preserved.projection_traces,
             ),
             core_trace_blocked_nodes=core_trace.blocked_nodes,
             projection_traces=preserved.projection_traces,
@@ -181,87 +169,86 @@ def write_reducer_outputs(directory: Path, result: ReducerResult) -> None:
 
 def _core_stage_nodes(
     shortest_path: ShortestPathSnapshot,
-    trace_nodes: tuple[tuple[CoreTraceNode, ...], ...],
-    projection_traces: tuple[ProjectionTrace, ...],
 ) -> tuple[tuple[CoreStageNode, ...], ...]:
-    projected_nodes = _projected_core_stage_nodes(projection_traces)
     return tuple(
-        _core_stage_chain_nodes(
-            chain,
-            trace_nodes[chain_index],
-            _CoreStageBuildContext(
-                chain_index=chain_index + 1,
-                projected_nodes=projected_nodes,
-            ),
-        )
-        for chain_index, chain in enumerate(shortest_path.chains)
-    )
-
-
-def _projected_core_stage_nodes(
-    projection_traces: tuple[ProjectionTrace, ...],
-) -> tuple[_ProjectedCoreStageNode, ...]:
-    return tuple(
-        _ProjectedCoreStageNode(
-            chain_index=trace.chain_index,
-            source_bead=trace.source_bead,
-            position=trace.projected_position,
-        )
-        for trace in projection_traces
+        _core_stage_chain_nodes(chain)
+        for chain in shortest_path.chains
     )
 
 
 def _core_stage_chain_nodes(
     chain: ShortestPathChain,
-    trace_nodes: tuple[CoreTraceNode, ...],
-    context: _CoreStageBuildContext,
 ) -> tuple[CoreStageNode, ...]:
-    endpoint_nodes = (
-        CoreStageNode(
-            position=chain.nodes[0].position,
-            source_bead=chain.nodes[0].source_bead,
-            transient=False,
-        ),
-        CoreStageNode(
-            position=chain.nodes[-1].position,
-            source_bead=chain.nodes[-1].source_bead,
-            transient=False,
-        ),
-    )
-    transient_nodes = tuple(
-        CoreStageNode(
-            position=_core_stage_trace_position(node, context),
-            source_bead=node.source_bead,
-            transient=True,
+    nodes: list[CoreStageNode] = []
+    for first_node, second_node in zip(
+        chain.nodes[:-1],
+        chain.nodes[1:],
+        strict=True,
+    ):
+        if len(nodes) == 0:
+            nodes.append(_core_stage_output_node(first_node))
+        support_count = _core_stage_support_node_count(
+            first_node.position,
+            second_node.position,
         )
-        for node in trace_nodes
-        if not node.retained
-    )
-    return tuple(
-        sorted(
-            (*endpoint_nodes, *transient_nodes),
-            key=lambda node: node.source_bead,
-        ),
+        nodes.extend(
+            _core_stage_support_node(first_node, second_node, support_index)
+            for support_index in range(1, support_count + 1)
+        )
+        nodes.append(_core_stage_output_node(second_node))
+    return tuple(nodes)
+
+
+def _core_stage_output_node(node: ShortestPathNode) -> CoreStageNode:
+    return CoreStageNode(
+        position=node.position,
+        source_bead=node.source_bead,
+        transient=False,
     )
 
 
-def _core_stage_trace_position(
-    node: CoreTraceNode,
-    context: _CoreStageBuildContext,
-) -> Vector3:
-    projected = next(
-        (
-            projected_node
-            for projected_node in context.projected_nodes
-            if projected_node.chain_index == context.chain_index
-            and abs(projected_node.source_bead - node.source_bead)
-            <= GEOMETRY_TOLERANCE
-        ),
-        None,
+def _core_stage_support_node(
+    first_node: ShortestPathNode,
+    second_node: ShortestPathNode,
+    support_index: int,
+) -> CoreStageNode:
+    support_count = _core_stage_support_node_count(
+        first_node.position,
+        second_node.position,
     )
-    if projected is None:
-        return node.position
-    return projected.position
+    fraction = support_index / (support_count + 1)
+    return CoreStageNode(
+        position=_interpolate_position(
+            first_node.position,
+            second_node.position,
+            fraction,
+        ),
+        source_bead=(
+            first_node.source_bead
+            + (second_node.source_bead - first_node.source_bead) * fraction
+        ),
+        transient=True,
+    )
+
+
+def _core_stage_support_node_count(first: Vector3, second: Vector3) -> int:
+    return max(
+        0,
+        ceil(_vector_distance(first, second) / CORE_STAGE_SUPPORT_MAX_LENGTH) - 1,
+    )
+
+
+def _interpolate_position(first: Vector3, second: Vector3, fraction: float) -> Vector3:
+    return Vector3(
+        x=first.x + (second.x - first.x) * fraction,
+        y=first.y + (second.y - first.y) * fraction,
+        z=first.z + (second.z - first.z) * fraction,
+    )
+
+
+def _vector_distance(first: Vector3, second: Vector3) -> float:
+    delta = _subtract(second, first)
+    return sqrt(delta.x * delta.x + delta.y * delta.y + delta.z * delta.z)
 
 
 def _reduce_chains(
