@@ -61,11 +61,52 @@ def test_clean_removes_z1plus_outputs(
     assert not any(tmp_path.iterdir())
 
 
-def test_unimplemented_analysis_mode_fails_clearly(tmp_path: Path) -> None:
+def test_default_analysis_mode_fails_clearly_until_reducer_exists(
+    tmp_path: Path,
+) -> None:
     input_path = tmp_path / "config.Z1"
     _ = input_path.write_text("1\n10 10 10\n3\n0 0 0\n1 0 0\n2 0 0\n", encoding="utf-8")
 
-    result = CliRunner().invoke(app, ["-PPA", str(input_path)], prog_name="pyz1")
+    result = CliRunner().invoke(app, [str(input_path)], prog_name="pyz1")
 
     assert result.exit_code != 0
     assert "mode is not implemented yet" in result.stdout
+
+
+def test_ppa_mode_writes_ppa_outputs(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    input_path = tmp_path / "config.Z1"
+    _ = input_path.write_text(
+        "1\n10 10 10\n3\n0 0 0\n0.5 0.2 0\n1 0 0\n",
+        encoding="utf-8",
+    )
+
+    monkeypatch.chdir(tmp_path)
+    result = CliRunner().invoke(app, ["-PPA", str(input_path)], prog_name="pyz1")
+
+    assert result.exit_code == 0
+    assert "completed ppa" in result.stdout
+    assert (tmp_path / "PPA.dat").exists()
+    assert (tmp_path / "PPA-summary.dat").exists()
+    assert (tmp_path / "Lpp_values.dat").exists()
+
+
+def test_ppaplus_mode_writes_ppaplus_outputs(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    input_path = tmp_path / "config.Z1"
+    _ = input_path.write_text(
+        "1\n10 10 10\n3\n0 0 0\n0.5 0.2 0\n1 0 0\n",
+        encoding="utf-8",
+    )
+
+    monkeypatch.chdir(tmp_path)
+    result = CliRunner().invoke(app, ["-PPA+", str(input_path)], prog_name="pyz1")
+
+    assert result.exit_code == 0
+    assert "completed ppaplus" in result.stdout
+    assert (tmp_path / "PPA+.dat").exists()
+    assert (tmp_path / "PPA+summary.dat").exists()

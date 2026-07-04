@@ -7,6 +7,14 @@ from typing import Annotated, Final
 import typer
 
 from pyz1.errors import InputFileMissingError
+from pyz1.ppa import (
+    PpaMode,
+    accelerated_ppa_settings,
+    run_ppa,
+    standard_ppa_settings,
+    write_ppa_outputs,
+)
+from pyz1.z1_io import read_z1_file
 
 COMPATIBILITY_HELP: Final = """
 
@@ -118,6 +126,10 @@ def run(
         typer.echo(str(InputFileMissingError(path=parsed.input_file)))
         raise typer.Exit(code=2)
 
+    if parsed.mode in ("ppa", "ppaplus"):
+        _run_ppa_mode(parsed)
+        return
+
     typer.echo(f"pyz1 {parsed.mode} mode is not implemented yet.")
     raise typer.Exit(code=3)
 
@@ -150,3 +162,23 @@ def _clean_outputs(directory: Path) -> None:
         path = directory / filename
         if path.exists():
             path.unlink()
+
+
+def _run_ppa_mode(parsed: ParsedCli) -> None:
+    if parsed.input_file is None:
+        typer.echo("PPA mode requires an input file")
+        raise typer.Exit(code=2)
+    snapshot = read_z1_file(parsed.input_file)
+    match parsed.mode:
+        case "ppa":
+            mode = PpaMode.STANDARD
+            settings = standard_ppa_settings()
+        case "ppaplus":
+            mode = PpaMode.ACCELERATED
+            settings = accelerated_ppa_settings()
+        case _:
+            typer.echo(f"pyz1 {parsed.mode} mode is not implemented yet.")
+            raise typer.Exit(code=3)
+    result = run_ppa(snapshot, settings)
+    write_ppa_outputs(Path.cwd(), result, mode)
+    typer.echo(f"[pyz1] completed {parsed.mode}")
