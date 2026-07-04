@@ -89,6 +89,8 @@ guard until the reducer gets neighbor-list style acceleration.
   drop-in replacement for Z1+ scientific production runs.
 - PPA/PPA+ has native Python execution and oracle-backed summary slices, but
   full benchmark-level runtime parity remains open.
+- `-selfZ` / `-0` is recognized but exits with an explicit not-implemented
+  error; it is not silently mapped onto the default reducer.
 - The first implementation intentionally avoids GPU, CUDA, CuPy, PyTorch,
   Numba, and accelerator-specific dependencies.
 

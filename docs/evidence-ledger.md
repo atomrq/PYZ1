@@ -28,6 +28,7 @@ and checks the expected mode-specific output files.
 | Clean-room reducer | Geometry primitives, reducer diagnostics, benchmark-04 reducer structure, SP+ pairing, and benchmark regression diagnostics | `tests/test_geometry.py`, `tests/test_z1_reducer.py`, `tests/test_spplus_regression.py` |
 | SP+ regression | Pairing comparison, max-node-delta localization, pair-segment geometry diagnostics, and oracle summary source isolation | `tests/test_spplus_regression.py`, `.omo/evidence/task-38-final-node-delta-location/`, `.omo/evidence/task-39-max-node-pair-geometry/`, `.omo/evidence/task-41-spplus-projection-direction/` |
 | Package integration smoke | Real module entrypoint smoke for default, SP+, PPA, and PPA+ | `tests/test_package_integration_smoke.py`, `.omo/evidence/task-44-evidence-ledger/` |
+| `selfZ` boundary | `-selfZ` is recognized and fails explicitly instead of silently running the default reducer | `tests/test_cli_scaffold.py`, `tests/test_package_integration_smoke.py`, `.omo/evidence/task-45-selfz-explicit-boundary/` |
 
 ## Latest SP+ Parity Measurements
 
@@ -55,5 +56,6 @@ The following are intentionally not claimed complete:
 - default geometrical Z1+ numerical parity across all benchmarks
 - scalable all-14 benchmark reducer regression without the current node-count
   performance guard
-- native self-entanglement (`selfZ`) behavior
+- native self-entanglement (`selfZ`) behavior beyond the current explicit
+  not-implemented CLI boundary
 - final user/developer documentation review for scientific parity caveats

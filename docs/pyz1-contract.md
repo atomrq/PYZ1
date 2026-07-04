@@ -255,6 +255,8 @@ Complete now:
 - benchmark regression report generation and transparent mismatch/skip status
 - package-level final integration smoke through `python -m pyz1` for default,
   SP+, PPA, and PPA+ modes
+- explicit CLI failure for `-selfZ` / `-0` so the unsupported self-entanglement
+  path cannot be confused with default reducer output
 
 Not complete yet:
 
@@ -264,5 +266,6 @@ Not complete yet:
   structure, and SP+ pairings.
 - scalable all-14 benchmark reducer regression without the current
   `node_count` performance guard.
-- self-entanglement (`selfZ`) behavior in the native reducer.
+- self-entanglement (`selfZ`) behavior in the native reducer beyond the current
+  explicit not-implemented boundary.
 - final user/developer documentation review for scientific parity caveats.

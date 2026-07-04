@@ -105,6 +105,22 @@ def test_spplus_analysis_mode_writes_pairing_columns(
     assert " 2 1\n" in (tmp_path / "Z1+SP.dat").read_text(encoding="utf-8")
 
 
+def test_selfz_option_fails_with_explicit_boundary(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    input_path = tmp_path / "config.Z1"
+    _ = input_path.write_text("1\n10 10 10\n3\n0 0 0\n1 0 0\n2 0 0\n", encoding="utf-8")
+
+    monkeypatch.chdir(tmp_path)
+    result = CliRunner().invoke(app, ["-selfZ", str(input_path)], prog_name="pyz1")
+
+    assert result.exit_code == 3
+    assert "selfZ mode is not implemented" in result.stdout
+    assert not (tmp_path / "Z1+SP.dat").exists()
+    assert not (tmp_path / "Z1+summary.dat").exists()
+
+
 def test_ppa_mode_writes_ppa_outputs(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,

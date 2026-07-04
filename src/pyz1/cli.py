@@ -64,6 +64,11 @@ MODE_OPTIONS: Final = {
     "-PPA+": "ppaplus",
 }
 
+SELF_ENTANGLEMENT_OPTIONS: Final = {
+    "-0",
+    "-selfZ",
+}
+
 BOOLEAN_OPTIONS: Final = {
     "-c",
     "-clean",
@@ -71,8 +76,6 @@ BOOLEAN_OPTIONS: Final = {
     "-log",
     "-s",
     "-stats",
-    "-0",
-    "-selfZ",
     "-ignore_H",
 }
 
@@ -98,6 +101,7 @@ class ParsedCli:
     input_file: Path | None
     clean: bool
     mode: str
+    self_entanglement: bool
 
 
 @app.command(
@@ -126,6 +130,9 @@ def run(
     if not parsed.input_file.exists():
         typer.echo(str(InputFileMissingError(path=parsed.input_file)))
         raise typer.Exit(code=2)
+    if parsed.self_entanglement:
+        typer.echo("pyz1 selfZ mode is not implemented yet.")
+        raise typer.Exit(code=3)
 
     if parsed.mode in ("default", "spplus"):
         _run_default_mode(parsed)
@@ -141,10 +148,14 @@ def run(
 def _parse_args(args: tuple[str, ...]) -> ParsedCli:
     clean = False
     mode = "default"
+    self_entanglement = False
     input_file: Path | None = None
     for arg in args:
         if arg in ("-c", "-clean"):
             clean = True
+            continue
+        if arg in SELF_ENTANGLEMENT_OPTIONS:
+            self_entanglement = True
             continue
         if arg in MODE_OPTIONS:
             mode = MODE_OPTIONS[arg]
@@ -158,7 +169,12 @@ def _parse_args(args: tuple[str, ...]) -> ParsedCli:
             typer.echo(f"unexpected argument: {arg}")
             raise typer.Exit(code=2)
         input_file = Path(arg)
-    return ParsedCli(input_file=input_file, clean=clean, mode=mode)
+    return ParsedCli(
+        input_file=input_file,
+        clean=clean,
+        mode=mode,
+        self_entanglement=self_entanglement,
+    )
 
 
 def _clean_outputs(directory: Path) -> None:
