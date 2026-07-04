@@ -58,6 +58,21 @@ ulimit -n 1000000; micromamba run -n pyz1 pyz1-ppa-oracle-coordinates \
 By default this discovers every `benchmark-*` directory under the oracle root.
 Pass `--benchmark-id` repeatedly to restrict the report to a smaller slice.
 
+Write a native PPA/PPA+ summary regression report:
+
+```bash
+ulimit -n 1000000; micromamba run -n pyz1 pyz1-ppa-regression \
+  --source-dir /Users/jiaxm/Contents/CodexProjects/source_code/Z1+ \
+  --oracle-root tests/fixtures/z1plus_oracle/corpus-ppa-ppaplus-20260703 \
+  --report-path pyz1-ppa-regression.md \
+  --max-node-count 1000
+```
+
+By default this discovers every `benchmark-*` directory under the oracle root
+and runs both PPA modes. Pass `--benchmark-id` repeatedly to restrict the
+report to a smaller slice. `--max-node-count` guards expensive native PPA
+runtime cases and records oversized cases as `known-invalid`.
+
 Run the package-level integration smoke:
 
 ```bash
