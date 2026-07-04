@@ -1,9 +1,0 @@
-# Todo 2 and 4 model/z1 io evidence
-date=2026-07-03T07:18:25Z
-## tests
-.......                                                                  [100%]
-7 passed in 0.01s
-## ruff
-All checks passed!
-## basedpyright
-0 errors, 0 warnings, 0 notes
