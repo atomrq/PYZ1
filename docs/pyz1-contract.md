@@ -264,8 +264,9 @@ Complete now:
 - native default reducer initial slice
 - native SP+ pairing output for retained kink nodes
 - native SP+ residual ghost-clearance rule reduces benchmark-04 final kink
-  max-position delta to `0.000441831629010637` and leaves one summary-field
-  mismatch, `ne_modified_coil`
+  max-position delta to `0.0004385586199525317`; benchmark-04 default/SP+
+  summary-field mismatches are now zero, while strict `Lpp` parity still leaves
+  the mode classified as `mismatch`
 - benchmark regression report generation and transparent mismatch/skip status
 - default/SP+ benchmark regression runs public benchmarks 01-05 under the
   default `node_count>1000` performance guard and records measured deltas for
@@ -297,7 +298,8 @@ Not complete yet:
   upstream-invalid native overflow fixture, not a parser/writer mismatch.
 - default geometrical Z1+ numerical parity for `Lpp`, `Z`, shortest-path
   structure, and SP+ pairings; benchmark-04 SP+ topology and pairings match,
-  but `ne_modified_coil` remains a summary mismatch.
+  and its summary fields match after task-58, but strict `Lpp` delta remains
+  `0.0003603492416281995`.
 - scalable all-14 benchmark reducer regression without the current
   `node_count>1000` performance guard.
 - self-entanglement (`selfZ`) behavior in the native reducer beyond the current

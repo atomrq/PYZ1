@@ -26,11 +26,14 @@ evidence still leaves scientific and scalability boundaries open.
 
 Latest gate artifacts:
 
-- `.omo/evidence/task-57-ppa-nan-root/pytest.txt`: `115 passed`
-- `.omo/evidence/task-57-ppa-nan-root/ruff.txt`: `All checks passed!`
-- `.omo/evidence/task-57-ppa-nan-root/basedpyright.txt`:
+- `.omo/evidence/task-58-spplus-residual/pytest.txt`: `115 passed`
+- `.omo/evidence/task-58-spplus-residual/ruff.txt`: `All checks passed!`
+- `.omo/evidence/task-58-spplus-residual/basedpyright.txt`:
   `0 errors, 0 warnings, 0 notes`
-- `.omo/evidence/task-57-ppa-nan-root/package-smoke.txt`: `2 passed`
+- `.omo/evidence/task-58-spplus-residual/package-smoke.txt`: `2 passed`
+- `.omo/evidence/task-58-spplus-residual/post-fix-spplus-report.txt`:
+  benchmark-04 SP+ has `summary_field_mismatches=0`,
+  `pairing_mismatches=0`, and `node_count_mismatches=0`
 - `.omo/evidence/task-57-ppa-nan-root/benchmark05-first-steps.txt`:
   benchmark-05 PPA+ first position update drives `mean_lpp` from
   `19.000003838046396` to `4089134097.2156291`
@@ -42,7 +45,7 @@ Latest gate artifacts:
 
 | Boundary | Current evidence | Completion evidence required |
 | --- | --- | --- |
-| Full default/SP+ numerical parity | Benchmark 01-05 default/SP+ are still `mismatch`; benchmark-04 SP+ leaves `ne_modified_coil` mismatch | Reported `passed` status or documented scientifically acceptable tolerance for all intended default/SP+ cases |
+| Full default/SP+ numerical parity | Benchmark 01-05 default/SP+ are still `mismatch`; task-58 clears benchmark-04 default/SP+ summary mismatches and keeps SP+ pairing/node-count mismatches at 0, but strict `Lpp` delta remains `0.0003603492416281995` | Reported `passed` status or documented scientifically acceptable tolerance for all intended default/SP+ cases |
 | Scalable all-14 default/SP+ regression | Benchmark-06 still timed out at 120 seconds even with bounds index and trace diagnostics disabled | All 14 benchmarks run with measured deltas or a deliberate documented tiered-regression contract accepted as final scope |
 | Full native PPA/PPA+ runtime parity | PPA+ benchmark-04 `Lpp` delta improved but remains `mismatch`; task-56 quick slice covers 01/04/05 under `max_node_count=1000`; task-57 shows 05 PPA+ is upstream-invalid because near-zero inter-chain WCA contact produces a first-step `mean_lpp` jump from `19.000003838046396` to `4089134097.2156291`, matching native Fortran `********` overflow in summary and coordinate output | Strict parity, accepted tolerance, or documented upstream-invalid fixture handling for every intended PPA/PPA+ benchmark |
 | Native `selfZ` implementation | CLI fails explicitly with not-implemented | Implemented `selfZ` reducer behavior and oracle parity evidence, or a final documented non-goal decision |
