@@ -92,4 +92,5 @@ guard until the reducer gets neighbor-list style acceleration.
 - The first implementation intentionally avoids GPU, CUDA, CuPy, PyTorch,
   Numba, and accelerator-specific dependencies.
 
-See `docs/pyz1-contract.md` for the implementation contract and parity policy.
+See `docs/pyz1-contract.md` for the implementation contract and parity policy,
+and `docs/evidence-ledger.md` for the current test/evidence index.

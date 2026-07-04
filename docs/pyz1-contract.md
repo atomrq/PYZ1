@@ -5,6 +5,9 @@ reproduction. It freezes what can be translated from public source, what must be
 reconstructed from papers and oracle fixtures, and what parity evidence is
 required before claiming equivalence.
 
+The current requirement-to-evidence index is maintained in
+`docs/evidence-ledger.md`.
+
 ## Source Boundary
 
 The public Z1+ package under
