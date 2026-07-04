@@ -24,7 +24,7 @@ if TYPE_CHECKING:
 
     from pyz1.models import Vector3
     from pyz1.output_models import ShortestPathPair, ShortestPathSnapshot
-    from pyz1.reducer import ProjectionTrace
+    from pyz1.reducer import CoreTraceNode, ProjectionTrace
 
 LPP_TOLERANCE: Final = 1.0e-6
 Z_TOLERANCE: Final = 1.0e-6
@@ -98,6 +98,11 @@ class RegressionRecord:
     pyz1_core_trace_ghost_nodes: int | None
     pyz1_core_accepted_blocked_moves: int | None
     pyz1_core_transient_blocked_nodes: int | None
+    pyz1_first_trace_blocker_chain: int | None
+    pyz1_first_trace_blocker_node: int | None
+    pyz1_first_trace_shortcut_fraction: float | None
+    pyz1_first_trace_blocker_fraction: float | None
+    pyz1_first_trace_blocker_distance: float | None
     pyz1_projection_trace_count: int | None
     pyz1_first_projection_responsible_chain: int | None
     pyz1_first_projection_responsible_node: int | None
@@ -170,6 +175,11 @@ def _compare_benchmark_mode(
             pyz1_core_trace_ghost_nodes=None,
             pyz1_core_accepted_blocked_moves=None,
             pyz1_core_transient_blocked_nodes=None,
+            pyz1_first_trace_blocker_chain=None,
+            pyz1_first_trace_blocker_node=None,
+            pyz1_first_trace_shortcut_fraction=None,
+            pyz1_first_trace_blocker_fraction=None,
+            pyz1_first_trace_blocker_distance=None,
             pyz1_projection_trace_count=None,
             pyz1_first_projection_responsible_chain=None,
             pyz1_first_projection_responsible_node=None,
@@ -199,6 +209,11 @@ def _compare_benchmark_mode(
             pyz1_core_trace_ghost_nodes=None,
             pyz1_core_accepted_blocked_moves=None,
             pyz1_core_transient_blocked_nodes=None,
+            pyz1_first_trace_blocker_chain=None,
+            pyz1_first_trace_blocker_node=None,
+            pyz1_first_trace_shortcut_fraction=None,
+            pyz1_first_trace_blocker_fraction=None,
+            pyz1_first_trace_blocker_distance=None,
             pyz1_projection_trace_count=None,
             pyz1_first_projection_responsible_chain=None,
             pyz1_first_projection_responsible_node=None,
@@ -228,6 +243,9 @@ def _compare_benchmark_mode(
         sp_path.read_text(encoding="utf-8"),
     )
     oracle_diagnostics = _oracle_reducer_diagnostics(oracle_dir / "log-stats.Z1")
+    first_trace_node = _first_core_trace_node(
+        result.diagnostics.core_trace_blocked_nodes,
+    )
     first_projection = _first_projection_trace(result.diagnostics.projection_traces)
     status = _status_from_deltas(lpp_delta, z_delta, pairing_mismatches)
     return RegressionRecord(
@@ -250,6 +268,31 @@ def _compare_benchmark_mode(
         ),
         pyz1_core_transient_blocked_nodes=(
             result.diagnostics.core_transient_blocked_node_count
+        ),
+        pyz1_first_trace_blocker_chain=(
+            first_trace_node.blocker_chain_index
+            if first_trace_node is not None
+            else None
+        ),
+        pyz1_first_trace_blocker_node=(
+            first_trace_node.blocker_node_index
+            if first_trace_node is not None
+            else None
+        ),
+        pyz1_first_trace_shortcut_fraction=(
+            first_trace_node.shortcut_fraction
+            if first_trace_node is not None
+            else None
+        ),
+        pyz1_first_trace_blocker_fraction=(
+            first_trace_node.blocker_fraction
+            if first_trace_node is not None
+            else None
+        ),
+        pyz1_first_trace_blocker_distance=(
+            first_trace_node.blocker_distance
+            if first_trace_node is not None
+            else None
         ),
         pyz1_projection_trace_count=len(result.diagnostics.projection_traces),
         pyz1_first_projection_responsible_chain=(
@@ -289,6 +332,15 @@ def _compare_benchmark_mode(
         ),
         note=_note_for_status(status),
     )
+
+
+def _first_core_trace_node(
+    blocked_nodes: tuple[tuple[CoreTraceNode, ...], ...],
+) -> CoreTraceNode | None:
+    for chain_nodes in blocked_nodes:
+        if len(chain_nodes) > 0:
+            return chain_nodes[0]
+    return None
 
 
 def _first_projection_trace(
@@ -457,6 +509,11 @@ def _format_report(records: tuple[RegressionRecord, ...]) -> str:
             "pyz1 core trace nodes | pyz1 core trace ghosts | "
             "pyz1 core accepted blocked moves | "
             "pyz1 core transient blocked nodes | "
+            "pyz1 first trace blocker chain | "
+            "pyz1 first trace blocker node | "
+            "pyz1 first trace shortcut fraction | "
+            "pyz1 first trace blocker fraction | "
+            "pyz1 first trace blocker distance | "
             "pyz1 projection traces | pyz1 first projection chain | "
             "pyz1 first projection node | pyz1 first projection fraction | "
             "oracle core nodes | oracle final nodes | "
@@ -466,7 +523,8 @@ def _format_report(records: tuple[RegressionRecord, ...]) -> str:
         (
             "| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | "
             "---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | "
-            "---: | ---: | ---: | ---: | ---: | ---: | --- | --- |"
+            "---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | "
+            "---: | ---: | --- | --- |"
         ),
     ]
     lines.extend(_format_record(record) for record in records)
@@ -488,6 +546,11 @@ def _format_record(record: RegressionRecord) -> str:
         f"{_format_optional_int(record.pyz1_core_trace_ghost_nodes)} | "
         f"{_format_optional_int(record.pyz1_core_accepted_blocked_moves)} | "
         f"{_format_optional_int(record.pyz1_core_transient_blocked_nodes)} | "
+        f"{_format_optional_int(record.pyz1_first_trace_blocker_chain)} | "
+        f"{_format_optional_int(record.pyz1_first_trace_blocker_node)} | "
+        f"{_format_first_trace_shortcut_fraction(record)} | "
+        f"{_format_first_trace_blocker_fraction(record)} | "
+        f"{_format_first_trace_blocker_distance(record)} | "
         f"{_format_optional_int(record.pyz1_projection_trace_count)} | "
         f"{_format_optional_int(record.pyz1_first_projection_responsible_chain)} | "
         f"{_format_optional_int(record.pyz1_first_projection_responsible_node)} | "
@@ -517,6 +580,18 @@ def _format_first_projection_fraction(record: RegressionRecord) -> str:
     return _format_optional_float(
         record.pyz1_first_projection_responsible_fraction,
     )
+
+
+def _format_first_trace_shortcut_fraction(record: RegressionRecord) -> str:
+    return _format_optional_float(record.pyz1_first_trace_shortcut_fraction)
+
+
+def _format_first_trace_blocker_fraction(record: RegressionRecord) -> str:
+    return _format_optional_float(record.pyz1_first_trace_blocker_fraction)
+
+
+def _format_first_trace_blocker_distance(record: RegressionRecord) -> str:
+    return _format_optional_float(record.pyz1_first_trace_blocker_distance)
 
 
 def _format_summary_field_details(

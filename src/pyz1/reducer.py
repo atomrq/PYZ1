@@ -49,6 +49,11 @@ class CoreTraceNode:
     position: Vector3
     source_bead: float
     retained: bool
+    blocker_chain_index: int | None
+    blocker_node_index: int | None
+    shortcut_fraction: float | None
+    blocker_fraction: float | None
+    blocker_distance: float | None
 
 
 @dataclass(frozen=True, slots=True)
@@ -253,6 +258,25 @@ def _blocking_segments(
     )
 
 
+def _indexed_blocking_segments(
+    chains: tuple[Chain, ...],
+    excluded_index: int,
+) -> tuple[_IndexedSegment, ...]:
+    return tuple(
+        _IndexedSegment(
+            chain_index=chain_index,
+            node_index=node_index,
+            segment=Segment(start=first, end=second),
+        )
+        for chain_index, chain in enumerate(chains, start=1)
+        if chain_index != excluded_index + 1
+        for node_index, (first, second) in enumerate(
+            zip(chain.nodes[:-1], chain.nodes[1:], strict=True),
+            start=1,
+        )
+    )
+
+
 def _chain_segments(chain: Chain) -> tuple[Segment, ...]:
     return tuple(
         Segment(start=first, end=second)
@@ -295,16 +319,62 @@ class _BlockedTraceMove:
     shortcut: Segment
 
 
+@dataclass(frozen=True, slots=True)
+class _BlockedContact:
+    blocker_chain_index: int
+    blocker_node_index: int
+    shortcut_fraction: float
+    blocker_fraction: float
+    distance: float
+
+
+def _blocked_contact(
+    shortcut: Segment,
+    swept_triangle: tuple[Vector3, Vector3, Vector3],
+    blockers: tuple[_IndexedSegment, ...],
+) -> _BlockedContact | None:
+    contacts = tuple(
+        _blocked_contact_for_segment(shortcut, swept_triangle, blocker)
+        for blocker in blockers
+    )
+    return min(
+        (contact for contact in contacts if contact is not None),
+        key=lambda contact: contact.distance,
+        default=None,
+    )
+
+
+def _blocked_contact_for_segment(
+    shortcut: Segment,
+    swept_triangle: tuple[Vector3, Vector3, Vector3],
+    blocker: _IndexedSegment,
+) -> _BlockedContact | None:
+    closest = closest_segment_points(shortcut, blocker.segment)
+    if (
+        closest.distance > GEOMETRY_TOLERANCE
+        and not segment_intersects_triangle(blocker.segment, swept_triangle)
+    ):
+        return None
+    return _BlockedContact(
+        blocker_chain_index=blocker.chain_index,
+        blocker_node_index=blocker.node_index,
+        shortcut_fraction=closest.first_fraction,
+        blocker_fraction=closest.second_fraction,
+        distance=closest.distance,
+    )
+
+
 def _blocked_move_trace(
     chains: tuple[Chain, ...],
     chain_index: int,
 ) -> _BlockedMoveTrace:
-    blockers = _blocking_segments(chains, chain_index)
+    indexed_blockers = _indexed_blocking_segments(chains, chain_index)
+    blockers = tuple(indexed.segment for indexed in indexed_blockers)
     current = tuple(
         _TraceNode(position=node, source_bead=float(index + 1))
         for index, node in enumerate(chains[chain_index].nodes)
     )
-    accepted_moves: list[tuple[_TraceNode, Segment]] = []
+    accepted_moves: list[tuple[_TraceNode, Segment, _BlockedContact | None]] = []
     node_index = 1
     while node_index < len(current) - 1:
         shortcut = Segment(
@@ -316,7 +386,8 @@ def _blocked_move_trace(
             current[node_index].position,
             current[node_index + 1].position,
         )
-        if _shortcut_is_clear(shortcut, swept_triangle, MoveContext(blockers)):
+        contact = _blocked_contact(shortcut, swept_triangle, indexed_blockers)
+        if contact is None:
             current = (*current[:node_index], *current[node_index + 1 :])
             node_index = max(1, node_index - 1)
             continue
@@ -327,13 +398,13 @@ def _blocked_move_trace(
             MoveContext(blockers),
         )
         if evaluation.accepted:
-            accepted_moves.append((candidate, shortcut))
+            accepted_moves.append((candidate, shortcut, contact))
             current = (*current[:node_index], candidate, *current[node_index + 1 :])
         node_index += 1
     retained_source_beads = frozenset(
         node.source_bead
         for node in current[1:-1]
-        if any(node == move_node for move_node, _ in accepted_moves)
+        if any(node == move_node for move_node, _, _ in accepted_moves)
     )
     return _BlockedMoveTrace(
         blocked_moves=tuple(
@@ -342,10 +413,29 @@ def _blocked_move_trace(
                     position=node.position,
                     source_bead=node.source_bead,
                     retained=node.source_bead in retained_source_beads,
+                    blocker_chain_index=(
+                        contact.blocker_chain_index
+                        if contact is not None
+                        else None
+                    ),
+                    blocker_node_index=(
+                        contact.blocker_node_index
+                        if contact is not None
+                        else None
+                    ),
+                    shortcut_fraction=(
+                        contact.shortcut_fraction if contact is not None else None
+                    ),
+                    blocker_fraction=(
+                        contact.blocker_fraction if contact is not None else None
+                    ),
+                    blocker_distance=(
+                        contact.distance if contact is not None else None
+                    ),
                 ),
                 shortcut=shortcut,
             )
-            for node, shortcut in accepted_moves
+            for node, shortcut, contact in accepted_moves
         ),
     )
 

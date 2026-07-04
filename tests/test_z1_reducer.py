@@ -236,6 +236,26 @@ def test_reduce_snapshot_when_benchmark_04_reports_core_trace_nodes() -> None:
     first_trace_node = trace_nodes[0][0]
     assert isclose(first_trace_node.source_bead, 3.5, abs_tol=FLOAT_TOLERANCE)
     assert first_trace_node.retained is False
+    assert first_trace_node.blocker_chain_index == 2
+    assert first_trace_node.blocker_node_index == 9
+    assert first_trace_node.shortcut_fraction is not None
+    assert first_trace_node.blocker_fraction is not None
+    assert first_trace_node.blocker_distance is not None
+    assert isclose(
+        first_trace_node.shortcut_fraction,
+        0.6073846552478331,
+        abs_tol=FLOAT_TOLERANCE,
+    )
+    assert isclose(
+        first_trace_node.blocker_fraction,
+        0.9360190360001871,
+        abs_tol=FLOAT_TOLERANCE,
+    )
+    assert isclose(
+        first_trace_node.blocker_distance,
+        0.018665390233954277,
+        abs_tol=FLOAT_TOLERANCE,
+    )
     assert_vector_close(
         first_trace_node.position,
         Vector3(0.1293575, -0.030405000000000015, 1.72274),
