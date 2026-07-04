@@ -24,6 +24,7 @@ dev = [
 
 [project.scripts]
 pyz1 = "pyz1.cli:app"
+pyz1-ppa-oracle-coordinates = "pyz1.ppa_oracle_coordinates_cli:app"
 
 [tool.setuptools.packages.find]
 where = ["src"]
