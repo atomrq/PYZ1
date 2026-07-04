@@ -202,6 +202,29 @@ def test_write_benchmark_regression_report_when_default_guard_runs_1000_node_cas
     assert records[1].note == "skipped: node_count>1000"
 
 
+def test_write_benchmark_regression_report_when_obstacle_sequence_differs_reports_pairs(
+    tmp_path: Path,
+) -> None:
+    report_path = tmp_path / "pyz1-benchmark-regression.md"
+
+    records = write_benchmark_regression_report(
+        RegressionRequest(
+            source_dir=SOURCE_Z1,
+            oracle_root=ORACLE_ROOT,
+            report_path=report_path,
+            modes=(RegressionMode.SPPLUS,),
+            benchmark_ids=("03",),
+        ),
+    )
+
+    text = report_path.read_text(encoding="utf-8")
+    assert records[0].pyz1_obstacle_pair_sequence == (77, 212, 212)
+    assert records[0].oracle_obstacle_pair_sequence == (268, 241, 160, 130)
+    assert "pyz1 obstacle pair sequence" in text
+    assert "77,212,212" in text
+    assert "268,241,160,130" in text
+
+
 def test_compare_spplus_pairing_when_pairing_differs_reports_mismatch() -> None:
     original = _spplus_snapshot_text().replace(
         "1       2       1",

@@ -11,15 +11,15 @@ For a requirement-by-requirement completion verdict, see
 
 Latest local gate evidence:
 
-- `.omo/evidence/task-61-obstacle-kinks/green-reducer-tests-retained.txt`:
-  `15 passed`
+- `.omo/evidence/task-63-obstacle-sequence-report/spplus-tests-final.txt`:
+  `7 passed`
 - `.omo/evidence/task-55-ppa-coverage/ppa-focused.txt`: `21 passed`
 - `.omo/evidence/task-57-ppa-nan-root/ppa-focused.txt`: `22 passed`
-- `.omo/evidence/task-61-obstacle-kinks/pytest.txt`: `116 passed`
-- `.omo/evidence/task-61-obstacle-kinks/ruff.txt`: `All checks passed!`
-- `.omo/evidence/task-61-obstacle-kinks/basedpyright.txt`:
+- `.omo/evidence/task-63-obstacle-sequence-report/pytest.txt`: `117 passed`
+- `.omo/evidence/task-63-obstacle-sequence-report/ruff.txt`: `All checks passed!`
+- `.omo/evidence/task-63-obstacle-sequence-report/basedpyright.txt`:
   `0 errors, 0 warnings, 0 notes`
-- `.omo/evidence/task-61-obstacle-kinks/package-smoke.txt`: `2 passed`
+- `.omo/evidence/task-63-obstacle-sequence-report/package-smoke.txt`: `2 passed`
 
 The package smoke runs `python -m pyz1` for default, SP+, PPA, and PPA+ modes
 and checks the expected mode-specific output files.
@@ -111,6 +111,15 @@ lower/upper hull filters do not generalize cleanly to benchmark-01/02.
 source tree lacks `module-Z1.f90`; `Z1+install.pl` lists that reducer module
 only in the private distribution, while the visible runnable oracle is the Linux
 x86-64 ELF `Z1+.ex`.
+
+Task-63 adds obstacle-sequence diagnostics to the benchmark regression report.
+Evidence in
+`.omo/evidence/task-63-obstacle-sequence-report/default-spplus-01-05-sequences.txt`
+and `.md` records the native and oracle first-chain SP+ obstacle pair-chain
+sequences for each runnable benchmark. For example, benchmark-03 SP+ reports
+native `(77, 212, 212)` versus oracle `(268, 241, 160, 130)`. This gives the
+next reducer slice a stable report surface for placement/source-bead/pairing
+work without changing the pass/fail tolerance.
 
 ## Latest PPA/PPA+ Oracle Summary Coverage
 

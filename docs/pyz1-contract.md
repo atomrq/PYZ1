@@ -246,7 +246,9 @@ record measured deltas or an explicit skip reason. Current status is:
   blockers, and contribute retained blocked-move obstacle kinks; the remaining
   gap is exact Z1+ obstacle-kink placement, source-bead selection, and SP+
   pairing. Task-62 evidence shows simple retained-trace and lower/upper hull
-  rules do not fully explain the oracle obstacle sequence.
+  rules do not fully explain the oracle obstacle sequence. Task-63 adds
+  native/oracle obstacle pair-chain sequences to the regression report so this
+  gap is tracked directly.
 - SP+ structural comparison counts mismatched `other-chain other-node` pairs.
 - `benchmark-06` and larger benchmark/mode entries are classified as
   `known-invalid` under the current `node_count>1000` performance guard until
@@ -288,6 +290,8 @@ Complete now:
   `Z1+install.pl` lists `module-Z1.f90` only in the private distribution, and
   the visible public tree supplies the Linux x86-64 ELF oracle `Z1+.ex` instead
 - benchmark regression report generation and transparent mismatch/skip status
+- benchmark regression rows include SP+ native/oracle first-chain obstacle pair
+  sequences, giving the obstacle-placement work a stable diagnostic surface
 - default/SP+ benchmark regression runs public benchmarks 01-05 under the
   default `node_count>1000` performance guard and records measured deltas for
   each runnable mismatch

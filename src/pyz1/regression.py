@@ -138,6 +138,8 @@ class RegressionRecord:
     pyz1_core_stage_source_bead_matches: int | None
     pyz1_core_stage_source_bead_max_delta: float | None
     note: str
+    pyz1_obstacle_pair_sequence: tuple[int, ...] | None = None
+    oracle_obstacle_pair_sequence: tuple[int, ...] | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -328,9 +330,10 @@ def _compare_benchmark_mode(
     )
     summary_field_mismatches = len(summary_field_mismatch_details)
     pairing_mismatches = _pairing_mismatch_count(mode, result.shortest_path, sp_path)
-    geometry_comparison = _shortest_path_geometry_comparison(
+    oracle_shortest_path = parse_shortest_path_text(sp_path.read_text(encoding="utf-8"))
+    geometry_comparison = _shortest_path_snapshot_geometry_comparison(
         result.shortest_path,
-        sp_path.read_text(encoding="utf-8"),
+        oracle_shortest_path,
     )
     oracle_diagnostics = _oracle_reducer_diagnostics(oracle_dir / "log-stats.Z1")
     oracle_core_stage = _oracle_core_stage(oracle_dir / CORE_STAGE_NODE_FILENAME)
@@ -475,6 +478,12 @@ def _compare_benchmark_mode(
             else None
         ),
         note=_note_for_status(status),
+        pyz1_obstacle_pair_sequence=_obstacle_pair_chain_sequence(
+            result.shortest_path,
+        ),
+        oracle_obstacle_pair_sequence=_obstacle_pair_chain_sequence(
+            oracle_shortest_path,
+        ),
     )
 
 
@@ -670,16 +679,6 @@ def _pairing_mismatch_count(
             return comparison.mismatched_pair_count
 
 
-def _shortest_path_geometry_comparison(
-    actual: ShortestPathSnapshot,
-    expected_text: str,
-) -> ShortestPathGeometryComparison:
-    return _shortest_path_snapshot_geometry_comparison(
-        actual,
-        parse_shortest_path_text(expected_text),
-    )
-
-
 def _shortest_path_snapshot_geometry_comparison(
     actual: ShortestPathSnapshot,
     expected: ShortestPathSnapshot,
@@ -853,6 +852,16 @@ def _pair_sequence(
     )
 
 
+def _obstacle_pair_chain_sequence(snapshot: ShortestPathSnapshot) -> tuple[int, ...]:
+    if snapshot.chain_count == 0:
+        return ()
+    return tuple(
+        node.pair.chain_index
+        for node in snapshot.chains[0].nodes
+        if node.is_entanglement and node.pair is not None
+    )
+
+
 def _format_report(records: tuple[RegressionRecord, ...]) -> str:
     lines = [
         "# pyz1 Benchmark Regression",
@@ -886,6 +895,8 @@ def _format_report(records: tuple[RegressionRecord, ...]) -> str:
             "pyz1 core stage max node position delta | "
             "pyz1 core stage source bead matches | "
             "pyz1 core stage source bead max delta | "
+            "pyz1 obstacle pair sequence | "
+            "oracle obstacle pair sequence | "
             "summary mismatch details | note |"
         ),
         (
@@ -894,7 +905,8 @@ def _format_report(records: tuple[RegressionRecord, ...]) -> str:
             "---: | ---: | ---: | ---: | "
             "---: | ---: | ---: | ---: | "
             "---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | "
-            "---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- |"
+            "---: | ---: | ---: | ---: | ---: | ---: | ---: | "
+            "--- | --- | --- | --- |"
         ),
     ]
     lines.extend(_format_record(record) for record in records)
@@ -942,6 +954,8 @@ def _format_record(record: RegressionRecord) -> str:
         f"{_format_optional_float(record.pyz1_core_stage_max_node_position_delta)} | "
         f"{_format_optional_int(record.pyz1_core_stage_source_bead_matches)} | "
         f"{_format_optional_float(record.pyz1_core_stage_source_bead_max_delta)} | "
+        f"{_format_int_sequence(record.pyz1_obstacle_pair_sequence)} | "
+        f"{_format_int_sequence(record.oracle_obstacle_pair_sequence)} | "
         f"{_format_summary_field_details(record.summary_field_mismatch_details)} | "
         f"{record.note} |"
     )
@@ -957,6 +971,14 @@ def _format_optional_int(value: int | None) -> str:
     if value is None:
         return "n/a"
     return str(value)
+
+
+def _format_int_sequence(values: tuple[int, ...] | None) -> str:
+    if values is None:
+        return "n/a"
+    if len(values) == 0:
+        return "none"
+    return ",".join(str(value) for value in values)
 
 
 def _format_first_projection_fraction(record: RegressionRecord) -> str:

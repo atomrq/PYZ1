@@ -26,16 +26,17 @@ evidence still leaves scientific and scalability boundaries open.
 
 Latest gate artifacts:
 
-- `.omo/evidence/task-61-obstacle-kinks/pytest.txt`: `116 passed`
-- `.omo/evidence/task-61-obstacle-kinks/ruff.txt`: `All checks passed!`
-- `.omo/evidence/task-61-obstacle-kinks/basedpyright.txt`:
+- `.omo/evidence/task-63-obstacle-sequence-report/pytest.txt`: `117 passed`
+- `.omo/evidence/task-63-obstacle-sequence-report/ruff.txt`: `All checks passed!`
+- `.omo/evidence/task-63-obstacle-sequence-report/basedpyright.txt`:
   `0 errors, 0 warnings, 0 notes`
-- `.omo/evidence/task-61-obstacle-kinks/package-smoke.txt`: `2 passed`
-- `.omo/evidence/task-61-obstacle-kinks/default-spplus-01-05-retained.txt`:
+- `.omo/evidence/task-63-obstacle-sequence-report/package-smoke.txt`: `2 passed`
+- `.omo/evidence/task-63-obstacle-sequence-report/default-spplus-01-05-sequences.txt`:
   benchmark-04 default/SP+ are `passed`; benchmarks 01/02/03/05 default/SP+
   remain `mismatch`; benchmark-01/02/03 now retain the 300 two-node obstacle
   chains and retained blocked-move obstacle kinks, reducing node-count
-  mismatches to 5/3/1
+  mismatches to 5/3/1; SP+ rows now also report native/oracle obstacle pair
+  sequences for placement debugging
 - `.omo/evidence/task-57-ppa-nan-root/benchmark05-first-steps.txt`:
   benchmark-05 PPA+ first position update drives `mean_lpp` from
   `19.000003838046396` to `4089134097.2156291`
@@ -63,8 +64,9 @@ Latest gate artifacts:
 3. If scientific parity is the priority, continue reducer geometry debugging
    on benchmarks 01/02/03/05. For benchmark-01/02/03, the next reducer gap is
    obstacle-kink placement/source-bead selection and SP+ pairing. Use the
-   task-62 winding diagnostics and oracle traces; do not assume the missing
-   public `module-Z1.f90` can be read locally.
+   task-62 winding diagnostics, task-63 obstacle sequence report fields, and
+   oracle traces; do not assume the missing public `module-Z1.f90` can be read
+   locally.
 4. Keep the package gate green after each slice:
    `pytest -q`, `ruff check .`, `basedpyright`, and
    `pytest tests/test_package_integration_smoke.py -q`.
