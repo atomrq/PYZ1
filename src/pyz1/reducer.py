@@ -48,12 +48,22 @@ class ReducerResult:
 class ReducerDiagnostics:
     core_node_count: int
     final_node_count: int
+    core_accepted_blocked_move_count: int
+    core_retained_blocked_node_count: int
+    core_transient_blocked_node_count: int
 
 
 @dataclass(frozen=True, slots=True)
 class _PreservedChains:
     chains: tuple[Chain, ...]
     source_beads: tuple[tuple[float, ...], ...]
+
+
+@dataclass(frozen=True, slots=True)
+class _CoreTraceDiagnostics:
+    accepted_blocked_move_count: int
+    retained_blocked_node_count: int
+    transient_blocked_node_count: int
 
 
 def reduce_snapshot(
@@ -63,6 +73,7 @@ def reduce_snapshot(
     active_settings = settings or ReducerSettings()
     box = GeometryBox(lengths=snapshot.box, shear=snapshot.shear or 0.0)
     chains = tuple(unfold_chain(chain, box) for chain in snapshot.true_chains)
+    core_trace = _core_trace_diagnostics(chains)
     core_chains = _reduce_chains(chains, active_settings)
     preserved = _preserve_close_contacts(chains, core_chains, active_settings)
     reduced_chains = preserved.chains
@@ -91,6 +102,13 @@ def reduce_snapshot(
         diagnostics=ReducerDiagnostics(
             core_node_count=sum(chain.node_count for chain in core_chains),
             final_node_count=sum(chain.node_count for chain in reduced_chains),
+            core_accepted_blocked_move_count=(
+                core_trace.accepted_blocked_move_count
+            ),
+            core_retained_blocked_node_count=core_trace.retained_blocked_node_count,
+            core_transient_blocked_node_count=(
+                core_trace.transient_blocked_node_count
+            ),
         ),
     )
 
@@ -210,6 +228,72 @@ def _chain_segments(chain: Chain) -> tuple[Segment, ...]:
     return tuple(
         Segment(start=first, end=second)
         for first, second in zip(chain.nodes[:-1], chain.nodes[1:], strict=True)
+    )
+
+
+def _core_trace_diagnostics(chains: tuple[Chain, ...]) -> _CoreTraceDiagnostics:
+    traces = tuple(
+        _blocked_move_trace(chains, chain_index)
+        for chain_index in range(len(chains))
+    )
+    accepted_count = sum(len(trace.accepted_source_beads) for trace in traces)
+    retained_count = sum(len(trace.retained_source_beads) for trace in traces)
+    return _CoreTraceDiagnostics(
+        accepted_blocked_move_count=accepted_count,
+        retained_blocked_node_count=retained_count,
+        transient_blocked_node_count=accepted_count - retained_count,
+    )
+
+
+@dataclass(frozen=True, slots=True)
+class _BlockedMoveTrace:
+    accepted_source_beads: tuple[float, ...]
+    retained_source_beads: tuple[float, ...]
+
+
+def _blocked_move_trace(
+    chains: tuple[Chain, ...],
+    chain_index: int,
+) -> _BlockedMoveTrace:
+    blockers = _blocking_segments(chains, chain_index)
+    current = tuple(
+        _TraceNode(position=node, source_bead=float(index + 1))
+        for index, node in enumerate(chains[chain_index].nodes)
+    )
+    accepted_source_beads: list[float] = []
+    node_index = 1
+    while node_index < len(current) - 1:
+        shortcut = Segment(
+            start=current[node_index - 1].position,
+            end=current[node_index + 1].position,
+        )
+        swept_triangle = (
+            current[node_index - 1].position,
+            current[node_index].position,
+            current[node_index + 1].position,
+        )
+        if _shortcut_is_clear(shortcut, swept_triangle, MoveContext(blockers)):
+            current = (*current[:node_index], *current[node_index + 1 :])
+            node_index = max(1, node_index - 1)
+            continue
+        candidate = _candidate_trace_node(current, node_index)
+        evaluation = evaluate_node_move(
+            Chain(tuple(node.position for node in current)),
+            NodeMove(node_index=node_index, position=candidate.position),
+            MoveContext(blockers),
+        )
+        if evaluation.accepted:
+            accepted_source_beads.append(candidate.source_bead)
+            current = (*current[:node_index], candidate, *current[node_index + 1 :])
+        node_index += 1
+    retained_source_beads = tuple(
+        node.source_bead
+        for node in current[1:-1]
+        if node.source_bead in accepted_source_beads
+    )
+    return _BlockedMoveTrace(
+        accepted_source_beads=tuple(accepted_source_beads),
+        retained_source_beads=retained_source_beads,
     )
 
 
