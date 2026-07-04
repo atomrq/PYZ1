@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import StrEnum
-from math import isclose
+from math import isclose, sqrt
 from typing import TYPE_CHECKING, Final
 
 from pyz1.output_io import (
@@ -17,6 +17,7 @@ from pyz1.z1_io import read_z1_file
 if TYPE_CHECKING:
     from pathlib import Path
 
+    from pyz1.models import Vector3
     from pyz1.output_models import ShortestPathPair, ShortestPathSnapshot
 
 LPP_TOLERANCE: Final = 1.0e-6
@@ -83,7 +84,15 @@ class RegressionRecord:
     summary_field_mismatches: int | None
     summary_field_mismatch_details: tuple[SummaryFieldMismatch, ...] | None
     pairing_mismatches: int | None
+    node_count_mismatches: int | None
+    max_node_position_delta: float | None
     note: str
+
+
+@dataclass(frozen=True, slots=True)
+class ShortestPathGeometryComparison:
+    node_count_mismatches: int
+    max_node_position_delta: float
 
 
 def compare_spplus_pairing(
@@ -133,6 +142,8 @@ def _compare_benchmark_mode(
             summary_field_mismatches=None,
             summary_field_mismatch_details=None,
             pairing_mismatches=None,
+            node_count_mismatches=None,
+            max_node_position_delta=None,
             note="missing source or oracle output",
         )
     snapshot = read_z1_file(source_path)
@@ -146,6 +157,8 @@ def _compare_benchmark_mode(
             summary_field_mismatches=None,
             summary_field_mismatch_details=None,
             pairing_mismatches=None,
+            node_count_mismatches=None,
+            max_node_position_delta=None,
             note=f"skipped: node_count>{request.max_node_count}",
         )
     result = reduce_snapshot(snapshot, _settings_for_mode(mode))
@@ -162,6 +175,10 @@ def _compare_benchmark_mode(
     )
     summary_field_mismatches = len(summary_field_mismatch_details)
     pairing_mismatches = _pairing_mismatch_count(mode, result.shortest_path, sp_path)
+    geometry_comparison = _shortest_path_geometry_comparison(
+        result.shortest_path,
+        sp_path.read_text(encoding="utf-8"),
+    )
     status = _status_from_deltas(lpp_delta, z_delta, pairing_mismatches)
     return RegressionRecord(
         benchmark_id=benchmark_id,
@@ -172,6 +189,8 @@ def _compare_benchmark_mode(
         summary_field_mismatches=summary_field_mismatches,
         summary_field_mismatch_details=summary_field_mismatch_details,
         pairing_mismatches=pairing_mismatches,
+        node_count_mismatches=geometry_comparison.node_count_mismatches,
+        max_node_position_delta=geometry_comparison.max_node_position_delta,
         note=_note_for_status(status),
     )
 
@@ -206,6 +225,44 @@ def _pairing_mismatch_count(
                 expected_path.read_text(encoding="utf-8"),
             )
             return comparison.mismatched_pair_count
+
+
+def _shortest_path_geometry_comparison(
+    actual: ShortestPathSnapshot,
+    expected_text: str,
+) -> ShortestPathGeometryComparison:
+    expected = parse_shortest_path_text(expected_text)
+    node_count_mismatches = abs(actual.chain_count - expected.chain_count)
+    max_position_delta = 0.0
+    shared_chain_count = min(actual.chain_count, expected.chain_count)
+    for chain_index in range(shared_chain_count):
+        actual_chain = actual.chains[chain_index]
+        expected_chain = expected.chains[chain_index]
+        node_count_mismatches += abs(
+            actual_chain.node_count - expected_chain.node_count,
+        )
+        shared_node_count = min(actual_chain.node_count, expected_chain.node_count)
+        for node_index in range(shared_node_count):
+            delta = _node_position_delta(
+                actual_chain.nodes[node_index].position,
+                expected_chain.nodes[node_index].position,
+            )
+            max_position_delta = max(max_position_delta, delta)
+    return ShortestPathGeometryComparison(
+        node_count_mismatches=node_count_mismatches,
+        max_node_position_delta=max_position_delta,
+    )
+
+
+def _node_position_delta(
+    actual: Vector3,
+    expected: Vector3,
+) -> float:
+    return sqrt(
+        (actual.x - expected.x) ** 2
+        + (actual.y - expected.y) ** 2
+        + (actual.z - expected.z) ** 2,
+    )
 
 
 def _summary_field_mismatches(
@@ -285,9 +342,10 @@ def _format_report(records: tuple[RegressionRecord, ...]) -> str:
         (
             "| benchmark | mode | status | Lpp delta | Z delta | "
             "summary field mismatches | pair mismatches | "
+            "node count mismatches | max node position delta | "
             "summary mismatch details | note |"
         ),
-        "| --- | --- | --- | ---: | ---: | ---: | ---: | --- | --- |",
+        "| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- |",
     ]
     lines.extend(_format_record(record) for record in records)
     return "\n".join(lines) + "\n"
@@ -300,6 +358,8 @@ def _format_record(record: RegressionRecord) -> str:
         f"{_format_optional_float(record.z_delta)} | "
         f"{_format_optional_int(record.summary_field_mismatches)} | "
         f"{_format_optional_int(record.pairing_mismatches)} | "
+        f"{_format_optional_int(record.node_count_mismatches)} | "
+        f"{_format_optional_float(record.max_node_position_delta)} | "
         f"{_format_summary_field_details(record.summary_field_mismatch_details)} | "
         f"{record.note} |"
     )
