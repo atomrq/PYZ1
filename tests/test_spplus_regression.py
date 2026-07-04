@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from shutil import copyfile
 
+from pyz1.output_io import read_shortest_path_file, read_summary_file
 from pyz1.regression import (
     RegressionMode,
     RegressionRecord,
@@ -10,6 +11,8 @@ from pyz1.regression import (
     compare_spplus_pairing,
     write_benchmark_regression_report,
 )
+from pyz1.summary import build_summary_outputs
+from pyz1.z1_io import read_z1_file
 
 SOURCE_Z1 = Path("/Users/jiaxm/Contents/CodexProjects/source_code/Z1+")
 ORACLE_ROOT = Path("tests/fixtures/z1plus_oracle/corpus-default-spplus-selfz-20260703")
@@ -161,6 +164,31 @@ def test_compare_spplus_pairing_when_pairing_differs_reports_mismatch() -> None:
     comparison = compare_spplus_pairing(_spplus_snapshot_text(), original)
 
     assert comparison.mismatched_pair_count == 1
+
+
+def test_build_summary_outputs_when_oracle_spplus_path_matches_ne_coil() -> None:
+    snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-04.Z1")
+    oracle_path = read_shortest_path_file(
+        ORACLE_ROOT / "benchmark-04" / "spplus" / "Z1+SP.dat",
+    )
+    oracle_summary = read_summary_file(
+        ORACLE_ROOT / "benchmark-04" / "spplus" / "Z1+summary.dat",
+    )[0]
+
+    outputs = build_summary_outputs(
+        original=snapshot,
+        primitive_path=oracle_path,
+        timestep=snapshot.label or 1,
+    )
+
+    assert (
+        abs(outputs.record.ne_classical_coil - oracle_summary.ne_classical_coil)
+        < 0.001
+    )
+    assert (
+        abs(outputs.record.ne_modified_coil - oracle_summary.ne_modified_coil)
+        < 0.002
+    )
 
 
 def _spplus_snapshot_text() -> str:
