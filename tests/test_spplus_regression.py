@@ -283,6 +283,64 @@ def test_write_benchmark_regression_report_when_convex_candidates_cover_oracle(
     assert "oracle true-chain pair sequence" in text
 
 
+def test_write_benchmark_regression_report_when_convex_selection_misses_oracle(
+    tmp_path: Path,
+) -> None:
+    report_path = tmp_path / "pyz1-benchmark-regression.md"
+
+    records = write_benchmark_regression_report(
+        RegressionRequest(
+            source_dir=SOURCE_Z1,
+            oracle_root=ORACLE_ROOT,
+            report_path=report_path,
+            modes=(RegressionMode.SPPLUS,),
+            benchmark_ids=("01", "02"),
+        ),
+    )
+
+    text = report_path.read_text(encoding="utf-8")
+    benchmark_01 = records[0]
+    benchmark_02 = records[1]
+    assert benchmark_01.pyz1_convex_selected_winding_sequence == (
+        20,
+        185,
+        278,
+        41,
+        134,
+        35,
+        110,
+        9,
+    )
+    assert benchmark_01.pyz1_convex_selected_missing_oracle_sequence == (
+        95,
+        80,
+        283,
+        128,
+        275,
+        87,
+        208,
+        132,
+        140,
+        97,
+        36,
+    )
+    assert benchmark_01.pyz1_convex_selected_extra_count == 6
+    assert benchmark_02.pyz1_convex_selected_winding_sequence == (63, 239, 46, 180)
+    assert benchmark_02.pyz1_convex_selected_missing_oracle_sequence == (
+        146,
+        278,
+        132,
+        86,
+        27,
+        139,
+        102,
+        217,
+    )
+    assert benchmark_02.pyz1_convex_selected_extra_count == 2
+    assert "pyz1 convex selected winding sequence" in text
+    assert "pyz1 convex selected missing oracle sequence" in text
+
+
 def test_write_benchmark_regression_report_when_source_beads_differ_reports_max_delta(
     tmp_path: Path,
 ) -> None:

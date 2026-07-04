@@ -11,16 +11,14 @@ For a requirement-by-requirement completion verdict, see
 
 Latest local gate evidence:
 
-- `.omo/evidence/task-68-winding-number-surface/spplus-regression.txt`:
-  `10 passed`
+- `.omo/evidence/task-69-convex-selection-order/pytest.txt`: `122 passed`
 - `.omo/evidence/task-55-ppa-coverage/ppa-focused.txt`: `21 passed`
 - `.omo/evidence/task-57-ppa-nan-root/ppa-focused.txt`: `22 passed`
-- `.omo/evidence/task-68-winding-number-surface/pytest.txt`: `121 passed`
-- `.omo/evidence/task-68-winding-number-surface/ruff.txt`:
+- `.omo/evidence/task-69-convex-selection-order/ruff.txt`:
   `All checks passed!`
-- `.omo/evidence/task-68-winding-number-surface/basedpyright.txt`:
+- `.omo/evidence/task-69-convex-selection-order/basedpyright.txt`:
   `0 errors, 0 warnings, 0 notes`
-- `.omo/evidence/task-68-winding-number-surface/package-smoke.txt`:
+- `.omo/evidence/task-69-convex-selection-order/package-smoke.txt`:
   `2 passed`
 
 The package smoke runs `python -m pyz1` for default, SP+, PPA, and PPA+ modes
@@ -182,6 +180,24 @@ many extra candidates, so their next blocker is selection/order on a broader
 surface. Benchmark-05 SP+ reports `true_pairs (40, 26)` and still has no
 dumbbell winding coverage, so its next blocker is true-chain interaction
 handling rather than dumbbell winding selection.
+
+Task-69 adds convex-selected winding diagnostics to the benchmark regression
+report. Evidence in
+`.omo/evidence/task-69-convex-selection-order/convex-candidate-features.md`
+and `.omo/evidence/task-69-convex-selection-order/convex-group-distribution.md`
+shows benchmark-01/02 oracle obstacles are not explained by one representative
+per source-gap group: benchmark-01 has multiple oracle obstacles in groups
+1/3/5/7, while benchmark-02 has multiple oracle obstacles in groups 2/3/4.
+The generated report artifact
+`.omo/evidence/task-69-convex-selection-order/regression-01-02-convex-selected.txt`
+records current convex-selected sequences `(20,185,278,41,134,35,110,9)` for
+benchmark-01 and `(63,239,46,180)` for benchmark-02, missing 11 and 8 oracle
+obstacles respectively. The paired source probes
+`.omo/evidence/task-69-convex-selection-order/oracle-sequence-node-order.md`,
+`.omo/evidence/task-69-convex-selection-order/oracle-periodic-image-probe.md`,
+and `.omo/evidence/task-69-convex-selection-order/wrapped-vs-unfolded-source.md`
+show the remaining blocker is source/order semantics for obstacle placement,
+not just convex membership or simple periodic image shifting.
 
 ## Latest PPA/PPA+ Oracle Summary Coverage
 

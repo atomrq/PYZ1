@@ -224,17 +224,20 @@ def convex_winding_obstacle_candidate_chain_indices(
     chains: tuple[Chain, ...],
     chain_index: int,
 ) -> tuple[int, ...]:
-    chain = chains[chain_index]
-    if not chain.is_true_chain:
-        return ()
-    hull = _convex_hull_xy(chain.nodes)
     return tuple(
-        candidate_chain_index
-        for candidate_chain_index, obstacle in enumerate(chains, start=1)
-        if not obstacle.is_true_chain
-        and _point_in_convex_polygon_xy(
-            _midpoint(Segment(obstacle.nodes[0], obstacle.nodes[1])),
-            hull,
+        candidate.chain_index
+        for candidate in _convex_winding_obstacle_candidates(chains, chain_index)
+    )
+
+
+def convex_selected_winding_obstacle_chain_indices(
+    chains: tuple[Chain, ...],
+    chain_index: int,
+) -> tuple[int, ...]:
+    return tuple(
+        candidate.chain_index
+        for candidate in _select_small_winding_obstacles(
+            _convex_winding_obstacle_candidates(chains, chain_index),
         )
     )
 
@@ -1040,6 +1043,41 @@ def _winding_obstacle_candidates(
             continue
         midpoint = _midpoint(Segment(obstacle.nodes[0], obstacle.nodes[1]))
         if not _point_in_chain_polygon_xy(midpoint, chain):
+            continue
+        source_bead, distance = _nearest_chain_source_bead_and_distance(
+            chain,
+            Segment(start=midpoint, end=midpoint),
+        )
+        candidates.append(
+            _WindingObstacleCandidate(
+                chain_index=candidate_chain_index,
+                position=midpoint,
+                source_bead=source_bead,
+                distance=distance,
+            ),
+        )
+    return tuple(
+        sorted(
+            candidates,
+            key=lambda candidate: candidate.source_bead,
+        ),
+    )
+
+
+def _convex_winding_obstacle_candidates(
+    chains: tuple[Chain, ...],
+    chain_index: int,
+) -> tuple[_WindingObstacleCandidate, ...]:
+    chain = chains[chain_index]
+    if not chain.is_true_chain:
+        return ()
+    hull = _convex_hull_xy(chain.nodes)
+    candidates: list[_WindingObstacleCandidate] = []
+    for candidate_chain_index, obstacle in enumerate(chains, start=1):
+        if obstacle.is_true_chain:
+            continue
+        midpoint = _midpoint(Segment(obstacle.nodes[0], obstacle.nodes[1]))
+        if not _point_in_convex_polygon_xy(midpoint, hull):
             continue
         source_bead, distance = _nearest_chain_source_bead_and_distance(
             chain,

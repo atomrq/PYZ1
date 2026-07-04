@@ -25,6 +25,7 @@ from pyz1.output_models import (
 )
 from pyz1.reducer import (
     ReducerSettings,
+    convex_selected_winding_obstacle_chain_indices,
     convex_winding_obstacle_candidate_chain_indices,
     reduce_snapshot,
     winding_obstacle_candidate_chain_indices,
@@ -168,6 +169,9 @@ class RegressionRecord:
     pyz1_convex_winding_candidate_count: int | None = None
     pyz1_convex_winding_missing_oracle_sequence: tuple[int, ...] | None = None
     pyz1_convex_winding_extra_candidate_count: int | None = None
+    pyz1_convex_selected_winding_sequence: tuple[int, ...] | None = None
+    pyz1_convex_selected_missing_oracle_sequence: tuple[int, ...] | None = None
+    pyz1_convex_selected_extra_count: int | None = None
     oracle_true_chain_pair_sequence: tuple[int, ...] | None = None
 
 
@@ -211,6 +215,9 @@ class _WindingCandidateCoverage:
     convex_candidate_count: int
     convex_missing_oracle_sequence: tuple[int, ...]
     convex_extra_candidate_count: int
+    convex_selected_sequence: tuple[int, ...]
+    convex_selected_missing_oracle_sequence: tuple[int, ...]
+    convex_selected_extra_count: int
     oracle_true_chain_pair_sequence: tuple[int, ...]
 
 
@@ -554,6 +561,15 @@ def _compare_benchmark_mode(
         pyz1_convex_winding_extra_candidate_count=(
             winding_candidate_coverage.convex_extra_candidate_count
         ),
+        pyz1_convex_selected_winding_sequence=(
+            winding_candidate_coverage.convex_selected_sequence
+        ),
+        pyz1_convex_selected_missing_oracle_sequence=(
+            winding_candidate_coverage.convex_selected_missing_oracle_sequence
+        ),
+        pyz1_convex_selected_extra_count=(
+            winding_candidate_coverage.convex_selected_extra_count
+        ),
         oracle_true_chain_pair_sequence=(
             winding_candidate_coverage.oracle_true_chain_pair_sequence
         ),
@@ -580,9 +596,14 @@ def _winding_candidate_coverage(
         chains,
         0,
     )
+    convex_selected_sequence = convex_selected_winding_obstacle_chain_indices(
+        chains,
+        0,
+    )
     oracle_sequence = _obstacle_pair_chain_sequence(oracle_shortest_path)
     candidate_set = set(candidate_sequence)
     convex_candidate_set = set(convex_candidate_sequence)
+    convex_selected_set = set(convex_selected_sequence)
     oracle_set = set(oracle_sequence)
     return _WindingCandidateCoverage(
         candidate_count=len(candidate_sequence),
@@ -604,6 +625,16 @@ def _winding_candidate_coverage(
         convex_extra_candidate_count=sum(
             chain_index not in oracle_set
             for chain_index in convex_candidate_sequence
+        ),
+        convex_selected_sequence=convex_selected_sequence,
+        convex_selected_missing_oracle_sequence=tuple(
+            chain_index
+            for chain_index in oracle_sequence
+            if chain_index not in convex_selected_set
+        ),
+        convex_selected_extra_count=sum(
+            chain_index not in oracle_set
+            for chain_index in convex_selected_sequence
         ),
         oracle_true_chain_pair_sequence=tuple(
             chain_index
@@ -1059,6 +1090,9 @@ def _format_report(records: tuple[RegressionRecord, ...]) -> str:
         "pyz1 convex winding candidates | "
         "pyz1 convex winding missing oracle sequence | "
         "pyz1 convex winding extra candidates | "
+        "pyz1 convex selected winding sequence | "
+        "pyz1 convex selected missing oracle sequence | "
+        "pyz1 convex selected extra candidates | "
         "oracle true-chain pair sequence | "
         "summary mismatch details | note |"
     )
@@ -1130,6 +1164,9 @@ def _format_record(record: RegressionRecord) -> str:
         f"{_format_optional_int(record.pyz1_convex_winding_candidate_count)} | "
         f"{_format_int_sequence(record.pyz1_convex_winding_missing_oracle_sequence)} | "
         f"{_format_optional_int(record.pyz1_convex_winding_extra_candidate_count)} | "
+        f"{_format_int_sequence(record.pyz1_convex_selected_winding_sequence)} | "
+        f"{_format_convex_selected_missing_sequence(record)} | "
+        f"{_format_optional_int(record.pyz1_convex_selected_extra_count)} | "
         f"{_format_int_sequence(record.oracle_true_chain_pair_sequence)} | "
         f"{_format_summary_field_details(record.summary_field_mismatch_details)} | "
         f"{record.note} |"
@@ -1154,6 +1191,10 @@ def _format_int_sequence(values: tuple[int, ...] | None) -> str:
     if len(values) == 0:
         return "none"
     return ",".join(str(value) for value in values)
+
+
+def _format_convex_selected_missing_sequence(record: RegressionRecord) -> str:
+    return _format_int_sequence(record.pyz1_convex_selected_missing_oracle_sequence)
 
 
 def _format_source_bead_residuals(
