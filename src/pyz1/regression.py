@@ -5,6 +5,7 @@ from enum import StrEnum
 from math import isclose, sqrt
 from typing import TYPE_CHECKING, Final
 
+from pyz1.geometry import GeometryBox, Segment, minimum_image_delta
 from pyz1.output_io import (
     format_shortest_path_text,
     format_summary_text,
@@ -33,6 +34,7 @@ if TYPE_CHECKING:
 
 LPP_TOLERANCE: Final = 1.0e-6
 Z_TOLERANCE: Final = 1.0e-6
+SOURCE_BEAD_TOLERANCE: Final = 1.0e-9
 CORE_STAGE_NODE_FILENAME: Final = "Z1+NODES-best-match-step1-entry.dat"
 SUMMARY_FIELD_NAMES: Final = (
     "timestep",
@@ -120,6 +122,8 @@ class RegressionRecord:
     oracle_core_stage_node_count: int | None
     pyz1_core_stage_node_count_mismatches: int | None
     pyz1_core_stage_max_node_position_delta: float | None
+    pyz1_core_stage_source_bead_matches: int | None
+    pyz1_core_stage_source_bead_max_delta: float | None
     note: str
 
 
@@ -127,6 +131,14 @@ class RegressionRecord:
 class ShortestPathGeometryComparison:
     node_count_mismatches: int
     max_node_position_delta: float
+
+
+@dataclass(frozen=True, slots=True)
+class CoreStageGeometryComparison:
+    node_count_mismatches: int
+    max_node_position_delta: float
+    source_bead_matches: int
+    source_bead_max_node_position_delta: float
 
 
 def compare_spplus_pairing(
@@ -200,6 +212,8 @@ def _compare_benchmark_mode(
             oracle_core_stage_node_count=None,
             pyz1_core_stage_node_count_mismatches=None,
             pyz1_core_stage_max_node_position_delta=None,
+            pyz1_core_stage_source_bead_matches=None,
+            pyz1_core_stage_source_bead_max_delta=None,
             note="missing source or oracle output",
         )
     snapshot = read_z1_file(source_path)
@@ -237,6 +251,8 @@ def _compare_benchmark_mode(
             oracle_core_stage_node_count=None,
             pyz1_core_stage_node_count_mismatches=None,
             pyz1_core_stage_max_node_position_delta=None,
+            pyz1_core_stage_source_bead_matches=None,
+            pyz1_core_stage_source_bead_max_delta=None,
             note=f"skipped: node_count>{request.max_node_count}",
         )
     result = reduce_snapshot(snapshot, _settings_for_mode(mode))
@@ -366,6 +382,16 @@ def _compare_benchmark_mode(
             if pyz1_core_stage_comparison is not None
             else None
         ),
+        pyz1_core_stage_source_bead_matches=(
+            pyz1_core_stage_comparison.source_bead_matches
+            if pyz1_core_stage_comparison is not None
+            else None
+        ),
+        pyz1_core_stage_source_bead_max_delta=(
+            pyz1_core_stage_comparison.source_bead_max_node_position_delta
+            if pyz1_core_stage_comparison is not None
+            else None
+        ),
         note=_note_for_status(status),
     )
 
@@ -403,12 +429,94 @@ def _pyz1_core_stage_comparison(
     shortest_path: ShortestPathSnapshot,
     trace_nodes: tuple[tuple[CoreTraceNode, ...], ...],
     oracle_core_stage: ShortestPathSnapshot | None,
-) -> ShortestPathGeometryComparison | None:
+) -> CoreStageGeometryComparison | None:
     if oracle_core_stage is None:
         return None
-    return _shortest_path_snapshot_geometry_comparison(
-        _pyz1_core_stage_snapshot(shortest_path, trace_nodes),
+    actual_core_stage = _pyz1_core_stage_snapshot(shortest_path, trace_nodes)
+    index_comparison = _shortest_path_snapshot_geometry_comparison(
+        actual_core_stage,
         oracle_core_stage,
+    )
+    source_bead_comparison = _source_bead_matched_geometry_comparison(
+        actual_core_stage,
+        oracle_core_stage,
+    )
+    return CoreStageGeometryComparison(
+        node_count_mismatches=index_comparison.node_count_mismatches,
+        max_node_position_delta=index_comparison.max_node_position_delta,
+        source_bead_matches=source_bead_comparison.source_bead_matches,
+        source_bead_max_node_position_delta=(
+            source_bead_comparison.source_bead_max_node_position_delta
+        ),
+    )
+
+
+@dataclass(frozen=True, slots=True)
+class _SourceBeadGeometryComparison:
+    source_bead_matches: int
+    source_bead_max_node_position_delta: float
+
+
+def _source_bead_matched_geometry_comparison(
+    actual: ShortestPathSnapshot,
+    expected: ShortestPathSnapshot,
+) -> _SourceBeadGeometryComparison:
+    matched_count = 0
+    max_position_delta = 0.0
+    box = GeometryBox(lengths=actual.box)
+    shared_chain_count = min(actual.chain_count, expected.chain_count)
+    for chain_index in range(shared_chain_count):
+        for actual_node in actual.chains[chain_index].nodes:
+            expected_node = _find_source_bead_match(
+                actual_node,
+                expected.chains[chain_index],
+            )
+            if expected_node is None:
+                continue
+            matched_count += 1
+            delta = _periodic_node_position_delta(
+                actual_node.position,
+                expected_node.position,
+                box,
+            )
+            max_position_delta = max(max_position_delta, delta)
+    return _SourceBeadGeometryComparison(
+        source_bead_matches=matched_count,
+        source_bead_max_node_position_delta=max_position_delta,
+    )
+
+
+def _find_source_bead_match(
+    actual_node: ShortestPathNode,
+    expected_chain: ShortestPathChain,
+) -> ShortestPathNode | None:
+    return next(
+        (
+            expected_node
+            for expected_node in expected_chain.nodes
+            if _source_beads_match(
+                actual_node.source_bead,
+                expected_node.source_bead,
+            )
+        ),
+        None,
+    )
+
+
+def _source_beads_match(actual: float, expected: float) -> bool:
+    return abs(actual - expected) <= SOURCE_BEAD_TOLERANCE
+
+
+def _periodic_node_position_delta(
+    actual: Vector3,
+    expected: Vector3,
+    box: GeometryBox,
+) -> float:
+    delta = minimum_image_delta(Segment(start=expected, end=actual), box)
+    return sqrt(
+        delta.x * delta.x
+        + delta.y * delta.y
+        + delta.z * delta.z,
     )
 
 
@@ -625,13 +733,15 @@ def _format_report(records: tuple[RegressionRecord, ...]) -> str:
             "oracle core stage nodes | "
             "pyz1 core stage node count mismatches | "
             "pyz1 core stage max node position delta | "
+            "pyz1 core stage source bead matches | "
+            "pyz1 core stage source bead max delta | "
             "summary mismatch details | note |"
         ),
         (
             "| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | "
             "---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | "
             "---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | "
-            "---: | ---: | ---: | ---: | ---: | --- | --- |"
+            "---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- |"
         ),
     ]
     lines.extend(_format_record(record) for record in records)
@@ -669,6 +779,8 @@ def _format_record(record: RegressionRecord) -> str:
         f"{_format_optional_int(record.oracle_core_stage_node_count)} | "
         f"{_format_optional_int(record.pyz1_core_stage_node_count_mismatches)} | "
         f"{_format_optional_float(record.pyz1_core_stage_max_node_position_delta)} | "
+        f"{_format_optional_int(record.pyz1_core_stage_source_bead_matches)} | "
+        f"{_format_optional_float(record.pyz1_core_stage_source_bead_max_delta)} | "
         f"{_format_summary_field_details(record.summary_field_mismatch_details)} | "
         f"{record.note} |"
     )

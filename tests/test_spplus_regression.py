@@ -62,6 +62,9 @@ def test_write_benchmark_regression_report_when_oracles_exist_lists_modes(
     assert records[1].pyz1_core_stage_node_count_mismatches == 6
     assert records[1].pyz1_core_stage_max_node_position_delta is not None
     assert 4.2 < records[1].pyz1_core_stage_max_node_position_delta < 4.3
+    assert records[1].pyz1_core_stage_source_bead_matches == 11
+    assert records[1].pyz1_core_stage_source_bead_max_delta is not None
+    assert 0.168 < records[1].pyz1_core_stage_source_bead_max_delta < 0.169
     assert "root_mean_squared_contour: 4.597 != 4.598" in text
     assert "ne_modified_coil: 654.152 != 641.605" in text
     assert "pyz1 core trace nodes" in text
@@ -72,6 +75,7 @@ def test_write_benchmark_regression_report_when_oracles_exist_lists_modes(
     assert "oracle core ghosts" in text
     assert "oracle core stage nodes" in text
     assert "pyz1 core stage max node position delta" in text
+    assert "pyz1 core stage source bead max delta" in text
 
 
 def test_write_benchmark_regression_report_when_stats_log_exists_lists_core_diagnostics(
@@ -126,11 +130,15 @@ def test_write_benchmark_regression_report_when_stats_log_exists_lists_core_diag
     assert records[0].pyz1_core_stage_node_count_mismatches == 6
     assert records[0].pyz1_core_stage_max_node_position_delta is not None
     assert 4.2 < records[0].pyz1_core_stage_max_node_position_delta < 4.3
+    assert records[0].pyz1_core_stage_source_bead_matches == 11
+    assert records[0].pyz1_core_stage_source_bead_max_delta is not None
+    assert 0.168 < records[0].pyz1_core_stage_source_bead_max_delta < 0.169
     assert "pyz1 core nodes" in text
     assert "pyz1 first projection fraction" in text
     assert "oracle core ghosts" in text
     assert "oracle core stage nodes" in text
     assert "pyz1 core stage node count mismatches" in text
+    assert "pyz1 core stage source bead matches" in text
     assert "| benchmark-04 | spplus | mismatch |" in text
     assert (
         "| 10 | 11 | 17 | 7 | 9 | 7 | 2 | 9 | 0.607385 | 0.936019 | 0.0186654 | "
