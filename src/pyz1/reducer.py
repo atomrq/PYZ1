@@ -57,6 +57,13 @@ class CoreTraceNode:
 
 
 @dataclass(frozen=True, slots=True)
+class CoreStageNode:
+    position: Vector3
+    source_bead: float
+    transient: bool
+
+
+@dataclass(frozen=True, slots=True)
 class ProjectionTrace:
     chain_index: int
     source_bead: float
@@ -71,6 +78,7 @@ class ProjectionTrace:
 class ReducerDiagnostics:
     core_node_count: int
     final_node_count: int
+    core_stage_nodes: tuple[tuple[CoreStageNode, ...], ...]
     core_trace_blocked_nodes: tuple[tuple[CoreTraceNode, ...], ...]
     projection_traces: tuple[ProjectionTrace, ...]
     core_trace_node_count: int
@@ -131,6 +139,10 @@ def reduce_snapshot(
         diagnostics=ReducerDiagnostics(
             core_node_count=sum(chain.node_count for chain in core_chains),
             final_node_count=sum(chain.node_count for chain in reduced_chains),
+            core_stage_nodes=_core_stage_nodes(
+                shortest_path,
+                core_trace.blocked_nodes,
+            ),
             core_trace_blocked_nodes=core_trace.blocked_nodes,
             projection_traces=preserved.projection_traces,
             core_trace_node_count=sum(chain.node_count for chain in core_chains)
@@ -151,6 +163,49 @@ def write_reducer_outputs(directory: Path, result: ReducerResult) -> None:
     directory.mkdir(parents=True, exist_ok=True)
     write_shortest_path_file(directory / "Z1+SP.dat", result.shortest_path)
     write_summary_outputs(directory, result.summary)
+
+
+def _core_stage_nodes(
+    shortest_path: ShortestPathSnapshot,
+    trace_nodes: tuple[tuple[CoreTraceNode, ...], ...],
+) -> tuple[tuple[CoreStageNode, ...], ...]:
+    return tuple(
+        _core_stage_chain_nodes(chain, trace_nodes[chain_index])
+        for chain_index, chain in enumerate(shortest_path.chains)
+    )
+
+
+def _core_stage_chain_nodes(
+    chain: ShortestPathChain,
+    trace_nodes: tuple[CoreTraceNode, ...],
+) -> tuple[CoreStageNode, ...]:
+    endpoint_nodes = (
+        CoreStageNode(
+            position=chain.nodes[0].position,
+            source_bead=chain.nodes[0].source_bead,
+            transient=False,
+        ),
+        CoreStageNode(
+            position=chain.nodes[-1].position,
+            source_bead=chain.nodes[-1].source_bead,
+            transient=False,
+        ),
+    )
+    transient_nodes = tuple(
+        CoreStageNode(
+            position=node.position,
+            source_bead=node.source_bead,
+            transient=True,
+        )
+        for node in trace_nodes
+        if not node.retained
+    )
+    return tuple(
+        sorted(
+            (*endpoint_nodes, *transient_nodes),
+            key=lambda node: node.source_bead,
+        ),
+    )
 
 
 def _reduce_chains(

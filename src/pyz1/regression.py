@@ -30,7 +30,7 @@ if TYPE_CHECKING:
 
     from pyz1.models import Vector3
     from pyz1.output_models import ShortestPathPair
-    from pyz1.reducer import CoreTraceNode, ProjectionTrace
+    from pyz1.reducer import CoreStageNode, CoreTraceNode, ProjectionTrace
 
 LPP_TOLERANCE: Final = 1.0e-6
 Z_TOLERANCE: Final = 1.0e-6
@@ -276,8 +276,8 @@ def _compare_benchmark_mode(
     oracle_diagnostics = _oracle_reducer_diagnostics(oracle_dir / "log-stats.Z1")
     oracle_core_stage = _oracle_core_stage(oracle_dir / CORE_STAGE_NODE_FILENAME)
     pyz1_core_stage_comparison = _pyz1_core_stage_comparison(
-        result.shortest_path,
-        result.diagnostics.core_trace_blocked_nodes,
+        result.diagnostics.core_stage_nodes,
+        result.shortest_path.box,
         oracle_core_stage,
     )
     first_trace_node = _first_core_trace_node(
@@ -426,13 +426,13 @@ def _oracle_core_stage(path: Path) -> ShortestPathSnapshot | None:
 
 
 def _pyz1_core_stage_comparison(
-    shortest_path: ShortestPathSnapshot,
-    trace_nodes: tuple[tuple[CoreTraceNode, ...], ...],
+    core_stage_nodes: tuple[tuple[CoreStageNode, ...], ...],
+    box: Vector3,
     oracle_core_stage: ShortestPathSnapshot | None,
 ) -> CoreStageGeometryComparison | None:
     if oracle_core_stage is None:
         return None
-    actual_core_stage = _pyz1_core_stage_snapshot(shortest_path, trace_nodes)
+    actual_core_stage = _pyz1_core_stage_snapshot(core_stage_nodes, box)
     index_comparison = _shortest_path_snapshot_geometry_comparison(
         actual_core_stage,
         oracle_core_stage,
@@ -521,37 +521,28 @@ def _periodic_node_position_delta(
 
 
 def _pyz1_core_stage_snapshot(
-    shortest_path: ShortestPathSnapshot,
-    trace_nodes: tuple[tuple[CoreTraceNode, ...], ...],
+    core_stage_nodes: tuple[tuple[CoreStageNode, ...], ...],
+    box: Vector3,
 ) -> ShortestPathSnapshot:
     chains = tuple(
-        _pyz1_core_stage_chain(chain, trace_nodes[chain_index])
-        for chain_index, chain in enumerate(shortest_path.chains)
+        _pyz1_core_stage_chain(chain_nodes)
+        for chain_nodes in core_stage_nodes
     )
-    return ShortestPathSnapshot(chains=chains, box=shortest_path.box)
+    return ShortestPathSnapshot(chains=chains, box=box)
 
 
 def _pyz1_core_stage_chain(
-    chain: ShortestPathChain,
-    trace_nodes: tuple[CoreTraceNode, ...],
+    core_stage_nodes: tuple[CoreStageNode, ...],
 ) -> ShortestPathChain:
-    endpoint_nodes = (chain.nodes[0], chain.nodes[-1])
-    transient_nodes = tuple(
-        ShortestPathNode(
-            position=node.position,
-            source_bead=node.source_bead,
-            is_entanglement=False,
-            pair=None,
-        )
-        for node in trace_nodes
-        if not node.retained
-    )
     return ShortestPathChain(
         nodes=tuple(
-            sorted(
-                (*endpoint_nodes, *transient_nodes),
-                key=lambda node: node.source_bead,
-            ),
+            ShortestPathNode(
+                position=node.position,
+                source_bead=node.source_bead,
+                is_entanglement=False,
+                pair=None,
+            )
+            for node in core_stage_nodes
         ),
     )
 

@@ -262,6 +262,35 @@ def test_reduce_snapshot_when_benchmark_04_reports_core_trace_nodes() -> None:
     )
 
 
+def test_reduce_snapshot_when_benchmark_04_reports_core_stage_nodes() -> None:
+    snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-04.Z1")
+
+    result = reduce_snapshot(snapshot, ReducerSettings(pairing_enabled=True))
+
+    stage_nodes = result.diagnostics.core_stage_nodes
+    assert tuple(len(chain_nodes) for chain_nodes in stage_nodes) == (3, 4, 2, 4, 4)
+    assert sum(len(chain_nodes) for chain_nodes in stage_nodes) == 17
+    assert tuple(
+        tuple(node.source_bead for node in chain_nodes)
+        for chain_nodes in stage_nodes
+    ) == (
+        (1.0, 3.5, 10.0),
+        (1.0, 6.5, 7.25, 10.0),
+        (1.0, 10.0),
+        (1.0, 7.5, 8.25, 10.0),
+        (1.0, 6.5, 8.5, 10.0),
+    )
+    assert sum(
+        node.transient
+        for chain_nodes in stage_nodes
+        for node in chain_nodes
+    ) == 7
+    assert_vector_close(
+        stage_nodes[0][1].position,
+        Vector3(0.1293575, -0.030405000000000015, 1.72274),
+    )
+
+
 def test_reduce_snapshot_when_benchmark_04_reports_projection_trace() -> None:
     snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-04.Z1")
 
