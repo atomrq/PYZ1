@@ -86,6 +86,33 @@ def test_generate_oracle_fixtures_when_wrapper_times_out_records_run(
     assert run.output_sha256 == {}
 
 
+def test_generate_oracle_fixtures_when_wrapper_crashes_but_exits_zero_records_failure(
+    tmp_path: Path,
+) -> None:
+    install_dir = tmp_path / "install"
+    benchmarks_dir = tmp_path / "benchmarks"
+    out_dir = tmp_path / "oracle"
+    _write_fake_install(install_dir, crash_after_launch=True)
+    _write_benchmark(benchmarks_dir / ".benchmark-01.Z1")
+    request = OracleGenerationRequest(
+        benchmarks_dir=benchmarks_dir,
+        out_dir=out_dir,
+        z1_install_dir=install_dir,
+        mode_names=("default",),
+        allow_non_linux=True,
+        platform_name="Darwin",
+        timeout_seconds=None,
+    )
+
+    manifest = generate_oracle_fixtures(request)
+
+    assert len(manifest.runs) == 1
+    run = manifest.runs[0]
+    assert run.exit_code == 139
+    assert run.summary_rows == 0
+    assert "CRASHED" in (out_dir / run.stdout_path).read_text(encoding="utf-8")
+
+
 def test_generate_oracle_fixtures_when_summary_is_unparseable_continues(
     tmp_path: Path,
 ) -> None:
@@ -173,6 +200,7 @@ def _write_fake_install(
     *,
     delay_seconds: int = 0,
     summary_line: str = "1 1 3 2 2 0 0 0 2 0 0 0 0 1 0.001",
+    crash_after_launch: bool = False,
 ) -> None:
     install_dir.mkdir(parents=True, exist_ok=True)
     wrapper = install_dir / "Z1+"
@@ -180,6 +208,7 @@ def _write_fake_install(
         _fake_wrapper_text(
             delay_seconds=delay_seconds,
             summary_line=summary_line,
+            crash_after_launch=crash_after_launch,
         ),
         encoding="utf-8",
     )
@@ -191,7 +220,22 @@ def _write_fake_install(
     _ = rearrange.write_text("#!/usr/bin/perl\n", encoding="utf-8")
 
 
-def _fake_wrapper_text(*, delay_seconds: int, summary_line: str) -> str:
+def _fake_wrapper_text(
+    *,
+    delay_seconds: int,
+    summary_line: str,
+    crash_after_launch: bool,
+) -> str:
+    if crash_after_launch:
+        return NEWLINE.join(
+            (
+                "#!/bin/sh",
+                "set -eu",
+                "printf 'CRASHED. contact mk\\n'",
+                "printf 'forrtl: severe (174): SIGSEGV\\n' >&2",
+                "exit 0",
+            ),
+        ) + NEWLINE
     lines = (
         "#!/bin/sh",
         "set -eu",

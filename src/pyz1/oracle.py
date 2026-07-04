@@ -17,6 +17,7 @@ from pyz1.oracle_models import (
     OracleMode,
     OracleRunRecord,
 )
+from pyz1.oracle_outcome import normalize_oracle_exit_code
 from pyz1.output_io import read_summary_file
 
 WRAPPER_NAME: Final = "Z1+"
@@ -228,7 +229,11 @@ def _run_command(
             stderr=f"oracle run timed out after {timeout_seconds} seconds\n",
         )
     return CommandOutcome(
-        exit_code=result.returncode,
+        exit_code=normalize_oracle_exit_code(
+            exit_code=result.returncode,
+            stdout=result.stdout,
+            stderr=result.stderr,
+        ),
         stdout=result.stdout,
         stderr=result.stderr,
     )

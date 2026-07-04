@@ -512,14 +512,20 @@
       "arguments": [],
       "benchmark": ".benchmark-09.Z1",
       "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
-      "exit_code": 124,
+      "exit_code": 0,
       "input_sha256": "972cb13323575055293726431e6e398cfdf21dfec36845952e3d41b3ab1514a3",
       "mode": "default",
-      "output_sha256": {},
-      "outputs": {},
+      "output_sha256": {
+        "path": "46f392e21e724dd836409c40c99edf030565ac607058888a56cf5ab22990d9fb",
+        "summary": "470c41f32ea352a5810ae369bcc4abb6b7878498dd42566c1fc1eafd1cb157e6"
+      },
+      "outputs": {
+        "path": "benchmark-09/default/Z1+SP.dat",
+        "summary": "benchmark-09/default/Z1+summary.dat"
+      },
       "stderr_path": "benchmark-09/default/run.stderr",
       "stdout_path": "benchmark-09/default/run.stdout",
-      "summary_rows": 0,
+      "summary_rows": 1,
       "work_dir": "benchmark-09/default"
     },
     {
@@ -528,14 +534,20 @@
       ],
       "benchmark": ".benchmark-09.Z1",
       "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
-      "exit_code": 124,
+      "exit_code": 0,
       "input_sha256": "972cb13323575055293726431e6e398cfdf21dfec36845952e3d41b3ab1514a3",
       "mode": "spplus",
-      "output_sha256": {},
-      "outputs": {},
+      "output_sha256": {
+        "path": "618941134687917f387c6020c427bcd06bd0a06af690d2dfda73144d2eaff48d",
+        "summary": "470c41f32ea352a5810ae369bcc4abb6b7878498dd42566c1fc1eafd1cb157e6"
+      },
+      "outputs": {
+        "path": "benchmark-09/spplus/Z1+SP.dat",
+        "summary": "benchmark-09/spplus/Z1+summary.dat"
+      },
       "stderr_path": "benchmark-09/spplus/run.stderr",
       "stdout_path": "benchmark-09/spplus/run.stdout",
-      "summary_rows": 0,
+      "summary_rows": 1,
       "work_dir": "benchmark-09/spplus"
     },
     {
@@ -544,7 +556,7 @@
       ],
       "benchmark": ".benchmark-09.Z1",
       "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
-      "exit_code": 124,
+      "exit_code": 139,
       "input_sha256": "972cb13323575055293726431e6e398cfdf21dfec36845952e3d41b3ab1514a3",
       "mode": "selfz",
       "output_sha256": {},

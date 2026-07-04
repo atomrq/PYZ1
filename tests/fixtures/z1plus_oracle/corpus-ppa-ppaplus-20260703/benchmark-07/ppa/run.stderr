@@ -1,1 +1,36 @@
-oracle run timed out after 120.0 seconds
+perl: warning: Setting locale failed.
+perl: warning: Please check that your locale settings:
+	LANGUAGE = (unset),
+	LC_ALL = "C.UTF-8",
+	LC_CTYPE = "C.UTF-8",
+	LANG = "en_US.UTF-8"
+    are supported and installed on your system.
+perl: warning: Falling back to the standard locale ("C").
+      _____  ___          
+     /__  / /__ |    _    
+       / /    | |  _| |_      (c) 2022 mk@mat.ethz.ch
+      / /_    | | |_   _| 
+     /____/   |_|   |_|      This executable was licensed for CPC                                                                             
+                             renew your license in < 34908 days
+________________________________________________________________________________ about
+                                                                                
+(c) mk@mat.ethz.ch (Z1+) version 1 June 2022 http://www.complexfluids.ethz.ch
+Z1+ is online at http://www.complexfluids.ethz.ch/Z1+
+Consider mentioning these publications when making use of Z1+ results in your research:
+ [1] http://doi.org/10.1016/j.cpc.2005.01.020
+ [2] http://doi.org/10.1021/ma062457k
+ [3] http://doi.org/10.1103/PhysRevE.80.031803
+ [4] http://doi.org/10.3390/ijms10115054
+ [5] The Z1+ package: Shortest multiple disconnected path for
+     the analysis of entanglements in macromolecular systems,
+     Comput. Phys. Commun. (2022) in press.
+                                                                                
+perl: warning: Setting locale failed.
+perl: warning: Please check that your locale settings:
+	LANGUAGE = (unset),
+	LC_ALL = "C.UTF-8",
+	LC_CTYPE = "C.UTF-8",
+	LANG = "en_US.UTF-8"
+    are supported and installed on your system.
+perl: warning: Falling back to the standard locale ("C").
+cp: cannot stat 'Z_values.dat': No such file or directory
