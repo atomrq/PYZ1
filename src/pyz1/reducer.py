@@ -36,6 +36,9 @@ MAX_INDEX_CELLS_PER_SEGMENT: Final = 4096
 MIN_INDEX_CELL_SIZE: Final = 1.0e-6
 MAX_SMALL_WINDING_OBSTACLE_CANDIDATES: Final = 8
 SMALL_WINDING_SOURCE_CLUSTER_GAP: Final = 0.35
+TRUE_CHAIN_CONTACT_CANDIDATE_DISTANCE: Final = 0.3
+TRUE_CHAIN_CONTACT_CLUSTER_SOURCE_RADIUS: Final = 1.0
+TRUE_CHAIN_CONTACT_CLUSTER_MIN_CANDIDATES: Final = 2
 CONVEX_HULL_MIN_TURN_POINTS: Final = 2
 CONVEX_POLYGON_MIN_POINTS: Final = 3
 CellKey = tuple[int, int, int]
@@ -117,6 +120,7 @@ class ReducerDiagnostics:
 class _PreservedChains:
     chains: tuple[Chain, ...]
     source_beads: tuple[tuple[float, ...], ...]
+    pair_overrides: tuple[tuple[ShortestPathPair | None, ...], ...]
     projection_traces: tuple[ProjectionTrace, ...]
 
 
@@ -166,11 +170,22 @@ def reduce_snapshot(
     pairings = (
         _build_pairings(reduced_chains) if active_settings.pairing_enabled else ()
     )
+    output_pairings = (
+        tuple(
+            _merge_pair_overrides(
+                chain_pairings,
+                preserved.pair_overrides[chain_index],
+            )
+            for chain_index, chain_pairings in enumerate(pairings)
+        )
+        if pairings
+        else ()
+    )
     shortest_path = ShortestPathSnapshot(
         chains=tuple(
             _to_shortest_path_chain(
                 chain,
-                pairings[chain_index] if pairings else (),
+                output_pairings[chain_index] if output_pairings else (),
                 source_beads[chain_index],
             )
             for chain_index, chain in enumerate(reduced_chains)
@@ -890,6 +905,15 @@ class _ContactCandidate:
 
 
 @dataclass(frozen=True, slots=True)
+class _TrueChainContactCandidate:
+    chain_index: int
+    node_index: int
+    position: Vector3
+    source_bead: float
+    distance: float
+
+
+@dataclass(frozen=True, slots=True)
 class _TraceNode:
     position: Vector3
     source_bead: float
@@ -904,6 +928,7 @@ class _PreservedKinkCandidate:
     blocker_segment: Segment | None
     ghost_anchor: Vector3 | None
     ghost_clearance: float | None
+    pair_override: ShortestPathPair | None
 
 
 @dataclass(frozen=True, slots=True)
@@ -944,6 +969,10 @@ def _preserve_close_contacts(
             strict=True,
         )
     ]
+    pair_overrides: list[list[ShortestPathPair | None]] = [
+        [None for _node in reduced_chain.nodes]
+        for reduced_chain in reduced_chains
+    ]
     projection_traces: list[ProjectionTrace] = []
     for chain_index, chain in enumerate(original_chains):
         if not chain.is_true_chain:
@@ -968,6 +997,12 @@ def _preserve_close_contacts(
         )
         if len(winding_candidates) > 0:
             candidates = winding_candidates
+        true_chain_candidates = _true_chain_contact_kink_candidates(
+            original_chains,
+            chain_index,
+        )
+        if len(winding_candidates) == 0 and len(true_chain_candidates) > 0:
+            candidates = true_chain_candidates
         if len(candidates) == 0:
             candidates = (_contact_kink_candidate(chain, contact),)
         projections = tuple(
@@ -991,9 +1026,17 @@ def _preserve_close_contacts(
             + [candidate.source_bead for candidate in projected_candidates]
             + [source_beads[chain_index][-1]]
         )
+        pair_overrides[chain_index] = (
+            [None]
+            + [candidate.pair_override for candidate in projected_candidates]
+            + [None]
+        )
     return _PreservedChains(
         chains=tuple(preserved_nodes),
         source_beads=tuple(tuple(chain_sources) for chain_sources in source_beads),
+        pair_overrides=tuple(
+            tuple(chain_overrides) for chain_overrides in pair_overrides
+        ),
         projection_traces=tuple(projection_traces),
     )
 
@@ -1019,6 +1062,103 @@ def _closest_lower_index_contact(
                         distance=distance,
                     )
     return best_contact
+
+
+def _true_chain_contact_kink_candidates(
+    chains: tuple[Chain, ...],
+    chain_index: int,
+) -> tuple[_PreservedKinkCandidate, ...]:
+    selected = _select_true_chain_contact_cluster(
+        _true_chain_contact_candidates(chains, chain_index),
+    )
+    return tuple(
+        _true_chain_contact_kink_candidate(candidate) for candidate in selected
+    )
+
+
+def _true_chain_contact_candidates(
+    chains: tuple[Chain, ...],
+    chain_index: int,
+) -> tuple[_TrueChainContactCandidate, ...]:
+    chain = chains[chain_index]
+    candidates: list[_TrueChainContactCandidate] = []
+    for other_index in range(chain_index + 1, len(chains)):
+        other = chains[other_index]
+        if not other.is_true_chain:
+            continue
+        for segment_index, segment in enumerate(_chain_segments(chain)):
+            for other_segment_index, other_segment in enumerate(
+                _chain_segments(other),
+            ):
+                closest = closest_segment_points(segment, other_segment)
+                if closest.distance > TRUE_CHAIN_CONTACT_CANDIDATE_DISTANCE:
+                    continue
+                candidates.append(
+                    _TrueChainContactCandidate(
+                        chain_index=other_index + 1,
+                        node_index=other_segment_index + 1,
+                        position=closest.first_point,
+                        source_bead=segment_index + 1.0 + closest.first_fraction,
+                        distance=closest.distance,
+                    ),
+                )
+    return tuple(sorted(candidates, key=_true_chain_contact_sort_key))
+
+
+def _true_chain_contact_sort_key(
+    candidate: _TrueChainContactCandidate,
+) -> tuple[float, float, int]:
+    return (candidate.source_bead, candidate.distance, candidate.chain_index)
+
+
+def _select_true_chain_contact_cluster(
+    candidates: tuple[_TrueChainContactCandidate, ...],
+) -> tuple[_TrueChainContactCandidate, ...]:
+    if len(candidates) == 0:
+        return ()
+    closest = min(candidates, key=lambda candidate: candidate.distance)
+    cluster = tuple(
+        candidate
+        for candidate in candidates
+        if abs(candidate.source_bead - closest.source_bead)
+        <= TRUE_CHAIN_CONTACT_CLUSTER_SOURCE_RADIUS
+    )
+    if len(cluster) < TRUE_CHAIN_CONTACT_CLUSTER_MIN_CANDIDATES:
+        return ()
+    return _deduplicate_true_chain_contact_cluster(cluster)
+
+
+def _deduplicate_true_chain_contact_cluster(
+    candidates: tuple[_TrueChainContactCandidate, ...],
+) -> tuple[_TrueChainContactCandidate, ...]:
+    selected: list[_TrueChainContactCandidate] = []
+    selected_chain_indices: set[int] = set()
+    for candidate in candidates:
+        if candidate.chain_index in selected_chain_indices:
+            continue
+        selected.append(candidate)
+        selected_chain_indices.add(candidate.chain_index)
+    if len(selected) < TRUE_CHAIN_CONTACT_CLUSTER_MIN_CANDIDATES:
+        return ()
+    return tuple(selected)
+
+
+def _true_chain_contact_kink_candidate(
+    candidate: _TrueChainContactCandidate,
+) -> _PreservedKinkCandidate:
+    return _PreservedKinkCandidate(
+        position=candidate.position,
+        source_bead=candidate.source_bead,
+        shortcut=None,
+        projection_normal=None,
+        blocker_segment=None,
+        ghost_anchor=None,
+        ghost_clearance=None,
+        pair_override=ShortestPathPair(
+            chain_index=candidate.chain_index,
+            node_index=candidate.node_index,
+        ),
+    )
 
 
 def _blocked_kink_candidates(
@@ -1187,6 +1327,7 @@ def _winding_obstacle_kink_candidate(
         blocker_segment=None,
         ghost_anchor=None,
         ghost_clearance=None,
+        pair_override=None,
     )
 
 
@@ -1203,6 +1344,7 @@ def _blocked_kink_candidate(
         blocker_segment=_blocked_segment(chains, move.node),
         ghost_anchor=_blocked_ghost_anchor(chains, move.node),
         ghost_clearance=move.node.blocker_distance,
+        pair_override=None,
     )
 
 
@@ -1279,6 +1421,7 @@ def _contact_kink_candidate(
         blocker_segment=None,
         ghost_anchor=None,
         ghost_clearance=None,
+        pair_override=None,
     )
 
 
@@ -1341,6 +1484,7 @@ def _project_to_responsible_segment(
         blocker_segment=preserved.blocker_segment,
         ghost_anchor=preserved.ghost_anchor,
         ghost_clearance=preserved.ghost_clearance,
+        pair_override=preserved.pair_override,
     )
     return _ProjectionResult(
         candidate=candidate,
@@ -1632,6 +1776,16 @@ def _build_pairings(
             for node_index, node in enumerate(chain.nodes)
         )
         for chain_index, chain in enumerate(chains, start=1)
+    )
+
+
+def _merge_pair_overrides(
+    pairings: tuple[ShortestPathPair | None, ...],
+    overrides: tuple[ShortestPathPair | None, ...],
+) -> tuple[ShortestPathPair | None, ...]:
+    return tuple(
+        override if override is not None else pairing
+        for pairing, override in zip(pairings, overrides, strict=True)
     )
 
 

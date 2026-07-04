@@ -302,7 +302,7 @@ def test_write_benchmark_regression_report_when_convex_candidates_cover_oracle(
     assert benchmark_01.pyz1_convex_winding_extra_candidate_count == 54
     assert benchmark_02.pyz1_convex_winding_candidate_count == 65
     assert benchmark_02.pyz1_convex_winding_missing_oracle_sequence == ()
-    assert benchmark_05.pyz1_true_chain_pair_sequence == (4,)
+    assert benchmark_05.pyz1_true_chain_pair_sequence == (40, 26)
     assert benchmark_05.pyz1_true_chain_contact_candidate_sequence == (
         6,
         40,
