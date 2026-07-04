@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from math import ceil, sqrt
+from math import ceil, floor, sqrt
 from typing import TYPE_CHECKING, Final
 
 from pyz1.geometry import (
@@ -32,6 +32,9 @@ if TYPE_CHECKING:
 
 CORE_STAGE_SUPPORT_MAX_LENGTH: Final = 2.2
 BLOCKED_KINK_CLEARANCE_FRACTION: Final = 0.1
+MAX_INDEX_CELLS_PER_SEGMENT: Final = 4096
+MIN_INDEX_CELL_SIZE: Final = 1.0e-6
+CellKey = tuple[int, int, int]
 
 
 @dataclass(frozen=True, slots=True)
@@ -39,6 +42,7 @@ class ReducerSettings:
     max_sweeps: int = 16
     pairing_enabled: bool = False
     contact_preservation_distance: float = 0.1
+    trace_diagnostics_enabled: bool = True
 
 
 @dataclass(frozen=True, slots=True)
@@ -113,6 +117,14 @@ class _Bounds:
     upper: Vector3
 
 
+@dataclass(frozen=True, slots=True)
+class _BoundsIndex:
+    bounds: tuple[_Bounds, ...]
+    buckets: dict[CellKey, tuple[int, ...]]
+    global_indices: tuple[int, ...]
+    cell_size: float
+
+
 def reduce_snapshot(
     snapshot: Snapshot,
     settings: ReducerSettings | None = None,
@@ -120,7 +132,11 @@ def reduce_snapshot(
     active_settings = settings or ReducerSettings()
     box = GeometryBox(lengths=snapshot.box, shear=snapshot.shear or 0.0)
     chains = tuple(unfold_chain(chain, box) for chain in snapshot.true_chains)
-    core_trace = _core_trace_diagnostics(chains)
+    core_trace = (
+        _core_trace_diagnostics(chains)
+        if active_settings.trace_diagnostics_enabled
+        else _empty_core_trace_diagnostics(chains)
+    )
     core_chains = _reduce_chains(chains, active_settings)
     preserved = _preserve_close_contacts(chains, core_chains, active_settings)
     reduced_chains = preserved.chains
@@ -275,9 +291,13 @@ def _reduce_sweep(chains: tuple[Chain, ...]) -> tuple[Chain, ...]:
     reduced: list[Chain] = []
     current = chains
     for chain_index, chain in enumerate(current):
+        blocking_segments = _blocking_segments(current, chain_index)
         reduced_chain = _reduce_chain_once(
             chain,
-            MoveContext(blocking_segments=_blocking_segments(current, chain_index)),
+            MoveContext(blocking_segments=blocking_segments),
+            _build_bounds_index(
+                tuple(_segment_bounds(segment) for segment in blocking_segments),
+            ),
         )
         cleaned_chain = clean_collinear_kinks(reduced_chain).chain
         reduced.append(cleaned_chain)
@@ -285,7 +305,11 @@ def _reduce_sweep(chains: tuple[Chain, ...]) -> tuple[Chain, ...]:
     return tuple(reduced)
 
 
-def _reduce_chain_once(chain: Chain, context: MoveContext) -> Chain:
+def _reduce_chain_once(
+    chain: Chain,
+    context: MoveContext,
+    blocker_index: _BoundsIndex,
+) -> Chain:
     current = chain
     node_index = 1
     while node_index < current.node_count - 1:
@@ -298,24 +322,25 @@ def _reduce_chain_once(chain: Chain, context: MoveContext) -> Chain:
             current.nodes[node_index],
             current.nodes[node_index + 1],
         )
-        if _shortcut_is_clear(shortcut, swept_triangle, context):
+        if _shortcut_is_clear(shortcut, swept_triangle, context, blocker_index):
             current = _remove_node(current, node_index)
             node_index = max(1, node_index - 1)
             continue
         candidate = _candidate_position(current, node_index)
+        move = NodeMove(node_index=node_index, position=candidate)
         move_context = MoveContext(
             blocking_segments=_candidate_move_blockers(
                 context.blocking_segments,
+                blocker_index,
                 current,
-                node_index,
-                candidate,
+                move,
                 context.tolerance,
             ),
             tolerance=context.tolerance,
         )
         evaluation = evaluate_node_move(
             current,
-            NodeMove(node_index=node_index, position=candidate),
+            move,
             move_context,
         )
         if evaluation.accepted:
@@ -334,12 +359,14 @@ def _shortcut_is_clear(
     shortcut: Segment,
     swept_triangle: tuple[Vector3, Vector3, Vector3],
     context: MoveContext,
+    blocker_index: _BoundsIndex,
 ) -> bool:
     return not any(
         segment_distance(shortcut, blocker) <= context.tolerance
         or segment_intersects_triangle(blocker, swept_triangle)
         for blocker in _candidate_shortcut_blockers(
             context.blocking_segments,
+            blocker_index,
             shortcut,
             swept_triangle,
             context.tolerance,
@@ -368,6 +395,7 @@ def _candidate_position(chain: Chain, node_index: int) -> Vector3:
 
 def _candidate_shortcut_blockers(
     blockers: tuple[Segment, ...],
+    blocker_index: _BoundsIndex,
     shortcut: Segment,
     swept_triangle: tuple[Vector3, Vector3, Vector3],
     tolerance: float,
@@ -375,14 +403,17 @@ def _candidate_shortcut_blockers(
     shortcut_bounds = _segment_bounds(shortcut, tolerance)
     triangle_bounds = _triangle_bounds(swept_triangle, tolerance)
     return tuple(
-        blocker
-        for blocker in blockers
-        if _segment_may_block(blocker, shortcut_bounds, triangle_bounds)
+        blockers[index]
+        for index in _query_bounds_index(
+            blocker_index,
+            (shortcut_bounds, triangle_bounds),
+        )
     )
 
 
 def _candidate_indexed_shortcut_blockers(
     blockers: tuple[_IndexedSegment, ...],
+    blocker_index: _BoundsIndex,
     shortcut: Segment,
     swept_triangle: tuple[Vector3, Vector3, Vector3],
     tolerance: float,
@@ -390,44 +421,32 @@ def _candidate_indexed_shortcut_blockers(
     shortcut_bounds = _segment_bounds(shortcut, tolerance)
     triangle_bounds = _triangle_bounds(swept_triangle, tolerance)
     return tuple(
-        blocker
-        for blocker in blockers
-        if _segment_may_block(blocker.segment, shortcut_bounds, triangle_bounds)
+        blockers[index]
+        for index in _query_bounds_index(
+            blocker_index,
+            (shortcut_bounds, triangle_bounds),
+        )
     )
 
 
 def _candidate_move_blockers(
     blockers: tuple[Segment, ...],
+    blocker_index: _BoundsIndex,
     chain: Chain,
-    node_index: int,
-    candidate: Vector3,
+    move: NodeMove,
     tolerance: float,
 ) -> tuple[Segment, ...]:
     first_bounds = _segment_bounds(
-        Segment(start=chain.nodes[node_index - 1], end=candidate),
+        Segment(start=chain.nodes[move.node_index - 1], end=move.position),
         tolerance,
     )
     second_bounds = _segment_bounds(
-        Segment(start=candidate, end=chain.nodes[node_index + 1]),
+        Segment(start=move.position, end=chain.nodes[move.node_index + 1]),
         tolerance,
     )
     return tuple(
-        blocker
-        for blocker in blockers
-        if _bounds_overlap(_segment_bounds(blocker), first_bounds)
-        or _bounds_overlap(_segment_bounds(blocker), second_bounds)
-    )
-
-
-def _segment_may_block(
-    segment: Segment,
-    shortcut_bounds: _Bounds,
-    triangle_bounds: _Bounds,
-) -> bool:
-    bounds = _segment_bounds(segment)
-    return _bounds_overlap(bounds, shortcut_bounds) or _bounds_overlap(
-        bounds,
-        triangle_bounds,
+        blockers[index]
+        for index in _query_bounds_index(blocker_index, (first_bounds, second_bounds))
     )
 
 
@@ -472,6 +491,78 @@ def _bounds_overlap(first: _Bounds, second: _Bounds) -> bool:
         or second.upper.y < first.lower.y
         or first.upper.z < second.lower.z
         or second.upper.z < first.lower.z
+    )
+
+
+def _build_bounds_index(bounds: tuple[_Bounds, ...]) -> _BoundsIndex:
+    if len(bounds) == 0:
+        return _BoundsIndex(bounds=(), buckets={}, global_indices=(), cell_size=1.0)
+    cell_size = _index_cell_size(bounds)
+    mutable_buckets: dict[CellKey, list[int]] = {}
+    global_indices: list[int] = []
+    for index, segment_bounds in enumerate(bounds):
+        cells = _cells_for_bounds(segment_bounds, cell_size)
+        if len(cells) > MAX_INDEX_CELLS_PER_SEGMENT:
+            global_indices.append(index)
+            continue
+        for cell in cells:
+            mutable_buckets.setdefault(cell, []).append(index)
+    return _BoundsIndex(
+        bounds=bounds,
+        buckets={
+            cell: tuple(indices)
+            for cell, indices in mutable_buckets.items()
+        },
+        global_indices=tuple(global_indices),
+        cell_size=cell_size,
+    )
+
+
+def _query_bounds_index(
+    index: _BoundsIndex,
+    query_bounds: tuple[_Bounds, ...],
+) -> tuple[int, ...]:
+    if len(index.bounds) == 0:
+        return ()
+    candidate_indices = set(index.global_indices)
+    for bounds in query_bounds:
+        for cell in _cells_for_bounds(bounds, index.cell_size):
+            candidate_indices.update(index.buckets.get(cell, ()))
+    return tuple(
+        candidate_index
+        for candidate_index in sorted(candidate_indices)
+        if any(
+            _bounds_overlap(index.bounds[candidate_index], bounds)
+            for bounds in query_bounds
+        )
+    )
+
+
+def _index_cell_size(bounds: tuple[_Bounds, ...]) -> float:
+    spans = sorted(_max_bounds_span(bound) for bound in bounds)
+    return max(spans[len(spans) // 2] * 2.0, MIN_INDEX_CELL_SIZE)
+
+
+def _max_bounds_span(bounds: _Bounds) -> float:
+    return max(
+        bounds.upper.x - bounds.lower.x,
+        bounds.upper.y - bounds.lower.y,
+        bounds.upper.z - bounds.lower.z,
+    )
+
+
+def _cells_for_bounds(bounds: _Bounds, cell_size: float) -> tuple[CellKey, ...]:
+    lower_x = floor(bounds.lower.x / cell_size)
+    lower_y = floor(bounds.lower.y / cell_size)
+    lower_z = floor(bounds.lower.z / cell_size)
+    upper_x = floor(bounds.upper.x / cell_size)
+    upper_y = floor(bounds.upper.y / cell_size)
+    upper_z = floor(bounds.upper.z / cell_size)
+    return tuple(
+        (x_index, y_index, z_index)
+        for x_index in range(lower_x, upper_x + 1)
+        for y_index in range(lower_y, upper_y + 1)
+        for z_index in range(lower_z, upper_z + 1)
     )
 
 
@@ -537,6 +628,15 @@ def _core_trace_diagnostics(chains: tuple[Chain, ...]) -> _CoreTraceDiagnostics:
     )
 
 
+def _empty_core_trace_diagnostics(chains: tuple[Chain, ...]) -> _CoreTraceDiagnostics:
+    return _CoreTraceDiagnostics(
+        blocked_nodes=tuple(() for _ in chains),
+        accepted_blocked_move_count=0,
+        retained_blocked_node_count=0,
+        transient_blocked_node_count=0,
+    )
+
+
 @dataclass(frozen=True, slots=True)
 class _BlockedMoveTrace:
     blocked_moves: tuple[_BlockedTraceMove, ...]
@@ -598,6 +698,9 @@ def _blocked_move_trace(
     chain_index: int,
 ) -> _BlockedMoveTrace:
     indexed_blockers = _indexed_blocking_segments(chains, chain_index)
+    blocker_index = _build_bounds_index(
+        tuple(_segment_bounds(indexed.segment) for indexed in indexed_blockers),
+    )
     blockers = tuple(indexed.segment for indexed in indexed_blockers)
     current = tuple(
         _TraceNode(position=node, source_bead=float(index + 1))
@@ -617,6 +720,7 @@ def _blocked_move_trace(
         )
         local_indexed_blockers = _candidate_indexed_shortcut_blockers(
             indexed_blockers,
+            blocker_index,
             shortcut,
             swept_triangle,
             GEOMETRY_TOLERANCE,
@@ -628,16 +732,17 @@ def _blocked_move_trace(
             continue
         candidate = _candidate_trace_node(current, node_index)
         current_chain = Chain(tuple(node.position for node in current))
+        move = NodeMove(node_index=node_index, position=candidate.position)
         local_blockers = _candidate_move_blockers(
             blockers,
+            blocker_index,
             current_chain,
-            node_index,
-            candidate.position,
+            move,
             GEOMETRY_TOLERANCE,
         )
         evaluation = evaluate_node_move(
             current_chain,
-            NodeMove(node_index=node_index, position=candidate.position),
+            move,
             MoveContext(local_blockers),
         )
         if evaluation.accepted:

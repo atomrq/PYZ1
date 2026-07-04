@@ -79,6 +79,7 @@ class RegressionRequest:
     modes: tuple[RegressionMode, ...]
     benchmark_ids: tuple[str, ...]
     max_node_count: int = 1000
+    trace_diagnostics_max_node_count: int = 1000
 
 
 @dataclass(frozen=True, slots=True)
@@ -298,7 +299,15 @@ def _compare_benchmark_mode(
             pyz1_core_stage_source_bead_max_delta=None,
             note=f"skipped: node_count>{request.max_node_count}",
         )
-    result = reduce_snapshot(snapshot, _settings_for_mode(mode))
+    result = reduce_snapshot(
+        snapshot,
+        _settings_for_mode(
+            mode,
+            trace_diagnostics_enabled=(
+                snapshot.node_count <= request.trace_diagnostics_max_node_count
+            ),
+        ),
+    )
     oracle_summary = read_summary_file(summary_path)[0]
     actual_summary = result.summary.record
     lpp_delta = abs(
@@ -606,12 +615,21 @@ def _pyz1_core_stage_chain(
     )
 
 
-def _settings_for_mode(mode: RegressionMode) -> ReducerSettings:
+def _settings_for_mode(
+    mode: RegressionMode,
+    *,
+    trace_diagnostics_enabled: bool = True,
+) -> ReducerSettings:
     match mode:
         case RegressionMode.DEFAULT:
-            return ReducerSettings()
+            return ReducerSettings(
+                trace_diagnostics_enabled=trace_diagnostics_enabled,
+            )
         case RegressionMode.SPPLUS:
-            return ReducerSettings(pairing_enabled=True)
+            return ReducerSettings(
+                pairing_enabled=True,
+                trace_diagnostics_enabled=trace_diagnostics_enabled,
+            )
 
 
 def _summary_filename(mode: RegressionMode) -> str:

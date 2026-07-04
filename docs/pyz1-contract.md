@@ -262,6 +262,9 @@ Complete now:
 - default/SP+ benchmark regression runs public benchmarks 01-05 under the
   default `node_count>1000` performance guard and records measured deltas for
   each runnable mismatch
+- reducer blocker checks use a bounds index before exact geometry predicates,
+  and large custom regression runs can skip expensive trace diagnostics while
+  preserving reducer/summary/SP comparison
 - package-level final integration smoke through `python -m pyz1` for default,
   SP+, PPA, and PPA+ modes
 - explicit CLI failure for `-selfZ` / `-0` so the unsupported self-entanglement
