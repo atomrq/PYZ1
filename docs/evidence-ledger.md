@@ -13,12 +13,12 @@ Latest local gate evidence:
 
 - `.omo/evidence/task-53-reducer-index/spplus-focused.txt`: `6 passed`
 - `.omo/evidence/task-55-ppa-coverage/ppa-focused.txt`: `21 passed`
-- `.omo/evidence/task-56-ppa-nonfinite/ppa-regression-focused.txt`: `3 passed`
-- `.omo/evidence/task-56-ppa-nonfinite/pytest.txt`: `115 passed`
-- `.omo/evidence/task-56-ppa-nonfinite/ruff.txt`: `All checks passed!`
-- `.omo/evidence/task-56-ppa-nonfinite/basedpyright.txt`:
+- `.omo/evidence/task-57-ppa-nan-root/ppa-focused.txt`: `22 passed`
+- `.omo/evidence/task-57-ppa-nan-root/pytest.txt`: `115 passed`
+- `.omo/evidence/task-57-ppa-nan-root/ruff.txt`: `All checks passed!`
+- `.omo/evidence/task-57-ppa-nan-root/basedpyright.txt`:
   `0 errors, 0 warnings, 0 notes`
-- `.omo/evidence/task-56-ppa-nonfinite/package-smoke.txt`: `2 passed`
+- `.omo/evidence/task-57-ppa-nan-root/package-smoke.txt`: `2 passed`
 
 The package smoke runs `python -m pyz1` for default, SP+, PPA, and PPA+ modes
 and checks the expected mode-specific output files.
@@ -34,7 +34,7 @@ and checks the expected mode-specific output files.
 | Native PPA/PPA+ slices | PPA mode tests, CLI mode tests, package-level smoke, WCA cell-list candidate generation, native PPA summary regression reporting, Z1+ PPA+ phase-stop regression, 12 parseable oracle coordinate-path summary parity cases, and one explicit Fortran-overflow known-invalid fixture | `tests/test_ppa.py`, `tests/test_ppa_regression.py`, `tests/test_cli_scaffold.py`, `tests/test_package_integration_smoke.py`, `.omo/evidence/task-46-ppa-summary-oracle-coverage/`, `.omo/evidence/task-47-ppa-neighbor-list/`, `.omo/evidence/task-48-ppa-native-regression/`, `.omo/evidence/task-49-ppa-lpp-debug/` |
 | Clean-room reducer | Geometry primitives, reducer diagnostics, benchmark-04 reducer structure, SP+ pairing, broad-phase/index blocker filtering, and benchmark regression diagnostics for 01-05 under the default guard | `tests/test_geometry.py`, `tests/test_z1_reducer.py`, `tests/test_spplus_regression.py`, `.omo/evidence/task-53-reducer-index/` |
 | SP+ regression | Pairing comparison, max-node-delta localization, pair-segment geometry diagnostics, oracle summary source isolation, and residual ghost-clearance tuning | `tests/test_spplus_regression.py`, `.omo/evidence/task-38-final-node-delta-location/`, `.omo/evidence/task-39-max-node-pair-geometry/`, `.omo/evidence/task-41-spplus-projection-direction/`, `.omo/evidence/task-50-spplus-residual/` |
-| Package integration smoke | Real module entrypoint smoke for default, SP+, PPA, and PPA+ | `tests/test_package_integration_smoke.py`, `.omo/evidence/task-53-reducer-index/package-smoke.txt` |
+| Package integration smoke | Real module entrypoint smoke for default, SP+, PPA, and PPA+ | `tests/test_package_integration_smoke.py`, `.omo/evidence/task-57-ppa-nan-root/package-smoke.txt` |
 | `selfZ` boundary | `-selfZ` is recognized and fails explicitly instead of silently running the default reducer | `tests/test_cli_scaffold.py`, `tests/test_package_integration_smoke.py`, `.omo/evidence/task-45-selfz-explicit-boundary/` |
 
 ## Latest SP+ Parity Measurements
@@ -131,6 +131,21 @@ That quick slice runs benchmark 01 and 04 PPA/PPA+ plus benchmark 05 PPA+ under
 benchmark 05 PPA+ is classified as `known-invalid` because the native quick
 output reports non-finite `Lpp`, and the default full PPA phase report remains
 too slow for the local gate.
+
+Task-57 root-cause evidence is in `.omo/evidence/task-57-ppa-nan-root/`:
+
+- `benchmark05-initial-diagnostics.txt` shows the benchmark-05 PPA+ input is
+  finite before dynamics (`mean_lpp=19.000003838046396`,
+  `max_abs_unfolded_coord=13.85`) and that the FENE denominator is not close to
+  singular (`min_fene_denominator=0.55488848888888809`). The instability comes
+  from inter-chain WCA contact: `min_wca_distance_squared=0.0084160399999999684`
+  and `max_force_norm=1472449696360073.5`.
+- `benchmark05-first-steps.txt` confirms the first PPA+ position update drives
+  `mean_lpp` from `19.000003838046396` to `4089134097.2156291`, matching the
+  Z1+ native `********` fixed-width overflow in `PPA+summary.dat` and several
+  `PPA+.dat` coordinate rows. This fixture is therefore upstream-invalid for
+  strict PPA+ numeric parity under the visible native settings, not a parser or
+  writer failure.
 
 ## Open Boundaries
 

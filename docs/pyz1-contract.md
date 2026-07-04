@@ -169,6 +169,11 @@ preserve:
 
 PPA/PPA+ parity is numeric and must use documented tolerances. The tolerances
 must be justified by measured deltas, not loosened to hide mismatches.
+Known upstream-invalid native outputs must be documented as such instead of
+masked by non-native force clipping or coordinate clipping. Benchmark-05 PPA+
+is one such fixture: the input is finite and FENE-safe, but a near-zero
+inter-chain WCA contact creates a first-step force large enough to overflow the
+native fixed-width `Lpp` and coordinate output fields.
 
 ## Clean-Room Geometry Contract
 
@@ -288,7 +293,8 @@ Not complete yet:
 - full PPA/PPA+ benchmark-level runtime parity from native integration output;
   the WCA path now has a local candidate list and benchmark-04 PPA+ completes
   with default accelerated settings and Z1+ phase stops, but strict summary
-  parity is still a `mismatch`.
+  parity is still a `mismatch`. Benchmark-05 PPA+ is tracked separately as an
+  upstream-invalid native overflow fixture, not a parser/writer mismatch.
 - default geometrical Z1+ numerical parity for `Lpp`, `Z`, shortest-path
   structure, and SP+ pairings; benchmark-04 SP+ topology and pairings match,
   but `ne_modified_coil` remains a summary mismatch.
