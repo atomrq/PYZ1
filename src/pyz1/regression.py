@@ -237,6 +237,8 @@ class RegressionRecord:
     ) = None
     oracle_source_nearest_true_chain_contact_sequence: tuple[int, ...] | None = None
     oracle_true_chain_pair_sequence: tuple[int, ...] | None = None
+    pyz1_true_chain_pair_node_sequence: tuple[int, ...] | None = None
+    oracle_true_chain_pair_node_sequence: tuple[int, ...] | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -713,6 +715,14 @@ def _compare_benchmark_mode(
         ),
         oracle_true_chain_pair_sequence=(
             winding_candidate_coverage.oracle_true_chain_pair_sequence
+        ),
+        pyz1_true_chain_pair_node_sequence=_true_chain_pair_node_sequence(
+            result.shortest_path,
+            snapshot,
+        ),
+        oracle_true_chain_pair_node_sequence=_true_chain_pair_node_sequence(
+            oracle_shortest_path,
+            snapshot,
         ),
     )
 
@@ -1369,6 +1379,21 @@ def _true_chain_pair_sequence(
     )
 
 
+def _true_chain_pair_node_sequence(
+    shortest_path: ShortestPathSnapshot,
+    source_snapshot: Snapshot,
+) -> tuple[int, ...]:
+    if shortest_path.chain_count == 0:
+        return ()
+    return tuple(
+        node.pair.node_index
+        for node in shortest_path.chains[0].nodes
+        if node.is_entanglement
+        and node.pair is not None
+        and _has_true_chain_pair(source_snapshot, node.pair.chain_index)
+    )
+
+
 def _has_true_chain_pair(snapshot: Snapshot, chain_index: int) -> bool:
     zero_based_index = chain_index - 1
     return (
@@ -1612,6 +1637,8 @@ def _format_report(records: tuple[RegressionRecord, ...]) -> str:
         "pyz1 true-chain contact candidate details | "
         "oracle-source nearest true-chain contact sequence | "
         "oracle true-chain pair sequence | "
+        "pyz1 true-chain pair node sequence | "
+        "oracle true-chain pair node sequence | "
         "summary mismatch details | note |"
     )
     lines = [
@@ -1703,6 +1730,8 @@ def _format_record(record: RegressionRecord) -> str:
         f"{_format_true_chain_contact_candidates(record)} | "
         f"{_format_oracle_source_nearest_contact_sequence(record)} | "
         f"{_format_int_sequence(record.oracle_true_chain_pair_sequence)} | "
+        f"{_format_int_sequence(record.pyz1_true_chain_pair_node_sequence)} | "
+        f"{_format_int_sequence(record.oracle_true_chain_pair_node_sequence)} | "
         f"{_format_summary_field_details(record.summary_field_mismatch_details)} | "
         f"{record.note} |"
     )

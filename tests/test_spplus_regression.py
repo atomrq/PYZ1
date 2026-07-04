@@ -314,12 +314,16 @@ def test_write_benchmark_regression_report_when_convex_candidates_cover_oracle(
         26,
     )
     assert benchmark_05.oracle_true_chain_pair_sequence == (40, 26)
+    assert benchmark_05.pyz1_true_chain_pair_node_sequence == (11, 1)
+    assert benchmark_05.oracle_true_chain_pair_node_sequence == (3, 2)
     assert benchmark_05.pyz1_convex_winding_missing_oracle_sequence == (40, 26)
     assert "pyz1 convex winding candidates" in text
     assert "pyz1 true-chain contact candidate sequence" in text
     assert "oracle-source nearest true-chain contact sequence" in text
     assert "pyz1 true-chain pair sequence" in text
+    assert "pyz1 true-chain pair node sequence" in text
     assert "oracle true-chain pair sequence" in text
+    assert "oracle true-chain pair node sequence" in text
 
 
 def test_write_benchmark_regression_report_when_convex_selection_misses_oracle(
