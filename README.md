@@ -28,6 +28,18 @@ Run SP+ pairing mode:
 ulimit -n 1000000; micromamba run -n pyz1 python -m pyz1 -SP+ config.Z1
 ```
 
+Write a default/SP+ benchmark regression report:
+
+```bash
+ulimit -n 1000000; micromamba run -n pyz1 pyz1-benchmark-regression \
+  --source-dir /Users/jiaxm/Contents/CodexProjects/source_code/Z1+ \
+  --oracle-root tests/fixtures/z1plus_oracle/corpus-default-spplus-selfz-20260703 \
+  --report-path pyz1-benchmark-regression.md
+```
+
+By default this discovers every `benchmark-*` directory under the oracle root.
+Pass `--benchmark-id` repeatedly to restrict the report to a smaller slice.
+
 Run native PPA/PPA+ modes:
 
 ```bash

@@ -11,15 +11,15 @@ For a requirement-by-requirement completion verdict, see
 
 Latest local gate evidence:
 
-- `.omo/evidence/task-80-ppa-oracle-coordinate-discovery/pytest.txt`:
-  `132 passed`
+- `.omo/evidence/task-81-default-spplus-regression-cli/pytest.txt`:
+  `134 passed`
 - `.omo/evidence/task-55-ppa-coverage/ppa-focused.txt`: `21 passed`
 - `.omo/evidence/task-57-ppa-nan-root/ppa-focused.txt`: `22 passed`
-- `.omo/evidence/task-80-ppa-oracle-coordinate-discovery/ruff.txt`:
+- `.omo/evidence/task-81-default-spplus-regression-cli/ruff.txt`:
   `All checks passed!`
-- `.omo/evidence/task-80-ppa-oracle-coordinate-discovery/basedpyright.txt`:
+- `.omo/evidence/task-81-default-spplus-regression-cli/basedpyright.txt`:
   `0 errors, 0 warnings, 0 notes`
-- `.omo/evidence/task-80-ppa-oracle-coordinate-discovery/package-smoke.txt`:
+- `.omo/evidence/task-81-default-spplus-regression-cli/package-smoke.txt`:
   `2 passed`
 
 The package smoke runs `python -m pyz1` for default, SP+, PPA, and PPA+ modes
@@ -34,8 +34,8 @@ and checks the expected mode-specific output files.
 | Summary and `Ne` estimators | Estimator unit tests plus oracle-SP-through-pyz1 summary parity for benchmark-04 SP+ | `tests/test_estimators.py`, `tests/test_summary.py`, `tests/test_spplus_regression.py`, `.omo/evidence/task-42-summary-ne-source/` |
 | Oracle fixture tooling and parity reporting | Oracle manifest tests, CLI help smoke, benchmark regression report tests, and logged oracle run metadata | `tests/test_oracle.py`, `tests/test_z1plus_parity.py`, `tests/test_spplus_regression.py` |
 | Native PPA/PPA+ slices | PPA mode tests, CLI mode tests, package-level smoke, WCA cell-list candidate generation, native PPA summary regression reporting, Z1+ PPA+ phase-stop regression, 12 parseable oracle coordinate-path summary parity cases, explicit Fortran-overflow known-invalid fixture handling, reusable oracle coordinate fixture status reports, and a package script that discovers all oracle benchmark directories for coordinate fixture reporting | `tests/test_ppa.py`, `tests/test_ppa_regression.py`, `tests/test_ppa_oracle_coordinates.py`, `tests/test_ppa_oracle_coordinates_cli.py`, `tests/test_cli_scaffold.py`, `tests/test_package_integration_smoke.py`, `.omo/evidence/task-46-ppa-summary-oracle-coverage/`, `.omo/evidence/task-47-ppa-neighbor-list/`, `.omo/evidence/task-48-ppa-native-regression/`, `.omo/evidence/task-49-ppa-lpp-debug/`, `.omo/evidence/task-78-ppa-oracle-coordinate-report/`, `.omo/evidence/task-79-ppa-oracle-coordinate-cli/`, `.omo/evidence/task-80-ppa-oracle-coordinate-discovery/` |
-| Clean-room reducer | Geometry primitives, reducer diagnostics, benchmark-04 reducer structure, SP+ pairing, broad-phase/index blocker filtering, and benchmark regression diagnostics for 01-05 under the default guard | `tests/test_geometry.py`, `tests/test_z1_reducer.py`, `tests/test_spplus_regression.py`, `.omo/evidence/task-53-reducer-index/` |
-| SP+ regression | Pairing comparison, max-node-delta localization, pair-segment geometry diagnostics, oracle summary source isolation, and residual ghost-clearance tuning | `tests/test_spplus_regression.py`, `.omo/evidence/task-38-final-node-delta-location/`, `.omo/evidence/task-39-max-node-pair-geometry/`, `.omo/evidence/task-41-spplus-projection-direction/`, `.omo/evidence/task-50-spplus-residual/` |
+| Clean-room reducer | Geometry primitives, reducer diagnostics, benchmark-04 reducer structure, SP+ pairing, broad-phase/index blocker filtering, benchmark regression diagnostics for 01-05 under the default guard, and a package script that discovers all default/SP+ oracle benchmark directories for regression reporting | `tests/test_geometry.py`, `tests/test_z1_reducer.py`, `tests/test_spplus_regression.py`, `tests/test_regression_cli.py`, `.omo/evidence/task-53-reducer-index/`, `.omo/evidence/task-81-default-spplus-regression-cli/` |
+| SP+ regression | Pairing comparison, max-node-delta localization, pair-segment geometry diagnostics, oracle summary source isolation, residual ghost-clearance tuning, and CLI-driven full-corpus default/SP+ status reporting | `tests/test_spplus_regression.py`, `tests/test_regression_cli.py`, `.omo/evidence/task-38-final-node-delta-location/`, `.omo/evidence/task-39-max-node-pair-geometry/`, `.omo/evidence/task-41-spplus-projection-direction/`, `.omo/evidence/task-50-spplus-residual/`, `.omo/evidence/task-81-default-spplus-regression-cli/` |
 | Package integration smoke | Real module entrypoint smoke for default, SP+, PPA, and PPA+ | `tests/test_package_integration_smoke.py`, `.omo/evidence/task-57-ppa-nan-root/package-smoke.txt` |
 | `selfZ` boundary | `-selfZ` is recognized and fails explicitly instead of silently running the default reducer | `tests/test_cli_scaffold.py`, `tests/test_package_integration_smoke.py`, `.omo/evidence/task-45-selfz-explicit-boundary/` |
 
@@ -409,6 +409,17 @@ root when `--benchmark-id` is omitted. Evidence in
 records all 14 benchmark directories and both PPA modes for 28 coordinate
 fixture slots: 12 `parseable`, 15 `missing`, and benchmark-05 PPA+ as the
 single `invalid` coordinate fixture at line 310 with `invalid float`.
+
+## Latest Default/SP+ Regression CLI Evidence
+
+Task-81 adds a package-level default/SP+ benchmark regression CLI. Evidence in
+`.omo/evidence/task-81-default-spplus-regression-cli/default-spplus-all-discovered-report.md`
+shows `pyz1-benchmark-regression` discovers all 14 default/SP+ benchmark
+directories and writes 28 regression records: benchmark-04 default/SP+ are
+`passed`, benchmarks 01/02/03/05 default/SP+ are `mismatch`, and benchmarks
+06-14 default/SP+ are `known-invalid` under the current `node_count>1000`
+guard. The same surface is covered through `python -m pyz1.regression_cli` and
+`tests/test_regression_cli.py`.
 
 ## Open Boundaries
 
