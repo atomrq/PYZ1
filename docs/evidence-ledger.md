@@ -11,14 +11,14 @@ For a requirement-by-requirement completion verdict, see
 
 Latest local gate evidence:
 
-- `.omo/evidence/task-72-oracle-source-ambiguity/pytest.txt`: `125 passed`
+- `.omo/evidence/task-73-sequence-source-assignment/pytest.txt`: `126 passed`
 - `.omo/evidence/task-55-ppa-coverage/ppa-focused.txt`: `21 passed`
 - `.omo/evidence/task-57-ppa-nan-root/ppa-focused.txt`: `22 passed`
-- `.omo/evidence/task-72-oracle-source-ambiguity/ruff.txt`:
+- `.omo/evidence/task-73-sequence-source-assignment/ruff.txt`:
   `All checks passed!`
-- `.omo/evidence/task-72-oracle-source-ambiguity/basedpyright.txt`:
+- `.omo/evidence/task-73-sequence-source-assignment/basedpyright.txt`:
   `0 errors, 0 warnings, 0 notes`
-- `.omo/evidence/task-72-oracle-source-ambiguity/package-smoke.txt`:
+- `.omo/evidence/task-73-sequence-source-assignment/package-smoke.txt`:
   `2 passed`
 
 The package smoke runs `python -m pyz1` for default, SP+, PPA, and PPA+ modes
@@ -243,6 +243,22 @@ nearest source-compatible segment is rank 2. Benchmark-02 reports max rank `5`
 with ambiguous chains `(146,278,132,239,46,86,27,139,102)`. This localizes the
 remaining 01/02 source/order blocker to a non-nearest, sequence-aware source
 assignment rule rather than a simple geometric nearest-projection rule.
+
+Task-73 adds default-oracle source sequence diagnostics to the benchmark
+regression report and records two source-assignment probes. Evidence in
+`.omo/evidence/task-73-sequence-source-assignment/regression-01-03-default-source-match.txt`
+shows benchmark-01/02/03 SP+ oracle source sequences match their corresponding
+default oracle source sequences exactly; SP+ adds pair-chain annotations, but
+does not create a different first-chain source/order sequence. The probe
+`.omo/evidence/task-73-sequence-source-assignment/monotone-source-path-probe.md`
+rules out a simple strictly increasing minimum-distance source path: for
+benchmark-02 it selects all nearest midpoint sources, while oracle sources
+remain offset by up to `1.3252898191386155`. The paired
+`.omo/evidence/task-73-sequence-source-assignment/ray-crossing-source-probe.md`
+rules out horizontal/vertical ray-crossing assignment, with benchmark-02
+matching only `0/10` horizontal and `1/10` vertical sources under the local
+near-match threshold. The next reducer work should therefore target default
+Z1+ source/order generation before SP+ pair annotation.
 
 ## Latest PPA/PPA+ Oracle Summary Coverage
 

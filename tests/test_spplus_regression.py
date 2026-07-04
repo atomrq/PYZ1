@@ -464,6 +464,55 @@ def test_write_benchmark_regression_report_when_oracle_source_uses_nonnearest_se
     assert "36: r4" in text
 
 
+def test_write_benchmark_regression_report_when_spplus_sources_match_default(
+    tmp_path: Path,
+) -> None:
+    report_path = tmp_path / "pyz1-benchmark-regression.md"
+
+    records = write_benchmark_regression_report(
+        RegressionRequest(
+            source_dir=SOURCE_Z1,
+            oracle_root=ORACLE_ROOT,
+            report_path=report_path,
+            modes=(RegressionMode.SPPLUS,),
+            benchmark_ids=("01", "02"),
+        ),
+    )
+
+    text = report_path.read_text(encoding="utf-8")
+    assert records[0].oracle_mode_source_sequence_matches_default is True
+    assert records[0].oracle_default_source_sequence == (
+        1.4,
+        1.79,
+        2.19,
+        3.06,
+        3.5,
+        4.56,
+        5.24,
+        5.99,
+        6.74,
+        7.47,
+        8.27,
+        9.16,
+        10.08,
+    )
+    assert records[1].oracle_mode_source_sequence_matches_default is True
+    assert records[1].oracle_default_source_sequence == (
+        1.95,
+        2.85,
+        3.62,
+        4.32,
+        5.06,
+        5.85,
+        7.48,
+        8.32,
+        9.2,
+        10.1,
+    )
+    assert "oracle default source sequence" in text
+    assert "oracle source sequence matches default" in text
+
+
 def test_write_benchmark_regression_report_when_source_beads_differ_reports_max_delta(
     tmp_path: Path,
 ) -> None:

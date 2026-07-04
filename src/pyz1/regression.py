@@ -205,6 +205,8 @@ class RegressionRecord:
     oracle_obstacle_source_segment_ambiguities: (
         tuple[OracleObstacleSourceSegmentAmbiguity, ...] | None
     ) = None
+    oracle_default_source_sequence: tuple[float, ...] | None = None
+    oracle_mode_source_sequence_matches_default: bool | None = None
     oracle_true_chain_pair_sequence: tuple[int, ...] | None = None
 
 
@@ -431,6 +433,11 @@ def _compare_benchmark_mode(
     summary_field_mismatches = len(summary_field_mismatch_details)
     pairing_mismatches = _pairing_mismatch_count(mode, result.shortest_path, sp_path)
     oracle_shortest_path = parse_shortest_path_text(sp_path.read_text(encoding="utf-8"))
+    oracle_default_source_sequence = _oracle_default_source_sequence(
+        request,
+        benchmark_id,
+    )
+    oracle_mode_source_sequence = _entanglement_source_sequence(oracle_shortest_path)
     geometry_comparison = _shortest_path_snapshot_geometry_comparison(
         result.shortest_path,
         oracle_shortest_path,
@@ -639,6 +646,12 @@ def _compare_benchmark_mode(
         ),
         oracle_obstacle_source_segment_ambiguities=(
             winding_candidate_coverage.oracle_obstacle_source_segment_ambiguities
+        ),
+        oracle_default_source_sequence=oracle_default_source_sequence,
+        oracle_mode_source_sequence_matches_default=(
+            oracle_default_source_sequence == oracle_mode_source_sequence
+            if oracle_default_source_sequence is not None
+            else None
         ),
         oracle_true_chain_pair_sequence=(
             winding_candidate_coverage.oracle_true_chain_pair_sequence
@@ -1281,6 +1294,36 @@ def _obstacle_pair_chain_sequence(snapshot: ShortestPathSnapshot) -> tuple[int, 
     )
 
 
+def _oracle_default_source_sequence(
+    request: RegressionRequest,
+    benchmark_id: str,
+) -> tuple[float, ...] | None:
+    default_sp_path = (
+        request.oracle_root
+        / f"benchmark-{benchmark_id}"
+        / RegressionMode.DEFAULT.value
+        / "Z1+SP.dat"
+    )
+    if not default_sp_path.exists():
+        return None
+    default_shortest_path = parse_shortest_path_text(
+        default_sp_path.read_text(encoding="utf-8"),
+    )
+    return _entanglement_source_sequence(default_shortest_path)
+
+
+def _entanglement_source_sequence(
+    snapshot: ShortestPathSnapshot,
+) -> tuple[float, ...]:
+    if snapshot.chain_count == 0:
+        return ()
+    return tuple(
+        node.source_bead
+        for node in snapshot.chains[0].nodes
+        if node.is_entanglement
+    )
+
+
 def _format_report(records: tuple[RegressionRecord, ...]) -> str:
     header = (
         "| benchmark | mode | status | Lpp delta | Z delta | "
@@ -1333,6 +1376,8 @@ def _format_report(records: tuple[RegressionRecord, ...]) -> str:
         "oracle obstacle source residual details | "
         "max oracle source segment rank | "
         "oracle source segment ambiguity details | "
+        "oracle default source sequence | "
+        "oracle source sequence matches default | "
         "oracle true-chain pair sequence | "
         "summary mismatch details | note |"
     )
@@ -1414,6 +1459,8 @@ def _format_record(record: RegressionRecord) -> str:
         f"{_format_oracle_obstacle_source_residuals(record)} | "
         f"{_format_optional_int(record.max_oracle_obstacle_source_segment_rank)} | "
         f"{_format_oracle_source_segment_ambiguities(record)} | "
+        f"{_format_float_sequence(record.oracle_default_source_sequence)} | "
+        f"{_format_oracle_source_sequence_default_match(record)} | "
         f"{_format_int_sequence(record.oracle_true_chain_pair_sequence)} | "
         f"{_format_summary_field_details(record.summary_field_mismatch_details)} | "
         f"{record.note} |"
@@ -1438,6 +1485,28 @@ def _format_int_sequence(values: tuple[int, ...] | None) -> str:
     if len(values) == 0:
         return "none"
     return ",".join(str(value) for value in values)
+
+
+def _format_float_sequence(values: tuple[float, ...] | None) -> str:
+    if values is None:
+        return "n/a"
+    if len(values) == 0:
+        return "none"
+    return ",".join(_format_optional_float(value) for value in values)
+
+
+def _format_optional_bool(value: bool | None) -> str:
+    if value is None:
+        return "n/a"
+    if value:
+        return "yes"
+    return "no"
+
+
+def _format_oracle_source_sequence_default_match(
+    record: RegressionRecord,
+) -> str:
+    return _format_optional_bool(record.oracle_mode_source_sequence_matches_default)
 
 
 def _format_convex_selected_missing_sequence(record: RegressionRecord) -> str:
