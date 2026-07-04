@@ -4,6 +4,7 @@ from pathlib import Path
 from shutil import copyfile
 
 from pyz1.output_io import read_shortest_path_file, read_summary_file
+from pyz1.reducer import ReducerSettings, reduce_snapshot
 from pyz1.regression import (
     RegressionMode,
     RegressionRecord,
@@ -316,7 +317,7 @@ def test_write_benchmark_regression_report_when_convex_candidates_cover_oracle(
     assert benchmark_05.oracle_true_chain_pair_sequence == (40, 26)
     assert benchmark_05.pyz1_true_chain_pair_node_sequence == (3, 2)
     assert benchmark_05.oracle_true_chain_pair_node_sequence == (3, 2)
-    assert benchmark_05.node_count_mismatches == 49
+    assert benchmark_05.node_count_mismatches == 38
     assert benchmark_05.pyz1_convex_winding_missing_oracle_sequence == (40, 26)
     assert "pyz1 convex winding candidates" in text
     assert "pyz1 true-chain contact candidate sequence" in text
@@ -325,6 +326,282 @@ def test_write_benchmark_regression_report_when_convex_candidates_cover_oracle(
     assert "pyz1 true-chain pair node sequence" in text
     assert "oracle true-chain pair sequence" in text
     assert "oracle true-chain pair node sequence" in text
+
+
+def test_reduce_snapshot_when_benchmark05_chain40_keeps_lower_index_contact() -> None:
+    snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-05.Z1")
+
+    result = reduce_snapshot(snapshot, ReducerSettings(pairing_enabled=True))
+
+    chain_40_pairs = tuple(
+        node.pair.chain_index
+        for node in result.shortest_path.chains[39].nodes[1:-1]
+        if node.pair is not None
+    )
+    assert 25 in chain_40_pairs
+
+
+def test_reduce_snapshot_when_benchmark05_chain25_keeps_reciprocal_contact() -> None:
+    snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-05.Z1")
+
+    result = reduce_snapshot(snapshot, ReducerSettings(pairing_enabled=True))
+
+    chain_25_pairs = tuple(
+        node.pair.chain_index
+        for node in result.shortest_path.chains[24].nodes[1:-1]
+        if node.pair is not None
+    )
+    assert 40 in chain_25_pairs
+
+
+def test_reduce_snapshot_when_benchmark05_chain2_keeps_repeated_contact() -> None:
+    snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-05.Z1")
+
+    result = reduce_snapshot(snapshot, ReducerSettings(pairing_enabled=True))
+
+    chain_2_pairs = tuple(
+        node.pair.chain_index
+        for node in result.shortest_path.chains[1].nodes[1:-1]
+        if node.pair is not None
+    )
+    assert 34 in chain_2_pairs
+
+
+def test_reduce_snapshot_when_benchmark05_chain2_places_repeated_source() -> None:
+    snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-05.Z1")
+
+    result = reduce_snapshot(snapshot, ReducerSettings(pairing_enabled=True))
+
+    chain_2_pair_34_sources = tuple(
+        node.source_bead
+        for node in result.shortest_path.chains[1].nodes[1:-1]
+        if node.pair is not None and node.pair.chain_index == 34
+    )
+    assert chain_2_pair_34_sources[0] > 3.9
+
+
+def test_reduce_snapshot_when_benchmark05_chain2_keeps_paired_contact() -> None:
+    snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-05.Z1")
+
+    result = reduce_snapshot(snapshot, ReducerSettings(pairing_enabled=True))
+
+    chain_2_pairs = tuple(
+        node.pair.chain_index
+        for node in result.shortest_path.chains[1].nodes[1:-1]
+        if node.pair is not None
+    )
+    assert 13 in chain_2_pairs
+
+
+def test_reduce_snapshot_when_benchmark05_chain2_keeps_second_pair_contact() -> None:
+    snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-05.Z1")
+
+    result = reduce_snapshot(snapshot, ReducerSettings(pairing_enabled=True))
+
+    chain_2_pair_13_count = sum(
+        1
+        for node in result.shortest_path.chains[1].nodes[1:-1]
+        if node.pair is not None and node.pair.chain_index == 13
+    )
+    assert chain_2_pair_13_count >= 2
+
+
+def test_reduce_snapshot_when_benchmark05_chain2_spreads_pair_sources() -> None:
+    snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-05.Z1")
+
+    result = reduce_snapshot(snapshot, ReducerSettings(pairing_enabled=True))
+
+    chain_2_pair_13_sources = tuple(
+        node.source_bead
+        for node in result.shortest_path.chains[1].nodes[1:-1]
+        if node.pair is not None and node.pair.chain_index == 13
+    )
+    assert (
+        chain_2_pair_13_sources[1] - chain_2_pair_13_sources[0]
+        > 2.0
+    )
+
+
+def test_reduce_snapshot_when_benchmark05_chain2_places_first_pair13_source() -> None:
+    snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-05.Z1")
+
+    result = reduce_snapshot(snapshot, ReducerSettings(pairing_enabled=True))
+
+    chain_2_pair_13_sources = tuple(
+        node.source_bead
+        for node in result.shortest_path.chains[1].nodes[1:-1]
+        if node.pair is not None and node.pair.chain_index == 13
+    )
+    assert chain_2_pair_13_sources[0] < 8.1
+
+
+def test_reduce_snapshot_when_benchmark05_chain2_places_second_pair13_source() -> None:
+    snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-05.Z1")
+
+    result = reduce_snapshot(snapshot, ReducerSettings(pairing_enabled=True))
+
+    chain_2_pair_13_sources = tuple(
+        node.source_bead
+        for node in result.shortest_path.chains[1].nodes[1:-1]
+        if node.pair is not None and node.pair.chain_index == 13
+    )
+    assert chain_2_pair_13_sources[1] > 11.94
+
+
+def test_reduce_snapshot_when_benchmark05_chain2_keeps_tail_contact() -> None:
+    snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-05.Z1")
+
+    result = reduce_snapshot(snapshot, ReducerSettings(pairing_enabled=True))
+
+    chain_2_pairs = tuple(
+        node.pair.chain_index
+        for node in result.shortest_path.chains[1].nodes[1:-1]
+        if node.pair is not None
+    )
+    assert 6 in chain_2_pairs
+
+
+def test_reduce_snapshot_when_benchmark05_chain2_places_tail_source() -> None:
+    snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-05.Z1")
+
+    result = reduce_snapshot(snapshot, ReducerSettings(pairing_enabled=True))
+
+    chain_2_pair_6_sources = tuple(
+        node.source_bead
+        for node in result.shortest_path.chains[1].nodes[1:-1]
+        if node.pair is not None and node.pair.chain_index == 6
+    )
+    assert chain_2_pair_6_sources[0] < 15.99
+
+
+def test_reduce_snapshot_when_benchmark05_chain2_places_pair6_node() -> None:
+    snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-05.Z1")
+
+    result = reduce_snapshot(snapshot, ReducerSettings(pairing_enabled=True))
+
+    chain_2_pair_6_nodes = tuple(
+        node.pair.node_index
+        for node in result.shortest_path.chains[1].nodes[1:-1]
+        if node.pair is not None and node.pair.chain_index == 6
+    )
+    assert chain_2_pair_6_nodes[0] == 2
+
+
+def test_reduce_snapshot_when_benchmark05_chain2_places_pair34_source() -> None:
+    snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-05.Z1")
+
+    result = reduce_snapshot(snapshot, ReducerSettings(pairing_enabled=True))
+
+    chain_2_pair_34_sources = tuple(
+        node.source_bead
+        for node in result.shortest_path.chains[1].nodes[1:-1]
+        if node.pair is not None and node.pair.chain_index == 34
+    )
+    assert chain_2_pair_34_sources[0] > 4.2
+
+
+def test_reduce_snapshot_when_benchmark05_chain2_places_pair34_node() -> None:
+    snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-05.Z1")
+
+    result = reduce_snapshot(snapshot, ReducerSettings(pairing_enabled=True))
+
+    chain_2_pair_34_nodes = tuple(
+        node.pair.node_index
+        for node in result.shortest_path.chains[1].nodes[1:-1]
+        if node.pair is not None and node.pair.chain_index == 34
+    )
+    assert chain_2_pair_34_nodes[0] == 2
+
+
+def test_reduce_snapshot_when_benchmark05_chain1_places_pair40_source() -> None:
+    snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-05.Z1")
+
+    result = reduce_snapshot(snapshot, ReducerSettings(pairing_enabled=True))
+
+    chain_1_pair_40_sources = tuple(
+        node.source_bead
+        for node in result.shortest_path.chains[0].nodes[1:-1]
+        if node.pair is not None and node.pair.chain_index == 40
+    )
+    assert chain_1_pair_40_sources[0] < 7.6
+
+
+def test_reduce_snapshot_when_benchmark05_chain28_keeps_pair34_contact() -> None:
+    snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-05.Z1")
+
+    result = reduce_snapshot(snapshot, ReducerSettings(pairing_enabled=True))
+
+    chain_28_pairs = tuple(
+        node.pair.chain_index
+        for node in result.shortest_path.chains[27].nodes[1:-1]
+        if node.pair is not None
+    )
+    assert 34 in chain_28_pairs
+
+
+def test_reduce_snapshot_when_benchmark05_chain28_places_pair34_source() -> None:
+    snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-05.Z1")
+
+    result = reduce_snapshot(snapshot, ReducerSettings(pairing_enabled=True))
+
+    chain_28_pair_34_sources = tuple(
+        node.source_bead
+        for node in result.shortest_path.chains[27].nodes[1:-1]
+        if node.pair is not None and node.pair.chain_index == 34
+    )
+    assert chain_28_pair_34_sources[0] > 2.4
+
+
+def test_reduce_snapshot_when_benchmark05_chain28_places_pair34_node() -> None:
+    snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-05.Z1")
+
+    result = reduce_snapshot(snapshot, ReducerSettings(pairing_enabled=True))
+
+    chain_28_pair_34_nodes = tuple(
+        node.pair.node_index
+        for node in result.shortest_path.chains[27].nodes[1:-1]
+        if node.pair is not None and node.pair.chain_index == 34
+    )
+    assert chain_28_pair_34_nodes[0] == 1
+
+
+def test_reduce_snapshot_when_benchmark05_chain34_keeps_pair28_contact() -> None:
+    snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-05.Z1")
+
+    result = reduce_snapshot(snapshot, ReducerSettings(pairing_enabled=True))
+
+    chain_34_pairs = tuple(
+        node.pair.chain_index
+        for node in result.shortest_path.chains[33].nodes[1:-1]
+        if node.pair is not None
+    )
+    assert 28 in chain_34_pairs
+
+
+def test_reduce_snapshot_when_benchmark05_chain34_places_pair28_source() -> None:
+    snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-05.Z1")
+
+    result = reduce_snapshot(snapshot, ReducerSettings(pairing_enabled=True))
+
+    chain_34_pair_28_sources = tuple(
+        node.source_bead
+        for node in result.shortest_path.chains[33].nodes[1:-1]
+        if node.pair is not None and node.pair.chain_index == 28
+    )
+    assert chain_34_pair_28_sources[0] < 4.6
+
+
+def test_reduce_snapshot_when_benchmark05_chain34_places_pair28_node() -> None:
+    snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-05.Z1")
+
+    result = reduce_snapshot(snapshot, ReducerSettings(pairing_enabled=True))
+
+    chain_34_pair_28_nodes = tuple(
+        node.pair.node_index
+        for node in result.shortest_path.chains[33].nodes[1:-1]
+        if node.pair is not None and node.pair.chain_index == 28
+    )
+    assert chain_34_pair_28_nodes[0] == 1
 
 
 def test_write_benchmark_regression_report_when_convex_selection_misses_oracle(

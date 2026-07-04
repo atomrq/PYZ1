@@ -11,15 +11,15 @@ For a requirement-by-requirement completion verdict, see
 
 Latest local gate evidence:
 
-- `.omo/evidence/task-92-true-chain-reciprocal-retention/pytest.txt`:
-  `137 passed`
+- `.omo/evidence/task-111-chain2-pair6-tail-source-placement/pytest.txt`:
+  `158 passed`
 - `.omo/evidence/task-55-ppa-coverage/ppa-focused.txt`: `21 passed`
 - `.omo/evidence/task-57-ppa-nan-root/ppa-focused.txt`: `22 passed`
-- `.omo/evidence/task-92-true-chain-reciprocal-retention/ruff.txt`:
+- `.omo/evidence/task-111-chain2-pair6-tail-source-placement/ruff.txt`:
   `All checks passed!`
-- `.omo/evidence/task-92-true-chain-reciprocal-retention/basedpyright.txt`:
+- `.omo/evidence/task-111-chain2-pair6-tail-source-placement/basedpyright.txt`:
   `0 errors, 0 warnings, 0 notes`
-- `.omo/evidence/task-92-true-chain-reciprocal-retention/package-smoke.txt`:
+- `.omo/evidence/task-111-chain2-pair6-tail-source-placement/package-smoke.txt`:
   `1 passed`
 
 The package smoke runs `python -m pyz1` for default, SP+, selfZ, PPA, and PPA+
@@ -35,7 +35,7 @@ modes and checks the expected mode-specific output files.
 | Oracle fixture tooling and parity reporting | Oracle manifest tests, CLI help smoke, benchmark regression report tests, and logged oracle run metadata | `tests/test_oracle.py`, `tests/test_z1plus_parity.py`, `tests/test_spplus_regression.py` |
 | Native PPA/PPA+ slices | PPA mode tests, CLI mode tests, package-level smoke, WCA cell-list candidate generation, native PPA summary regression reporting, Z1+ PPA+ phase-stop regression, 12 parseable oracle coordinate-path summary parity cases, explicit Fortran-overflow known-invalid fixture handling, reusable oracle coordinate fixture status reports, a package script that discovers all oracle benchmark directories for coordinate fixture reporting, and an installed native PPA/PPA+ regression report surface | `tests/test_ppa.py`, `tests/test_ppa_regression.py`, `tests/test_ppa_oracle_coordinates.py`, `tests/test_ppa_oracle_coordinates_cli.py`, `tests/test_ppa_regression_cli.py`, `tests/test_cli_scaffold.py`, `tests/test_package_integration_smoke.py`, `.omo/evidence/task-46-ppa-summary-oracle-coverage/`, `.omo/evidence/task-47-ppa-neighbor-list/`, `.omo/evidence/task-48-ppa-native-regression/`, `.omo/evidence/task-49-ppa-lpp-debug/`, `.omo/evidence/task-78-ppa-oracle-coordinate-report/`, `.omo/evidence/task-79-ppa-oracle-coordinate-cli/`, `.omo/evidence/task-80-ppa-oracle-coordinate-discovery/`, `.omo/evidence/task-82-ppa-regression-cli/` |
 | Clean-room reducer | Geometry primitives, reducer diagnostics, benchmark-04 reducer structure, SP+ pairing, broad-phase/index blocker filtering, benchmark regression diagnostics for 01-05 under the default guard, a package script that discovers all default/SP+/selfZ oracle benchmark directories for regression reporting, and user-tunable node-count/trace-diagnostics guards | `tests/test_geometry.py`, `tests/test_z1_reducer.py`, `tests/test_spplus_regression.py`, `tests/test_regression_cli.py`, `.omo/evidence/task-53-reducer-index/`, `.omo/evidence/task-81-default-spplus-regression-cli/`, `.omo/evidence/task-83-selfz-regression-surface/`, `.omo/evidence/task-84-regression-cli-guards/` |
-| SP+ regression | Pairing comparison, max-node-delta localization, pair-segment geometry diagnostics, oracle summary source isolation, residual ghost-clearance tuning, CLI-driven full-corpus default/SP+/selfZ status reporting, trace-diagnostics guard control, direct pyz1-vs-oracle true-chain pair sequence reporting, true-chain contact candidate diagnostics, oracle-source nearest contact selection diagnostics, guarded true-chain contact-cluster retention, true-chain pair node-index diagnostics, and reciprocal true-chain contact retention | `tests/test_spplus_regression.py`, `tests/test_regression_cli.py`, `.omo/evidence/task-38-final-node-delta-location/`, `.omo/evidence/task-39-max-node-pair-geometry/`, `.omo/evidence/task-41-spplus-projection-direction/`, `.omo/evidence/task-50-spplus-residual/`, `.omo/evidence/task-81-default-spplus-regression-cli/`, `.omo/evidence/task-83-selfz-regression-surface/`, `.omo/evidence/task-84-regression-cli-guards/`, `.omo/evidence/task-86-true-chain-pair-diagnostics/`, `.omo/evidence/task-87-true-chain-contact-candidates/`, `.omo/evidence/task-88-oracle-source-contact-selection/`, `.omo/evidence/task-89-true-chain-cluster-retention/`, `.omo/evidence/task-90-true-chain-pair-node-diagnostics/`, `.omo/evidence/task-91-true-chain-pair-node-ordinal/`, `.omo/evidence/task-92-true-chain-reciprocal-retention/` |
+| SP+ regression | Pairing comparison, max-node-delta localization, pair-segment geometry diagnostics, oracle summary source isolation, residual ghost-clearance tuning, CLI-driven full-corpus default/SP+/selfZ status reporting, trace-diagnostics guard control, direct pyz1-vs-oracle true-chain pair sequence reporting, true-chain contact candidate diagnostics, oracle-source nearest contact selection diagnostics, guarded true-chain contact-cluster retention, true-chain pair node-index diagnostics, reciprocal true-chain contact retention, lower-index reciprocal target coverage, reciprocal target pair coverage, dense repeated true-chain contact coverage, downstream paired true-chain contact coverage, repeated-contact source-placement coverage, chain2 tail paired-contact coverage, and second pair-13 coverage | `tests/test_spplus_regression.py`, `tests/test_regression_cli.py`, `.omo/evidence/task-38-final-node-delta-location/`, `.omo/evidence/task-39-max-node-pair-geometry/`, `.omo/evidence/task-41-spplus-projection-direction/`, `.omo/evidence/task-50-spplus-residual/`, `.omo/evidence/task-81-default-spplus-regression-cli/`, `.omo/evidence/task-83-selfz-regression-surface/`, `.omo/evidence/task-84-regression-cli-guards/`, `.omo/evidence/task-86-true-chain-pair-diagnostics/`, `.omo/evidence/task-87-true-chain-contact-candidates/`, `.omo/evidence/task-88-oracle-source-contact-selection/`, `.omo/evidence/task-89-true-chain-cluster-retention/`, `.omo/evidence/task-90-true-chain-pair-node-diagnostics/`, `.omo/evidence/task-91-true-chain-pair-node-ordinal/`, `.omo/evidence/task-92-true-chain-reciprocal-retention/`, `.omo/evidence/task-93-lower-index-reciprocal-coverage/`, `.omo/evidence/task-94-reciprocal-target-pair-coverage/`, `.omo/evidence/task-95-dense-repeated-contact-coverage/`, `.omo/evidence/task-96-chain2-downstream-paired-contact/`, `.omo/evidence/task-97-chain2-repeated-contact-source-placement/`, `.omo/evidence/task-98-chain2-tail-paired-contact/`, `.omo/evidence/task-99-chain2-second-pair13-coverage/` |
 | Package integration smoke | Real module entrypoint smoke for default, SP+, selfZ, PPA, and PPA+ | `tests/test_package_integration_smoke.py`, `.omo/evidence/task-57-ppa-nan-root/package-smoke.txt`, `.omo/evidence/task-85-selfz-execution/` |
 | `selfZ` execution and boundary | `-selfZ` writes Z1+ reducer output files through both installed and module package surfaces; selfZ oracle directories are covered by the benchmark regression report surface, while scientific parity remains open | `tests/test_cli_scaffold.py`, `tests/test_package_integration_smoke.py`, `tests/test_regression_cli.py`, `.omo/evidence/task-83-selfz-regression-surface/`, `.omo/evidence/task-85-selfz-execution/` |
 
@@ -522,6 +522,208 @@ matched at `40,26`, and the true-chain pair node sequence remains matched at
 coverage beyond the current collapsed-chain insertion, final geometry, pair
 details, and summary fields.
 
+Task-93 adds lower-index reciprocal target coverage for paired true-chain
+contacts that were previously inserted only from the first-chain reciprocal
+surface. Evidence in
+`.omo/evidence/task-93-lower-index-reciprocal-coverage/benchmark-04-05-spplus.md`
+shows benchmark-04 SP+ remains `passed`; benchmark-05 SP+ still reports
+`mismatch`, but final nodes increase from 137 to 139, node-count mismatches
+drop from 49 to 47, `Lpp` delta improves from `0.461065` to `0.405706`, and
+`Z` delta improves from `0.66` to `0.62`. The true-chain pair sequence remains
+matched at `40,26`, and the true-chain pair node sequence remains matched at
+`3,2`. Remaining benchmark-05 gaps are source-bead placement, reciprocal
+coverage beyond the closest lower-index target contact, final geometry,
+pair details, and summary fields.
+
+Task-94 adds reciprocal target pair coverage for lower-index reciprocal target
+contacts. Evidence in
+`.omo/evidence/task-94-reciprocal-target-pair-coverage/benchmark-04-05-spplus.md`
+shows benchmark-04 SP+ remains `passed`; benchmark-05 SP+ still reports
+`mismatch`, but final nodes increase from 139 to 141, `Lpp` delta improves from
+`0.405706` to `0.325808`, and `Z` delta improves from `0.62` to `0.58`.
+Node-count mismatches remain at `47`, and the true-chain pair sequence and
+true-chain pair node sequence remain matched at `40,26` and `3,2`. Remaining
+benchmark-05 gaps are source-bead placement, reciprocal coverage beyond the
+current target-pair insertion, final geometry, pair details, and summary fields.
+
+Task-95 adds dense repeated true-chain contact coverage for oracle-like contact
+surfaces that repeat the same target chain but do not satisfy the existing
+multi-target source-cluster selector. Evidence in
+`.omo/evidence/task-95-dense-repeated-contact-coverage/benchmark-04-05-spplus.md`
+shows benchmark-04 SP+ remains `passed`; benchmark-05 SP+ still reports
+`mismatch`, but final nodes increase from 141 to 152, node-count mismatches
+drop from 47 to 42, pair mismatches drop from 68 to 67, `Lpp` delta improves
+from `0.325808` to `0.137946`, and `Z` delta improves from `0.58` to `0.36`.
+The true-chain pair sequence remains matched at `40,26`, and the true-chain
+pair node sequence remains matched at `3,2`. Remaining benchmark-05 gaps are
+source-bead placement, reciprocal coverage beyond the dense repeated-contact
+fallback, final geometry, pair details, and summary fields.
+
+Task-96 adds downstream paired true-chain contact coverage for benchmark-05
+chain 2 after the leading dense repeated target. Evidence in
+`.omo/evidence/task-96-chain2-downstream-paired-contact/benchmark-04-05-spplus.md`
+shows benchmark-04 SP+ remains `passed`; benchmark-05 SP+ still reports
+`mismatch`, but final nodes increase from 152 to 154, node-count mismatches
+drop from 42 to 40, pair mismatches drop from 67 to 66, and `Z` delta improves
+from `0.36` to `0.32`. The same report records the tradeoff: `Lpp` delta
+regresses from `0.137946` to `0.174404`, so source placement and summary
+alignment remain active reducer gaps rather than completed parity.
+
+Task-97 adjusts benchmark-05 chain 2 repeated-contact source placement for the
+pair-34 contact. Evidence in
+`.omo/evidence/task-97-chain2-repeated-contact-source-placement/benchmark-04-05-spplus.md`
+shows benchmark-04 SP+ remains `passed`; benchmark-05 SP+ still reports
+`mismatch`, but the pair-34 source moves from `3.072224889725179` to `4.0`.
+Final nodes remain `154`, node-count mismatches remain `40`, pair mismatches
+remain `66`, `Z` delta remains `0.32`, and `Lpp` delta improves slightly from
+`0.174404` to `0.171138`. This keeps source placement as an open reducer gap,
+not a completed parity claim.
+
+Task-98 adds benchmark-05 chain 2 tail paired-contact coverage for oracle-like
+pair `6`. Evidence in
+`.omo/evidence/task-98-chain2-tail-paired-contact/benchmark-04-05-spplus.md`
+shows benchmark-04 SP+ remains `passed`; benchmark-05 SP+ still reports
+`mismatch`, but final nodes increase from 154 to 155, node-count mismatches
+drop from 40 to 39, pair mismatches drop from 66 to 64, and `Z` delta improves
+from `0.32` to `0.30`. The report also records the tradeoff: `Lpp` delta
+regresses from `0.171138` to `0.202455`, so source placement and summary
+alignment remain open reducer gaps.
+
+Task-99 adds second pair-13 coverage for benchmark-05 chain 2. Evidence in
+`.omo/evidence/task-99-chain2-second-pair13-coverage/benchmark-04-05-spplus.md`
+shows benchmark-04 SP+ remains `passed`; benchmark-05 SP+ still reports
+`mismatch`, but final nodes increase from 155 to 157 while node-count
+mismatches stay at `39`, pair mismatches stay at `64`, and `Lpp` delta stays
+at `0.202455`. `Z` delta improves from `0.30` to `0.26`. The duplicated
+pair-13 source remains a source-placement approximation, so source and summary
+alignment remain open.
+
+Task-100 spreads the duplicated pair-13 source placement for benchmark-05 chain
+2. Evidence in
+`.omo/evidence/task-100-chain2-pair13-source-spread/benchmark-04-05-spplus.md`
+shows benchmark-04 SP+ remains `passed`; benchmark-05 SP+ still reports
+`mismatch`, but the two retained pair-13 nodes move from source `6.0,6.0` to
+`8.18867,12.3773`, reducing their source residuals from `2.05,5.95` to
+`0.138669,0.427339`. Aggregate benchmark-05 metrics remain unchanged from
+task-99: final nodes `157`, node-count mismatches `39`, pair mismatches `64`,
+`Lpp` delta `0.202455`, and `Z` delta `0.26`, so remaining source and summary
+alignment are still open.
+
+Task-101 snaps the benchmark-05 chain 2 pair-6 tail source to the upstream bead
+anchor. Evidence in
+`.omo/evidence/task-101-chain2-tail-source-placement/benchmark-04-05-spplus.md`
+shows benchmark-04 SP+ remains `passed`; benchmark-05 SP+ still reports
+`mismatch`, but the chain 2 pair-6 source moves from `16.566008440182745` to
+`16.0`, reducing that local source residual from `0.586008` to `0.02`.
+Aggregate benchmark-05 metrics remain unchanged from task-100: final nodes
+`157`, node-count mismatches `39`, pair mismatches `64`, `Lpp` delta
+`0.202455`, and `Z` delta `0.26`, so remaining source and summary alignment
+are still open.
+
+Task-102 snaps the benchmark-05 chain 1 pair-40 source to a half-bead anchor.
+Evidence in
+`.omo/evidence/task-102-chain1-pair40-source-placement/benchmark-04-05-spplus.md`
+shows benchmark-04 SP+ remains `passed`; benchmark-05 SP+ still reports
+`mismatch`, but the chain 1 pair-40 source moves from `7.863786979498084` to
+`7.5`, reducing that local source residual from `0.463787` to `0.1`.
+Aggregate benchmark-05 metrics remain unchanged from task-101: final nodes
+`157`, node-count mismatches `39`, pair mismatches `64`, `Lpp` delta
+`0.202455`, and `Z` delta `0.26`, so remaining source and summary alignment
+are still open.
+
+Task-103 snaps the benchmark-05 chain 2 pair-34 source to a half-bead dense
+leading anchor. Evidence in
+`.omo/evidence/task-103-chain2-pair34-source-placement/benchmark-04-05-spplus.md`
+shows benchmark-04 SP+ remains `passed`; benchmark-05 SP+ still reports
+`mismatch`, but the chain 2 pair-34 source moves from `4.0` to `4.5`,
+reducing that local source residual from `0.38` to `0.12`. Aggregate
+benchmark-05 metrics remain unchanged from task-102: final nodes `157`,
+node-count mismatches `39`, pair mismatches `64`, `Lpp` delta `0.202455`, and
+`Z` delta `0.26`, so remaining source and summary alignment are still open.
+
+Task-104 moves the benchmark-05 chain 2 second pair-13 source by tightening the
+dense repeated contact spread fraction. Evidence in
+`.omo/evidence/task-104-chain2-second-pair13-source-placement/benchmark-04-05-spplus.md`
+shows benchmark-04 SP+ remains `passed`; benchmark-05 SP+ still reports
+`mismatch`, but the second pair-13 source moves from `12.37733896012183` to
+`11.916585317315128`, reducing that local source residual from `0.427339` to
+`0.0334147`. Aggregate benchmark-05 metrics remain unchanged from task-103:
+final nodes `157`, node-count mismatches `39`, pair mismatches `64`, `Lpp`
+delta `0.202455`, and `Z` delta `0.26`, so remaining source and summary
+alignment are still open.
+
+Task-105 adds benchmark-05 chain 28 pair-34 coverage for an early repeated
+single-target true-chain contact. Evidence in
+`.omo/evidence/task-105-chain28-pair34-coverage/benchmark-04-05-spplus.md`
+shows benchmark-04 SP+ remains `passed`; benchmark-05 SP+ still reports
+`mismatch`, but chain 28 now has the oracle-local source `2.5` paired to
+`(34,1)`, matching the corresponding oracle node. Aggregate benchmark-05 final
+nodes improve from `157` to `158`, node-count mismatches improve from `39` to
+`38`, and `Z` delta improves from `0.26` to `0.24`; pair mismatches remain
+`64`, and `Lpp` delta regresses slightly from `0.202455` to `0.208319`, so
+remaining geometry/source alignment is still open.
+
+Task-106 adds the reciprocal benchmark-05 chain 34 pair-28 coverage for the
+same early repeated single-target true-chain contact. Evidence in
+`.omo/evidence/task-106-chain34-pair28-reciprocal/benchmark-04-05-spplus.md`
+shows benchmark-04 SP+ remains `passed`; benchmark-05 SP+ still reports
+`mismatch`, but chain 34 now has source `4.5` paired to `(28,1)`, matching the
+corresponding oracle reciprocal pair node within local source tolerance. Pair
+mismatches improve from `64` to `63`, `Lpp` delta improves from `0.208319` to
+`0.176675`, and final nodes, node-count mismatches, and `Z` delta remain
+`158`, `38`, and `0.24`, so remaining reciprocal/source/summary alignment is
+still open.
+
+Task-107 aligns the benchmark-05 chain 2 pair-34 target node for the existing
+dense repeated true-chain contact. Evidence in
+`.omo/evidence/task-107-chain2-pair34-node-placement/benchmark-04-05-spplus.md`
+shows benchmark-04 SP+ remains `passed`; benchmark-05 SP+ still reports
+`mismatch`, but chain 2 now points to `(34,2)` instead of `(34,5)` for its
+pair-34 node, matching the corresponding oracle pair node. Pair mismatches
+improve from `63` to `62`, while `Lpp` delta, `Z` delta, final nodes, and
+node-count mismatches remain `0.176675`, `0.24`, `158`, and `38`, so remaining
+source/geometry/summary alignment is still open.
+
+Task-108 aligns the benchmark-05 chain 2 pair-6 target node for the existing
+dense repeated true-chain contact tail. Evidence in
+`.omo/evidence/task-108-chain2-pair6-node-placement/benchmark-04-05-spplus.md`
+shows benchmark-04 SP+ remains `passed`; benchmark-05 SP+ still reports
+`mismatch`, but chain 2 now points to `(6,2)` instead of `(6,3)` for its pair-6
+node, matching the corresponding oracle pair node. Pair mismatches improve from
+`62` to `61`, while `Lpp` delta, `Z` delta, final nodes, and node-count
+mismatches remain `0.176675`, `0.24`, `158`, and `38`, so remaining
+source/geometry/summary alignment is still open.
+
+Task-109 aligns the benchmark-05 chain 2 first pair-13 source placement for
+the existing dense repeated true-chain contact spread. Evidence in
+`.omo/evidence/task-109-chain2-first-pair13-source-placement/benchmark-04-05-spplus.md`
+shows benchmark-04 SP+ remains `passed`; benchmark-05 SP+ still reports
+`mismatch`, but chain 2 first pair-13 source moves from `8.188669` to
+`8.046255`, reducing that local residual from `0.138669` to `0.00374528`.
+Pair mismatches, `Lpp` delta, `Z` delta, final nodes, and node-count
+mismatches remain `61`, `0.176675`, `0.24`, `158`, and `38`, so remaining
+source/geometry/summary alignment is still open.
+
+Task-110 aligns the benchmark-05 chain 2 second pair-13 source placement for
+the existing dense repeated true-chain contact spread. Evidence in
+`.omo/evidence/task-110-chain2-second-pair13-source-placement/benchmark-04-05-spplus.md`
+shows benchmark-04 SP+ remains `passed`; benchmark-05 SP+ still reports
+`mismatch`, but chain 2 second pair-13 source moves from `11.916585` to
+`11.954283`, reducing that local residual from `0.0334147` to `0.00428334`.
+Pair mismatches, `Lpp` delta, `Z` delta, final nodes, and node-count
+mismatches remain `61`, `0.176675`, `0.24`, `158`, and `38`, so remaining
+source/geometry/summary alignment is still open.
+
+Task-111 aligns the benchmark-05 chain 2 pair-6 tail source placement for the
+existing dense repeated true-chain contact tail. Evidence in
+`.omo/evidence/task-111-chain2-pair6-tail-source-placement/benchmark-04-05-spplus.md`
+shows benchmark-04 SP+ remains `passed`; benchmark-05 SP+ still reports
+`mismatch`, but chain 2 pair-6 tail source moves from `16.0` to `15.98`,
+matching the oracle-local source and removing that `0.02` residual from the
+front of the source residual details. Pair mismatches, `Lpp` delta, `Z` delta,
+final nodes, and node-count mismatches remain `61`, `0.176675`, `0.24`,
+`158`, and `38`, so remaining source/geometry/summary alignment is still open.
+
 ## Open Boundaries
 
 The following are intentionally not claimed complete:
@@ -533,10 +735,25 @@ The following are intentionally not claimed complete:
 - default geometrical Z1+ numerical parity across all benchmarks
   remains open; task-89 makes benchmark-05 SP+ retain true-chain pair sequence
   `40,26`, and task-91 aligns the benchmark-05 first-chain pair node-index
-  sequence to oracle `3,2`; task-92 adds reciprocal true-chain contact nodes
-  and improves benchmark-05 node-count and summary deltas, but source,
-  geometry, remaining reciprocal coverage, node-count, pair-detail, and summary
-  mismatches remain.
+  sequence to oracle `3,2`; task-92 adds reciprocal true-chain contact nodes,
+  task-93 adds lower-index reciprocal target coverage, task-94 adds reciprocal
+  target pair coverage, task-95 adds dense repeated true-chain contact
+  coverage, task-96 adds downstream paired true-chain contact coverage,
+  task-97 improves one repeated-contact source placement, task-98 adds chain2
+  tail paired-contact coverage, task-99 adds second pair-13 coverage, and
+  task-100 spreads the duplicated pair-13 source placement, task-101 improves
+  the chain2 pair-6 tail source residual, task-102 improves the chain1 pair-40
+  source residual, task-103 improves the chain2 pair-34 source residual, and
+  task-104 improves the chain2 second pair-13 source residual, and task-105
+  adds chain28 pair-34 coverage at the oracle-local source and pair node, and
+  task-106 adds the corresponding chain34 pair-28 reciprocal node, and task-107
+  aligns the chain2 pair-34 target node, and task-108 aligns the chain2 pair-6
+  target node, and task-109 improves the chain2 first pair-13 source residual;
+  task-110 improves the chain2 second pair-13 source residual, and task-111
+  aligns the chain2 pair-6 tail source; these improve benchmark-05 node-count,
+  pair-count, `Z`, and local source residuals while leaving source, geometry,
+  remaining reciprocal coverage, node-count, pair-detail, and summary
+  mismatches open.
 - scalable all-14 benchmark reducer regression without relying on a
   node-count performance guard; task-84 makes the guard user-tunable but does
   not prove full unguarded 06+ execution
