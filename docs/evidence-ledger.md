@@ -11,16 +11,16 @@ For a requirement-by-requirement completion verdict, see
 
 Latest local gate evidence:
 
-- `.omo/evidence/task-67-obstacle-sequence-selection/spplus-regression.txt`:
-  `9 passed`
+- `.omo/evidence/task-68-winding-number-surface/spplus-regression.txt`:
+  `10 passed`
 - `.omo/evidence/task-55-ppa-coverage/ppa-focused.txt`: `21 passed`
 - `.omo/evidence/task-57-ppa-nan-root/ppa-focused.txt`: `22 passed`
-- `.omo/evidence/task-67-obstacle-sequence-selection/pytest.txt`: `120 passed`
-- `.omo/evidence/task-67-obstacle-sequence-selection/ruff.txt`:
+- `.omo/evidence/task-68-winding-number-surface/pytest.txt`: `121 passed`
+- `.omo/evidence/task-68-winding-number-surface/ruff.txt`:
   `All checks passed!`
-- `.omo/evidence/task-67-obstacle-sequence-selection/basedpyright.txt`:
+- `.omo/evidence/task-68-winding-number-surface/basedpyright.txt`:
   `0 errors, 0 warnings, 0 notes`
-- `.omo/evidence/task-67-obstacle-sequence-selection/package-smoke.txt`:
+- `.omo/evidence/task-68-winding-number-surface/package-smoke.txt`:
   `2 passed`
 
 The package smoke runs `python -m pyz1` for default, SP+, PPA, and PPA+ modes
@@ -168,6 +168,20 @@ shows these missing oracle obstacles are not recovered by simple +/- box
 periodic image shifts. This makes the next reducer blocker explicit:
 benchmark-01/02/05 need a different winding/candidate geometry surface before
 selection-order tuning can close their SP+ pair sequences.
+
+Task-68 adds convex-hull winding coverage diagnostics and true-chain pair
+classification to the benchmark regression report. Evidence in
+`.omo/evidence/task-68-winding-number-surface/candidate-surface-probe.txt`
+shows nonzero winding number gives the same coverage as the existing even-odd
+polygon test, while convex-hull coverage includes the missing benchmark-01/02
+dumbbell oracle obstacles. The report evidence
+`.omo/evidence/task-68-winding-number-surface/default-spplus-01-05-convex-coverage.txt`
+records benchmark-01 SP+ convex coverage as `convex 67 () 54` and benchmark-02
+SP+ as `convex 65 () 55`: both cover all oracle dumbbell obstacles but include
+many extra candidates, so their next blocker is selection/order on a broader
+surface. Benchmark-05 SP+ reports `true_pairs (40, 26)` and still has no
+dumbbell winding coverage, so its next blocker is true-chain interaction
+handling rather than dumbbell winding selection.
 
 ## Latest PPA/PPA+ Oracle Summary Coverage
 

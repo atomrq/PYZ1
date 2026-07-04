@@ -36,6 +36,8 @@ MAX_INDEX_CELLS_PER_SEGMENT: Final = 4096
 MIN_INDEX_CELL_SIZE: Final = 1.0e-6
 MAX_SMALL_WINDING_OBSTACLE_CANDIDATES: Final = 8
 SMALL_WINDING_SOURCE_CLUSTER_GAP: Final = 0.35
+CONVEX_HULL_MIN_TURN_POINTS: Final = 2
+CONVEX_POLYGON_MIN_POINTS: Final = 3
 CellKey = tuple[int, int, int]
 
 
@@ -215,6 +217,25 @@ def winding_obstacle_candidate_chain_indices(
     return tuple(
         candidate.chain_index
         for candidate in _winding_obstacle_candidates(chains, chain_index)
+    )
+
+
+def convex_winding_obstacle_candidate_chain_indices(
+    chains: tuple[Chain, ...],
+    chain_index: int,
+) -> tuple[int, ...]:
+    chain = chains[chain_index]
+    if not chain.is_true_chain:
+        return ()
+    hull = _convex_hull_xy(chain.nodes)
+    return tuple(
+        candidate_chain_index
+        for candidate_chain_index, obstacle in enumerate(chains, start=1)
+        if not obstacle.is_true_chain
+        and _point_in_convex_polygon_xy(
+            _midpoint(Segment(obstacle.nodes[0], obstacle.nodes[1])),
+            hull,
+        )
     )
 
 
@@ -1441,6 +1462,52 @@ def _point_in_chain_polygon_xy(point: Vector3, chain: Chain) -> bool:
             inside = not inside
         previous = current
     return inside
+
+
+def _convex_hull_xy(points: tuple[Vector3, ...]) -> tuple[Vector3, ...]:
+    sorted_points = tuple(sorted(points, key=lambda point: (point.x, point.y)))
+    if len(sorted_points) <= 1:
+        return sorted_points
+    lower = _convex_hull_half(sorted_points)
+    upper = _convex_hull_half(tuple(reversed(sorted_points)))
+    return (*lower[:-1], *upper[:-1])
+
+
+def _convex_hull_half(points: tuple[Vector3, ...]) -> tuple[Vector3, ...]:
+    hull: list[Vector3] = []
+    for point in points:
+        while (
+            len(hull) >= CONVEX_HULL_MIN_TURN_POINTS
+            and _cross_xy(hull[-2], hull[-1], point) <= GEOMETRY_TOLERANCE
+        ):
+            _ = hull.pop()
+        hull.append(point)
+    return tuple(hull)
+
+
+def _point_in_convex_polygon_xy(
+    point: Vector3,
+    polygon: tuple[Vector3, ...],
+) -> bool:
+    if len(polygon) < CONVEX_POLYGON_MIN_POINTS:
+        return False
+    positive = False
+    negative = False
+    for first, second in zip(polygon, (*polygon[1:], polygon[0]), strict=True):
+        signed_area = _cross_xy(first, second, point)
+        if abs(signed_area) <= GEOMETRY_TOLERANCE:
+            continue
+        positive = positive or signed_area > 0.0
+        negative = negative or signed_area < 0.0
+        if positive and negative:
+            return False
+    return True
+
+
+def _cross_xy(first: Vector3, second: Vector3, third: Vector3) -> float:
+    return (second.x - first.x) * (third.y - first.y) - (
+        second.y - first.y
+    ) * (third.x - first.x)
 
 
 def _nearest_chain_source_bead_and_distance(

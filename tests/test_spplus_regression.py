@@ -253,6 +253,36 @@ def test_write_benchmark_regression_report_when_winding_candidates_miss_oracle(
     assert "128,208,36" in text
 
 
+def test_write_benchmark_regression_report_when_convex_candidates_cover_oracle(
+    tmp_path: Path,
+) -> None:
+    report_path = tmp_path / "pyz1-benchmark-regression.md"
+
+    records = write_benchmark_regression_report(
+        RegressionRequest(
+            source_dir=SOURCE_Z1,
+            oracle_root=ORACLE_ROOT,
+            report_path=report_path,
+            modes=(RegressionMode.SPPLUS,),
+            benchmark_ids=("01", "02", "05"),
+        ),
+    )
+
+    text = report_path.read_text(encoding="utf-8")
+    benchmark_01 = records[0]
+    benchmark_02 = records[1]
+    benchmark_05 = records[2]
+    assert benchmark_01.pyz1_convex_winding_candidate_count == 67
+    assert benchmark_01.pyz1_convex_winding_missing_oracle_sequence == ()
+    assert benchmark_01.pyz1_convex_winding_extra_candidate_count == 54
+    assert benchmark_02.pyz1_convex_winding_candidate_count == 65
+    assert benchmark_02.pyz1_convex_winding_missing_oracle_sequence == ()
+    assert benchmark_05.oracle_true_chain_pair_sequence == (40, 26)
+    assert benchmark_05.pyz1_convex_winding_missing_oracle_sequence == (40, 26)
+    assert "pyz1 convex winding candidates" in text
+    assert "oracle true-chain pair sequence" in text
+
+
 def test_write_benchmark_regression_report_when_source_beads_differ_reports_max_delta(
     tmp_path: Path,
 ) -> None:
