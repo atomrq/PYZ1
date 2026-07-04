@@ -213,6 +213,24 @@ The current first oracle slice is `benchmark-04` in default and SP+ modes. Its
 evidence is recorded in
 `.omo/evidence/pyz1-benchmark-04-oracle-and-parity.md`.
 
+## Benchmark Regression Status
+
+The local benchmark regression report is:
+
+```text
+.omo/evidence/pyz1-benchmark-regression.md
+```
+
+The report is an evidence artifact, not a parity claim. It must classify each
+checked benchmark/mode as `passed`, `mismatch`, or `known-invalid`, and it must
+record measured deltas or an explicit skip reason. Current status is:
+
+- `benchmark-04` default and SP+ are classified as `mismatch`.
+- SP+ structural comparison counts mismatched `other-chain other-node` pairs.
+- Larger benchmark/mode entries are classified as `known-invalid` under the
+  current `node_count` performance guard until the reducer has a scalable
+  neighbor-candidate implementation.
+
 ## Current Completion Boundary
 
 Complete now:
@@ -224,14 +242,23 @@ Complete now:
 - Z1+ basic SP parser/writer
 - Z1+ SP+ pairing parser/writer
 - Z1+ initconfig, value-file, PPA, and PPA+ output parsers/writers
-- input-derived statistics for `benchmark-04`
-- `benchmark-04` basic/SP+ oracle fixture parity
+- input-derived statistics and summary/`Ne` estimators
+- Linux oracle fixture tooling and parsed oracle corpora
+- LAMMPS data/dump importer for bonded linear-chain use cases
+- native PPA/PPA+ execution slices and PPA-specific summary semantics
+- native clean-room geometry primitives
+- native default reducer initial slice
+- native SP+ pairing output for retained kink nodes
+- benchmark regression report generation and transparent mismatch/skip status
 
 Not complete yet:
 
-- full `Ne` estimator implementation
-- all-14 benchmark oracle manifest
-- LAMMPS importer
-- PPA/PPA+ Python port
-- clean-room default geometrical Z1+ reducer
-- final all-benchmark regression report
+- full PPA/PPA+ benchmark-level runtime parity; the scalar all-chain WCA path
+  still needs neighbor-list or vectorized acceleration without Numba/GPU.
+- default geometrical Z1+ numerical parity for `Lpp`, `Z`, shortest-path
+  structure, and SP+ pairings.
+- scalable all-14 benchmark reducer regression without the current
+  `node_count` performance guard.
+- self-entanglement (`selfZ`) behavior in the native reducer.
+- final user/developer documentation review and package-level final integration
+  smoke.
