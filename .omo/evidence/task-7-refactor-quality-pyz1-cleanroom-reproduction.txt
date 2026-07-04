@@ -1,0 +1,8 @@
+src/pyz1/oracle.py      237
+src/pyz1/oracle_cli.py       56
+src/pyz1/oracle_models.py       67
+tests/test_oracle.py      148
+....                                                                     [100%]
+4 passed in 3.84s
+All checks passed!
+0 errors, 0 warnings, 0 notes

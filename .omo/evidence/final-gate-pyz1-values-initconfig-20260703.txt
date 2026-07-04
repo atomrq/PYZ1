@@ -1,0 +1,28 @@
+....................................                                     [100%]
+36 passed in 2.99s
+All checks passed!
+0 errors, 0 warnings, 0 notes
+   2 src/pyz1/__init__.py
+   2 src/pyz1/__main__.py
+  20 src/pyz1/cli.py
+  37 src/pyz1/errors.py
+  49 src/pyz1/estimators.py
+ 132 src/pyz1/initconfig_io.py
+  52 src/pyz1/models.py
+ 240 src/pyz1/oracle.py
+  58 src/pyz1/oracle_cli.py
+  67 src/pyz1/oracle_models.py
+ 235 src/pyz1/output_io.py
+  45 src/pyz1/output_models.py
+  48 src/pyz1/output_values.py
+  65 src/pyz1/output_write.py
+ 126 src/pyz1/z1_io.py
+  15 tests/test_cli_scaffold.py
+  74 tests/test_initconfig_io.py
+  29 tests/test_models.py
+ 183 tests/test_oracle.py
+ 115 tests/test_output_io.py
+  42 tests/test_output_values.py
+   4 tests/test_package_metadata.py
+  39 tests/test_z1_io.py
+  42 tests/test_z1plus_parity.py

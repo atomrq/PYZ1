@@ -1,0 +1,4 @@
+............................................                             [100%]
+44 passed in 2.25s
+All checks passed!
+0 errors, 0 warnings, 0 notes

@@ -1,0 +1,879 @@
+{
+  "generator": "pyz1.oracle",
+  "platform_name": "Linux",
+  "runs": [
+    {
+      "arguments": [],
+      "benchmark": ".benchmark-01.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "135962f646096a000cd80c92ce8d44d6da6b9bf3bac2d98c41a929fbaf0dc7ab",
+      "mode": "default",
+      "output_sha256": {
+        "path": "c5a993b33d708bd61128f1ebdc9b61918f81f8f6d3b4b9d8530458f3308d2d6a",
+        "summary": "3289846bb2a254a52f426e0e11d6b171340f8fea7d49103df26b203187670665"
+      },
+      "outputs": {
+        "path": "benchmark-01/default/Z1+SP.dat",
+        "summary": "benchmark-01/default/Z1+summary.dat"
+      },
+      "stderr_path": "benchmark-01/default/run.stderr",
+      "stdout_path": "benchmark-01/default/run.stdout",
+      "summary_rows": 1,
+      "work_dir": "benchmark-01/default"
+    },
+    {
+      "arguments": [
+        "+"
+      ],
+      "benchmark": ".benchmark-01.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "135962f646096a000cd80c92ce8d44d6da6b9bf3bac2d98c41a929fbaf0dc7ab",
+      "mode": "spplus",
+      "output_sha256": {
+        "path": "db5b0f6615db2365b537ce7ac09f0be10f3c17f52093617291a31eeaca85ac5e",
+        "summary": "3289846bb2a254a52f426e0e11d6b171340f8fea7d49103df26b203187670665"
+      },
+      "outputs": {
+        "path": "benchmark-01/spplus/Z1+SP.dat",
+        "summary": "benchmark-01/spplus/Z1+summary.dat"
+      },
+      "stderr_path": "benchmark-01/spplus/run.stderr",
+      "stdout_path": "benchmark-01/spplus/run.stdout",
+      "summary_rows": 1,
+      "work_dir": "benchmark-01/spplus"
+    },
+    {
+      "arguments": [
+        "-selfZ"
+      ],
+      "benchmark": ".benchmark-01.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "135962f646096a000cd80c92ce8d44d6da6b9bf3bac2d98c41a929fbaf0dc7ab",
+      "mode": "selfz",
+      "output_sha256": {
+        "path": "c5a993b33d708bd61128f1ebdc9b61918f81f8f6d3b4b9d8530458f3308d2d6a",
+        "summary": "3289846bb2a254a52f426e0e11d6b171340f8fea7d49103df26b203187670665"
+      },
+      "outputs": {
+        "path": "benchmark-01/selfz/Z1+SP.dat",
+        "summary": "benchmark-01/selfz/Z1+summary.dat"
+      },
+      "stderr_path": "benchmark-01/selfz/run.stderr",
+      "stdout_path": "benchmark-01/selfz/run.stdout",
+      "summary_rows": 1,
+      "work_dir": "benchmark-01/selfz"
+    },
+    {
+      "arguments": [],
+      "benchmark": ".benchmark-02.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "7f6575c6f07ec14fa0e5de3cd90465160a4cde0739bbc0cbfe4fa9319543f353",
+      "mode": "default",
+      "output_sha256": {
+        "path": "e1817f690360fbd1fe770391fa00a68dbbf080aeee4590acf6eb7eb294f2ac01",
+        "summary": "094774d438f6d633963d5f976b4c9ba074dcf764e616fa2b44cda84c134bd4f8"
+      },
+      "outputs": {
+        "path": "benchmark-02/default/Z1+SP.dat",
+        "summary": "benchmark-02/default/Z1+summary.dat"
+      },
+      "stderr_path": "benchmark-02/default/run.stderr",
+      "stdout_path": "benchmark-02/default/run.stdout",
+      "summary_rows": 1,
+      "work_dir": "benchmark-02/default"
+    },
+    {
+      "arguments": [
+        "+"
+      ],
+      "benchmark": ".benchmark-02.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "7f6575c6f07ec14fa0e5de3cd90465160a4cde0739bbc0cbfe4fa9319543f353",
+      "mode": "spplus",
+      "output_sha256": {
+        "path": "f529320f8aaf0090541ec538dd976e5702fc7f1ef580e4230d4835d667768eb4",
+        "summary": "094774d438f6d633963d5f976b4c9ba074dcf764e616fa2b44cda84c134bd4f8"
+      },
+      "outputs": {
+        "path": "benchmark-02/spplus/Z1+SP.dat",
+        "summary": "benchmark-02/spplus/Z1+summary.dat"
+      },
+      "stderr_path": "benchmark-02/spplus/run.stderr",
+      "stdout_path": "benchmark-02/spplus/run.stdout",
+      "summary_rows": 1,
+      "work_dir": "benchmark-02/spplus"
+    },
+    {
+      "arguments": [
+        "-selfZ"
+      ],
+      "benchmark": ".benchmark-02.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "7f6575c6f07ec14fa0e5de3cd90465160a4cde0739bbc0cbfe4fa9319543f353",
+      "mode": "selfz",
+      "output_sha256": {
+        "path": "e1817f690360fbd1fe770391fa00a68dbbf080aeee4590acf6eb7eb294f2ac01",
+        "summary": "094774d438f6d633963d5f976b4c9ba074dcf764e616fa2b44cda84c134bd4f8"
+      },
+      "outputs": {
+        "path": "benchmark-02/selfz/Z1+SP.dat",
+        "summary": "benchmark-02/selfz/Z1+summary.dat"
+      },
+      "stderr_path": "benchmark-02/selfz/run.stderr",
+      "stdout_path": "benchmark-02/selfz/run.stdout",
+      "summary_rows": 1,
+      "work_dir": "benchmark-02/selfz"
+    },
+    {
+      "arguments": [],
+      "benchmark": ".benchmark-03.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "d1b91bccf4adecbad46e7db5d21e74eadb62ca7c94a73d2d4ec70a2405e62a16",
+      "mode": "default",
+      "output_sha256": {
+        "path": "e74640b6ef892cd6412d5b11510a908b1b8eb2ed78c5f01711fe12b5bb64e603",
+        "summary": "88cb944f9f70b0ce35c9b5e8c7b89edeb4a8ec5e08d9fb829a33f9e716eb50aa"
+      },
+      "outputs": {
+        "path": "benchmark-03/default/Z1+SP.dat",
+        "summary": "benchmark-03/default/Z1+summary.dat"
+      },
+      "stderr_path": "benchmark-03/default/run.stderr",
+      "stdout_path": "benchmark-03/default/run.stdout",
+      "summary_rows": 1,
+      "work_dir": "benchmark-03/default"
+    },
+    {
+      "arguments": [
+        "+"
+      ],
+      "benchmark": ".benchmark-03.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "d1b91bccf4adecbad46e7db5d21e74eadb62ca7c94a73d2d4ec70a2405e62a16",
+      "mode": "spplus",
+      "output_sha256": {
+        "path": "724c9e75f28d1dc06932f1a9edeaabd7f93cd4aa4ce4c2cbf4e905b849a2ad86",
+        "summary": "88cb944f9f70b0ce35c9b5e8c7b89edeb4a8ec5e08d9fb829a33f9e716eb50aa"
+      },
+      "outputs": {
+        "path": "benchmark-03/spplus/Z1+SP.dat",
+        "summary": "benchmark-03/spplus/Z1+summary.dat"
+      },
+      "stderr_path": "benchmark-03/spplus/run.stderr",
+      "stdout_path": "benchmark-03/spplus/run.stdout",
+      "summary_rows": 1,
+      "work_dir": "benchmark-03/spplus"
+    },
+    {
+      "arguments": [
+        "-selfZ"
+      ],
+      "benchmark": ".benchmark-03.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "d1b91bccf4adecbad46e7db5d21e74eadb62ca7c94a73d2d4ec70a2405e62a16",
+      "mode": "selfz",
+      "output_sha256": {
+        "path": "e74640b6ef892cd6412d5b11510a908b1b8eb2ed78c5f01711fe12b5bb64e603",
+        "summary": "88cb944f9f70b0ce35c9b5e8c7b89edeb4a8ec5e08d9fb829a33f9e716eb50aa"
+      },
+      "outputs": {
+        "path": "benchmark-03/selfz/Z1+SP.dat",
+        "summary": "benchmark-03/selfz/Z1+summary.dat"
+      },
+      "stderr_path": "benchmark-03/selfz/run.stderr",
+      "stdout_path": "benchmark-03/selfz/run.stdout",
+      "summary_rows": 1,
+      "work_dir": "benchmark-03/selfz"
+    },
+    {
+      "arguments": [],
+      "benchmark": ".benchmark-04.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "c4a2bfe6f11a47b4345005e91700c8b2778ae70c97544cc4a99c9d674c522e06",
+      "mode": "default",
+      "output_sha256": {
+        "path": "e9c78c19fc6e5bf6934ce40426e8aab35611d6c7d39b9f18eb7f576aec570893",
+        "summary": "1c985706a0701cdc9357986fa4a91adeeebaa4c3c8a34a716686aa63e4bb3f4b"
+      },
+      "outputs": {
+        "path": "benchmark-04/default/Z1+SP.dat",
+        "summary": "benchmark-04/default/Z1+summary.dat"
+      },
+      "stderr_path": "benchmark-04/default/run.stderr",
+      "stdout_path": "benchmark-04/default/run.stdout",
+      "summary_rows": 1,
+      "work_dir": "benchmark-04/default"
+    },
+    {
+      "arguments": [
+        "+"
+      ],
+      "benchmark": ".benchmark-04.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "c4a2bfe6f11a47b4345005e91700c8b2778ae70c97544cc4a99c9d674c522e06",
+      "mode": "spplus",
+      "output_sha256": {
+        "path": "ab72eb77a9f77e8dd35e473813045d2b7a3dffc91d9ecd016ba2b6264de5ad82",
+        "summary": "1c985706a0701cdc9357986fa4a91adeeebaa4c3c8a34a716686aa63e4bb3f4b"
+      },
+      "outputs": {
+        "path": "benchmark-04/spplus/Z1+SP.dat",
+        "summary": "benchmark-04/spplus/Z1+summary.dat"
+      },
+      "stderr_path": "benchmark-04/spplus/run.stderr",
+      "stdout_path": "benchmark-04/spplus/run.stdout",
+      "summary_rows": 1,
+      "work_dir": "benchmark-04/spplus"
+    },
+    {
+      "arguments": [
+        "-selfZ"
+      ],
+      "benchmark": ".benchmark-04.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "c4a2bfe6f11a47b4345005e91700c8b2778ae70c97544cc4a99c9d674c522e06",
+      "mode": "selfz",
+      "output_sha256": {
+        "path": "e9c78c19fc6e5bf6934ce40426e8aab35611d6c7d39b9f18eb7f576aec570893",
+        "summary": "1c985706a0701cdc9357986fa4a91adeeebaa4c3c8a34a716686aa63e4bb3f4b"
+      },
+      "outputs": {
+        "path": "benchmark-04/selfz/Z1+SP.dat",
+        "summary": "benchmark-04/selfz/Z1+summary.dat"
+      },
+      "stderr_path": "benchmark-04/selfz/run.stderr",
+      "stdout_path": "benchmark-04/selfz/run.stdout",
+      "summary_rows": 1,
+      "work_dir": "benchmark-04/selfz"
+    },
+    {
+      "arguments": [],
+      "benchmark": ".benchmark-05.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "b8a74b63d4cf8196cd5d71090f048e43ac2b26ba01853774a33ecbeaedd32889",
+      "mode": "default",
+      "output_sha256": {
+        "path": "1753b7ffe8ed028d59d8d056d65235a789166cf470ff41bcc69fa6621edbdac7",
+        "summary": "6b29eb422c99fe4e0e7074c319ac5da0f3dbb9d84ceb35474bec09fb08c2c7d4"
+      },
+      "outputs": {
+        "path": "benchmark-05/default/Z1+SP.dat",
+        "summary": "benchmark-05/default/Z1+summary.dat"
+      },
+      "stderr_path": "benchmark-05/default/run.stderr",
+      "stdout_path": "benchmark-05/default/run.stdout",
+      "summary_rows": 1,
+      "work_dir": "benchmark-05/default"
+    },
+    {
+      "arguments": [
+        "+"
+      ],
+      "benchmark": ".benchmark-05.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "b8a74b63d4cf8196cd5d71090f048e43ac2b26ba01853774a33ecbeaedd32889",
+      "mode": "spplus",
+      "output_sha256": {
+        "path": "267b38ff12b7480e17cd95baab6b96fce40358f46be4df82984a307cff03bb1d",
+        "summary": "6b29eb422c99fe4e0e7074c319ac5da0f3dbb9d84ceb35474bec09fb08c2c7d4"
+      },
+      "outputs": {
+        "path": "benchmark-05/spplus/Z1+SP.dat",
+        "summary": "benchmark-05/spplus/Z1+summary.dat"
+      },
+      "stderr_path": "benchmark-05/spplus/run.stderr",
+      "stdout_path": "benchmark-05/spplus/run.stdout",
+      "summary_rows": 1,
+      "work_dir": "benchmark-05/spplus"
+    },
+    {
+      "arguments": [
+        "-selfZ"
+      ],
+      "benchmark": ".benchmark-05.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "b8a74b63d4cf8196cd5d71090f048e43ac2b26ba01853774a33ecbeaedd32889",
+      "mode": "selfz",
+      "output_sha256": {
+        "path": "913061b810bda4d0ec8a86b647f3ec9ad9d65cf2adaa39609353b60f0aff0765",
+        "summary": "fe8319beb2bca4f6b66a85387316d2fd12ee309e676c6ebf080380e30c02d1d0"
+      },
+      "outputs": {
+        "path": "benchmark-05/selfz/Z1+SP.dat",
+        "summary": "benchmark-05/selfz/Z1+summary.dat"
+      },
+      "stderr_path": "benchmark-05/selfz/run.stderr",
+      "stdout_path": "benchmark-05/selfz/run.stdout",
+      "summary_rows": 1,
+      "work_dir": "benchmark-05/selfz"
+    },
+    {
+      "arguments": [],
+      "benchmark": ".benchmark-06.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "a11d3dd1bf4b783f128c6d608a61b009e7df69b137abdc02fddf0fe028e1a1b3",
+      "mode": "default",
+      "output_sha256": {
+        "path": "cc27fb94618801a0561b6164ce5e03679cf8a139a076db6c78a4cbec2d818562",
+        "summary": "08e9190f7dbf3a0e16e95e99b2f0634951e7911b9319a11ad4d720ccb2ca5f8e"
+      },
+      "outputs": {
+        "path": "benchmark-06/default/Z1+SP.dat",
+        "summary": "benchmark-06/default/Z1+summary.dat"
+      },
+      "stderr_path": "benchmark-06/default/run.stderr",
+      "stdout_path": "benchmark-06/default/run.stdout",
+      "summary_rows": 1,
+      "work_dir": "benchmark-06/default"
+    },
+    {
+      "arguments": [
+        "+"
+      ],
+      "benchmark": ".benchmark-06.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "a11d3dd1bf4b783f128c6d608a61b009e7df69b137abdc02fddf0fe028e1a1b3",
+      "mode": "spplus",
+      "output_sha256": {
+        "path": "8fa8e9c3fe1d86e0dce5ec8d4df0070de39f16e0d33993229e6f6eea38c9bc7b",
+        "summary": "08e9190f7dbf3a0e16e95e99b2f0634951e7911b9319a11ad4d720ccb2ca5f8e"
+      },
+      "outputs": {
+        "path": "benchmark-06/spplus/Z1+SP.dat",
+        "summary": "benchmark-06/spplus/Z1+summary.dat"
+      },
+      "stderr_path": "benchmark-06/spplus/run.stderr",
+      "stdout_path": "benchmark-06/spplus/run.stdout",
+      "summary_rows": 1,
+      "work_dir": "benchmark-06/spplus"
+    },
+    {
+      "arguments": [
+        "-selfZ"
+      ],
+      "benchmark": ".benchmark-06.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "a11d3dd1bf4b783f128c6d608a61b009e7df69b137abdc02fddf0fe028e1a1b3",
+      "mode": "selfz",
+      "output_sha256": {
+        "path": "55d165f61f6ac807a6ecba3f848048a151c73ce6b13b9b1ace316449e90c62ff",
+        "summary": "3df1d7aa990fcd7b15718bd01fd47e5c1b809420d5f3a51c3048ba0b678cab3a"
+      },
+      "outputs": {
+        "path": "benchmark-06/selfz/Z1+SP.dat",
+        "summary": "benchmark-06/selfz/Z1+summary.dat"
+      },
+      "stderr_path": "benchmark-06/selfz/run.stderr",
+      "stdout_path": "benchmark-06/selfz/run.stdout",
+      "summary_rows": 1,
+      "work_dir": "benchmark-06/selfz"
+    },
+    {
+      "arguments": [],
+      "benchmark": ".benchmark-07.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "fb47a3b0638a59c222b2c367b78e7d7cb6b9871212e5c16bd06a3217d8937466",
+      "mode": "default",
+      "output_sha256": {
+        "path": "3ed6286bdd36b6f5c304e868e41b8b0dacdafe4f9c8a91f8c1bbcb8f90fa6e57",
+        "summary": "e5fcae292e06833e19a8b55577dcd7d9e27dd14a1420ee730e5bba78d8077876"
+      },
+      "outputs": {
+        "path": "benchmark-07/default/Z1+SP.dat",
+        "summary": "benchmark-07/default/Z1+summary.dat"
+      },
+      "stderr_path": "benchmark-07/default/run.stderr",
+      "stdout_path": "benchmark-07/default/run.stdout",
+      "summary_rows": 1,
+      "work_dir": "benchmark-07/default"
+    },
+    {
+      "arguments": [
+        "+"
+      ],
+      "benchmark": ".benchmark-07.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "fb47a3b0638a59c222b2c367b78e7d7cb6b9871212e5c16bd06a3217d8937466",
+      "mode": "spplus",
+      "output_sha256": {
+        "path": "f474c6b67d8858247b32736af7b0b3a6a5e4ba37622daa4fe7ec4717679f33ce",
+        "summary": "e5fcae292e06833e19a8b55577dcd7d9e27dd14a1420ee730e5bba78d8077876"
+      },
+      "outputs": {
+        "path": "benchmark-07/spplus/Z1+SP.dat",
+        "summary": "benchmark-07/spplus/Z1+summary.dat"
+      },
+      "stderr_path": "benchmark-07/spplus/run.stderr",
+      "stdout_path": "benchmark-07/spplus/run.stdout",
+      "summary_rows": 1,
+      "work_dir": "benchmark-07/spplus"
+    },
+    {
+      "arguments": [
+        "-selfZ"
+      ],
+      "benchmark": ".benchmark-07.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "fb47a3b0638a59c222b2c367b78e7d7cb6b9871212e5c16bd06a3217d8937466",
+      "mode": "selfz",
+      "output_sha256": {
+        "path": "88ea5e339b3eb58a97157fefa65a3abb4b73be90e6032f5aa28263a06e860f72",
+        "summary": "9a10e8c99cccfb18ce44b32e95582274f25503571eda433dd489353749675241"
+      },
+      "outputs": {
+        "path": "benchmark-07/selfz/Z1+SP.dat",
+        "summary": "benchmark-07/selfz/Z1+summary.dat"
+      },
+      "stderr_path": "benchmark-07/selfz/run.stderr",
+      "stdout_path": "benchmark-07/selfz/run.stdout",
+      "summary_rows": 1,
+      "work_dir": "benchmark-07/selfz"
+    },
+    {
+      "arguments": [],
+      "benchmark": ".benchmark-08.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "8beb0eea80839b4f2c9c14c649c30c7babb35a84fecb1294c737e3edb9ee2314",
+      "mode": "default",
+      "output_sha256": {
+        "path": "2e949f11314ecb054c2e34aadc59be69c80147e0c2ef72a5838821a884ff1d1e",
+        "summary": "e3dd782eb93384ccfa83579fb4e0b45fc7cbc3d5df647a262af12132829e120f"
+      },
+      "outputs": {
+        "path": "benchmark-08/default/Z1+SP.dat",
+        "summary": "benchmark-08/default/Z1+summary.dat"
+      },
+      "stderr_path": "benchmark-08/default/run.stderr",
+      "stdout_path": "benchmark-08/default/run.stdout",
+      "summary_rows": 1,
+      "work_dir": "benchmark-08/default"
+    },
+    {
+      "arguments": [
+        "+"
+      ],
+      "benchmark": ".benchmark-08.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "8beb0eea80839b4f2c9c14c649c30c7babb35a84fecb1294c737e3edb9ee2314",
+      "mode": "spplus",
+      "output_sha256": {
+        "path": "190cd6827e25c7df5ec9a6f4082b005a29548ad45b2e6e147c1a9533a83d04e9",
+        "summary": "e3dd782eb93384ccfa83579fb4e0b45fc7cbc3d5df647a262af12132829e120f"
+      },
+      "outputs": {
+        "path": "benchmark-08/spplus/Z1+SP.dat",
+        "summary": "benchmark-08/spplus/Z1+summary.dat"
+      },
+      "stderr_path": "benchmark-08/spplus/run.stderr",
+      "stdout_path": "benchmark-08/spplus/run.stdout",
+      "summary_rows": 1,
+      "work_dir": "benchmark-08/spplus"
+    },
+    {
+      "arguments": [
+        "-selfZ"
+      ],
+      "benchmark": ".benchmark-08.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "8beb0eea80839b4f2c9c14c649c30c7babb35a84fecb1294c737e3edb9ee2314",
+      "mode": "selfz",
+      "output_sha256": {},
+      "outputs": {},
+      "stderr_path": "benchmark-08/selfz/run.stderr",
+      "stdout_path": "benchmark-08/selfz/run.stdout",
+      "summary_rows": 0,
+      "work_dir": "benchmark-08/selfz"
+    },
+    {
+      "arguments": [],
+      "benchmark": ".benchmark-09.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 124,
+      "input_sha256": "972cb13323575055293726431e6e398cfdf21dfec36845952e3d41b3ab1514a3",
+      "mode": "default",
+      "output_sha256": {},
+      "outputs": {},
+      "stderr_path": "benchmark-09/default/run.stderr",
+      "stdout_path": "benchmark-09/default/run.stdout",
+      "summary_rows": 0,
+      "work_dir": "benchmark-09/default"
+    },
+    {
+      "arguments": [
+        "+"
+      ],
+      "benchmark": ".benchmark-09.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 124,
+      "input_sha256": "972cb13323575055293726431e6e398cfdf21dfec36845952e3d41b3ab1514a3",
+      "mode": "spplus",
+      "output_sha256": {},
+      "outputs": {},
+      "stderr_path": "benchmark-09/spplus/run.stderr",
+      "stdout_path": "benchmark-09/spplus/run.stdout",
+      "summary_rows": 0,
+      "work_dir": "benchmark-09/spplus"
+    },
+    {
+      "arguments": [
+        "-selfZ"
+      ],
+      "benchmark": ".benchmark-09.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 124,
+      "input_sha256": "972cb13323575055293726431e6e398cfdf21dfec36845952e3d41b3ab1514a3",
+      "mode": "selfz",
+      "output_sha256": {},
+      "outputs": {},
+      "stderr_path": "benchmark-09/selfz/run.stderr",
+      "stdout_path": "benchmark-09/selfz/run.stdout",
+      "summary_rows": 0,
+      "work_dir": "benchmark-09/selfz"
+    },
+    {
+      "arguments": [],
+      "benchmark": ".benchmark-10.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "d05215b11477c3f9dea5a0e40a9902dde48344571cd3b785cabf2a5583b50876",
+      "mode": "default",
+      "output_sha256": {
+        "path": "d57b7178d5309221d0f5efd8078f4e93f585ea86ec4b4f90832b9adf04276ee2",
+        "summary": "bc16985c192cdc05b497b4c9b41090f9372c573dd7764132c1f7f04e63d56d08"
+      },
+      "outputs": {
+        "path": "benchmark-10/default/Z1+SP.dat",
+        "summary": "benchmark-10/default/Z1+summary.dat"
+      },
+      "stderr_path": "benchmark-10/default/run.stderr",
+      "stdout_path": "benchmark-10/default/run.stdout",
+      "summary_rows": 1,
+      "work_dir": "benchmark-10/default"
+    },
+    {
+      "arguments": [
+        "+"
+      ],
+      "benchmark": ".benchmark-10.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "d05215b11477c3f9dea5a0e40a9902dde48344571cd3b785cabf2a5583b50876",
+      "mode": "spplus",
+      "output_sha256": {
+        "path": "ed9c0cd39727aad1bd27330659f2137d824039ffc5324485bc008aea51aa0751",
+        "summary": "bc16985c192cdc05b497b4c9b41090f9372c573dd7764132c1f7f04e63d56d08"
+      },
+      "outputs": {
+        "path": "benchmark-10/spplus/Z1+SP.dat",
+        "summary": "benchmark-10/spplus/Z1+summary.dat"
+      },
+      "stderr_path": "benchmark-10/spplus/run.stderr",
+      "stdout_path": "benchmark-10/spplus/run.stdout",
+      "summary_rows": 1,
+      "work_dir": "benchmark-10/spplus"
+    },
+    {
+      "arguments": [
+        "-selfZ"
+      ],
+      "benchmark": ".benchmark-10.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "d05215b11477c3f9dea5a0e40a9902dde48344571cd3b785cabf2a5583b50876",
+      "mode": "selfz",
+      "output_sha256": {
+        "path": "e7c62161702b70bd331c3701793ffad1a0e234a982adb11a3bc86b6ddfeb38e3",
+        "summary": "da57b67301c0c2cf3192082fcda3f93c388b94340d1b408b52a24f948a5e31a2"
+      },
+      "outputs": {
+        "path": "benchmark-10/selfz/Z1+SP.dat",
+        "summary": "benchmark-10/selfz/Z1+summary.dat"
+      },
+      "stderr_path": "benchmark-10/selfz/run.stderr",
+      "stdout_path": "benchmark-10/selfz/run.stdout",
+      "summary_rows": 1,
+      "work_dir": "benchmark-10/selfz"
+    },
+    {
+      "arguments": [],
+      "benchmark": ".benchmark-11.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "fdded28439e49cc016fade5e820cf9cf5b84545c24872407acef018ac54121f5",
+      "mode": "default",
+      "output_sha256": {
+        "path": "ee5bf225b5f22bd4235d349f1feba0b9fac1a1dec72c8f27d41c17694fea1cb3",
+        "summary": "70fc3de79746df68abe06d5583d6a978815f6078f98c6a9168b594c016daad89"
+      },
+      "outputs": {
+        "path": "benchmark-11/default/Z1+SP.dat",
+        "summary": "benchmark-11/default/Z1+summary.dat"
+      },
+      "stderr_path": "benchmark-11/default/run.stderr",
+      "stdout_path": "benchmark-11/default/run.stdout",
+      "summary_rows": 1,
+      "work_dir": "benchmark-11/default"
+    },
+    {
+      "arguments": [
+        "+"
+      ],
+      "benchmark": ".benchmark-11.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "fdded28439e49cc016fade5e820cf9cf5b84545c24872407acef018ac54121f5",
+      "mode": "spplus",
+      "output_sha256": {
+        "path": "5b6a4475216e5d0a2bba0e1a76f5c64563dc6c6464dfa8721189c077ad14deb9",
+        "summary": "70fc3de79746df68abe06d5583d6a978815f6078f98c6a9168b594c016daad89"
+      },
+      "outputs": {
+        "path": "benchmark-11/spplus/Z1+SP.dat",
+        "summary": "benchmark-11/spplus/Z1+summary.dat"
+      },
+      "stderr_path": "benchmark-11/spplus/run.stderr",
+      "stdout_path": "benchmark-11/spplus/run.stdout",
+      "summary_rows": 1,
+      "work_dir": "benchmark-11/spplus"
+    },
+    {
+      "arguments": [
+        "-selfZ"
+      ],
+      "benchmark": ".benchmark-11.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "fdded28439e49cc016fade5e820cf9cf5b84545c24872407acef018ac54121f5",
+      "mode": "selfz",
+      "output_sha256": {
+        "path": "ee5bf225b5f22bd4235d349f1feba0b9fac1a1dec72c8f27d41c17694fea1cb3",
+        "summary": "70fc3de79746df68abe06d5583d6a978815f6078f98c6a9168b594c016daad89"
+      },
+      "outputs": {
+        "path": "benchmark-11/selfz/Z1+SP.dat",
+        "summary": "benchmark-11/selfz/Z1+summary.dat"
+      },
+      "stderr_path": "benchmark-11/selfz/run.stderr",
+      "stdout_path": "benchmark-11/selfz/run.stdout",
+      "summary_rows": 1,
+      "work_dir": "benchmark-11/selfz"
+    },
+    {
+      "arguments": [],
+      "benchmark": ".benchmark-12.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "6aadd357aac297571378c97f11fec6bec6fd055c78ef854545dc2705b2271021",
+      "mode": "default",
+      "output_sha256": {
+        "path": "dc7bc475c4dacbe8697b8315fb8128a67b2881a7dfaecece9013f7e989c372cb",
+        "summary": "8dd7c11cf4a43ca50861e9c003d26792e9082924540c1bbf864fbec433d37d70"
+      },
+      "outputs": {
+        "path": "benchmark-12/default/Z1+SP.dat",
+        "summary": "benchmark-12/default/Z1+summary.dat"
+      },
+      "stderr_path": "benchmark-12/default/run.stderr",
+      "stdout_path": "benchmark-12/default/run.stdout",
+      "summary_rows": 1,
+      "work_dir": "benchmark-12/default"
+    },
+    {
+      "arguments": [
+        "+"
+      ],
+      "benchmark": ".benchmark-12.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "6aadd357aac297571378c97f11fec6bec6fd055c78ef854545dc2705b2271021",
+      "mode": "spplus",
+      "output_sha256": {
+        "path": "fa06d92c0af7e1137ac3848d1b605ff26b0497a1a0761630a4da80d24aafb534",
+        "summary": "8dd7c11cf4a43ca50861e9c003d26792e9082924540c1bbf864fbec433d37d70"
+      },
+      "outputs": {
+        "path": "benchmark-12/spplus/Z1+SP.dat",
+        "summary": "benchmark-12/spplus/Z1+summary.dat"
+      },
+      "stderr_path": "benchmark-12/spplus/run.stderr",
+      "stdout_path": "benchmark-12/spplus/run.stdout",
+      "summary_rows": 1,
+      "work_dir": "benchmark-12/spplus"
+    },
+    {
+      "arguments": [
+        "-selfZ"
+      ],
+      "benchmark": ".benchmark-12.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "6aadd357aac297571378c97f11fec6bec6fd055c78ef854545dc2705b2271021",
+      "mode": "selfz",
+      "output_sha256": {
+        "path": "222cb8b76850c2af1798c71c9efc79c8523b142c29ac449b67aaab6076f37119",
+        "summary": "e845a3df8d7102dd40f159169dca8633dd252c8269200e5b799c492c0ec5c279"
+      },
+      "outputs": {
+        "path": "benchmark-12/selfz/Z1+SP.dat",
+        "summary": "benchmark-12/selfz/Z1+summary.dat"
+      },
+      "stderr_path": "benchmark-12/selfz/run.stderr",
+      "stdout_path": "benchmark-12/selfz/run.stdout",
+      "summary_rows": 1,
+      "work_dir": "benchmark-12/selfz"
+    },
+    {
+      "arguments": [],
+      "benchmark": ".benchmark-13.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "158db4a796b6fa9717338f7947fbc385d3b6edc39c1667f2f72b65ae32495f39",
+      "mode": "default",
+      "output_sha256": {
+        "path": "63bf03b1a55e70cf035996e2cc12992982399925dc487ff77601bc1c07780bb3",
+        "summary": "41e3d600dda4ff90b8ace936b79b8890176671312f95783c29b770e41411d4fa"
+      },
+      "outputs": {
+        "path": "benchmark-13/default/Z1+SP.dat",
+        "summary": "benchmark-13/default/Z1+summary.dat"
+      },
+      "stderr_path": "benchmark-13/default/run.stderr",
+      "stdout_path": "benchmark-13/default/run.stdout",
+      "summary_rows": 1,
+      "work_dir": "benchmark-13/default"
+    },
+    {
+      "arguments": [
+        "+"
+      ],
+      "benchmark": ".benchmark-13.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "158db4a796b6fa9717338f7947fbc385d3b6edc39c1667f2f72b65ae32495f39",
+      "mode": "spplus",
+      "output_sha256": {
+        "path": "38cf7b7e5cbbb2bb0c7a135243b3fcc8bf1b8bbdde074f7e33a0439176ee5a1a",
+        "summary": "41e3d600dda4ff90b8ace936b79b8890176671312f95783c29b770e41411d4fa"
+      },
+      "outputs": {
+        "path": "benchmark-13/spplus/Z1+SP.dat",
+        "summary": "benchmark-13/spplus/Z1+summary.dat"
+      },
+      "stderr_path": "benchmark-13/spplus/run.stderr",
+      "stdout_path": "benchmark-13/spplus/run.stdout",
+      "summary_rows": 1,
+      "work_dir": "benchmark-13/spplus"
+    },
+    {
+      "arguments": [
+        "-selfZ"
+      ],
+      "benchmark": ".benchmark-13.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "158db4a796b6fa9717338f7947fbc385d3b6edc39c1667f2f72b65ae32495f39",
+      "mode": "selfz",
+      "output_sha256": {
+        "path": "c3786f2d88fa99f2a2af06110d01a014c71e0f76c4f4641c5c2ff9dcba45aa60",
+        "summary": "171ddb0623efbecfac09bed5b2d47ef0223040772a22e3e37501c2ca16019d59"
+      },
+      "outputs": {
+        "path": "benchmark-13/selfz/Z1+SP.dat",
+        "summary": "benchmark-13/selfz/Z1+summary.dat"
+      },
+      "stderr_path": "benchmark-13/selfz/run.stderr",
+      "stdout_path": "benchmark-13/selfz/run.stdout",
+      "summary_rows": 1,
+      "work_dir": "benchmark-13/selfz"
+    },
+    {
+      "arguments": [],
+      "benchmark": ".benchmark-14.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "1f7fdee5eb2f06ab4beaa5beaaf328e8b1a1494ad04a871cd5f4e5a711b70e00",
+      "mode": "default",
+      "output_sha256": {
+        "path": "01d05401c927d15957eb66472823a081e412322f12da82fbc3e3d6841c9aac07",
+        "summary": "a0752fbc85dbc97ff841caf5f11fb46cfa0f18d8e984cd6ac311c12593192b37"
+      },
+      "outputs": {
+        "path": "benchmark-14/default/Z1+SP.dat",
+        "summary": "benchmark-14/default/Z1+summary.dat"
+      },
+      "stderr_path": "benchmark-14/default/run.stderr",
+      "stdout_path": "benchmark-14/default/run.stdout",
+      "summary_rows": 1,
+      "work_dir": "benchmark-14/default"
+    },
+    {
+      "arguments": [
+        "+"
+      ],
+      "benchmark": ".benchmark-14.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "1f7fdee5eb2f06ab4beaa5beaaf328e8b1a1494ad04a871cd5f4e5a711b70e00",
+      "mode": "spplus",
+      "output_sha256": {
+        "path": "8d21b5f21cb10602426e4473e1574a3eb5b4d832b0371e7e7da8d399e92535d5",
+        "summary": "a0752fbc85dbc97ff841caf5f11fb46cfa0f18d8e984cd6ac311c12593192b37"
+      },
+      "outputs": {
+        "path": "benchmark-14/spplus/Z1+SP.dat",
+        "summary": "benchmark-14/spplus/Z1+summary.dat"
+      },
+      "stderr_path": "benchmark-14/spplus/run.stderr",
+      "stdout_path": "benchmark-14/spplus/run.stdout",
+      "summary_rows": 1,
+      "work_dir": "benchmark-14/spplus"
+    },
+    {
+      "arguments": [
+        "-selfZ"
+      ],
+      "benchmark": ".benchmark-14.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "1f7fdee5eb2f06ab4beaa5beaaf328e8b1a1494ad04a871cd5f4e5a711b70e00",
+      "mode": "selfz",
+      "output_sha256": {
+        "path": "5d71d633372f90c0894b0a73647bda8ac17f37a798eab97bc62a069d231b5b24",
+        "summary": "660e20f375ab3757fcc8214f1c1206f4fa85d4376600aadae803f75f981b112f"
+      },
+      "outputs": {
+        "path": "benchmark-14/selfz/Z1+SP.dat",
+        "summary": "benchmark-14/selfz/Z1+summary.dat"
+      },
+      "stderr_path": "benchmark-14/selfz/run.stderr",
+      "stdout_path": "benchmark-14/selfz/run.stdout",
+      "summary_rows": 1,
+      "work_dir": "benchmark-14/selfz"
+    }
+  ],
+  "schema_version": 1
+}

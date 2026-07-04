@@ -1,0 +1,38 @@
+perl: warning: Setting locale failed.
+perl: warning: Please check that your locale settings:
+	LANGUAGE = (unset),
+	LC_ALL = "C.UTF-8",
+	LC_CTYPE = "C.UTF-8",
+	LANG = "en_US.UTF-8"
+    are supported and installed on your system.
+perl: warning: Falling back to the standard locale ("C").
+      _____  ___          
+     /__  / /__ |    _    
+       / /    | |  _| |_      (c) 2022 mk@mat.ethz.ch
+      / /_    | | |_   _| 
+     /____/   |_|   |_|      This executable was licensed for CPC                                                                             
+                             renew your license in < 34909 days
+________________________________________________________________________________ about
+                                                                                
+(c) mk@mat.ethz.ch (Z1+) version 1 June 2022 http://www.complexfluids.ethz.ch
+Z1+ is online at http://www.complexfluids.ethz.ch/Z1+
+Consider mentioning these publications when making use of Z1+ results in your research:
+ [1] http://doi.org/10.1016/j.cpc.2005.01.020
+ [2] http://doi.org/10.1021/ma062457k
+ [3] http://doi.org/10.1103/PhysRevE.80.031803
+ [4] http://doi.org/10.3390/ijms10115054
+ [5] The Z1+ package: Shortest multiple disconnected path for
+     the analysis of entanglements in macromolecular systems,
+     Comput. Phys. Commun. (2022) in press.
+                                                                                
+forrtl: severe (174): SIGSEGV, segmentation fault occurred
+Image              PC                Routine            Line        Source             
+Z1+.ex             000000000044B3FD  Unknown               Unknown  Unknown
+libpthread-2.17.s  00002B0E61A14630  Unknown               Unknown  Unknown
+Z1+.ex             0000000000429E23  Unknown               Unknown  Unknown
+Z1+.ex             0000000000427348  Unknown               Unknown  Unknown
+Z1+.ex             0000000000426779  Unknown               Unknown  Unknown
+Z1+.ex             0000000000442E06  Unknown               Unknown  Unknown
+Z1+.ex             0000000000402E1E  Unknown               Unknown  Unknown
+libc-2.17.so       00002B0E61C43555  __libc_start_main     Unknown  Unknown
+Z1+.ex             0000000000402D29  Unknown               Unknown  Unknown

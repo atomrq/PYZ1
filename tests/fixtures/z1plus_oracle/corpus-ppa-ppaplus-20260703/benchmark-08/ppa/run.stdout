@@ -1,0 +1,42 @@
+[1;32;40m    _____  ___  [1;37;40m
+[1;32;40m   /__  / /__ |    _    [1;37;40m
+[1;32;40m     / /    | |  _| |_     (c) 2022 mk.ethz.ch[1;37;40m
+[1;32;40m    / /_    | | |_   _| [1;37;40m
+[1;32;40m   /____/   |_|   |_|   [1;37;40m
+[1;32;40m                        [1;37;40m
+working directory:      /public/home/jxm/codex_tmp/pyz1_oracle_full_20260703_164229/oracle_ppa/benchmark-08/ppa
+installation directory: /public/home/jxm/codex_tmp/pyz1_oracle_full_20260703_164229/oracle_ppa/_z1plus_install
+[1;32;40m
+assuming Z1-formatted configuration file[1;37;40m
+[1;32;40m
+Z1+parameters contains:[1;37;40m
+&parameters
+stats = .False.
+logfile = .False.
+lmax_factor = 1.0
+thickness = 0.002
+self_entanglement = .False.
+basic_SP = .True.
+calc_PPA = .False.
+calc_CPPA = .True.
+/
+
+[Z1+] removing PPA-summary.dat
+[Z1+] removing PPA-summary.html
+[Z1+] finished cleaning
+[1;32;40m0[1;37;40m
+                       PPA  atoms (init)      103200
+                             PPA  chains        1032
+                                PPA  box    48.03640     48.03640     48.03640
+                     PPA  number density     0.93104
+                            PPA  min box    48.03640
+                                PPA  epc     0.00000
+                    PPA  init mean bondl     0.95411
+               PPA  init max bondl (all)     1.15659
+                               PPA  rcut     1.12246
+                                 PPA  M           22           22           22
+                                 PPA  Mi          -1           -1           -1
+                                 PPA  Mf           1            1            1
+                            PPA  binsize     2.18347      2.18347      2.18347
+                           PPA  max_list     4804166
+[1;31;40mCRASHED. contact mk[1;37;40m

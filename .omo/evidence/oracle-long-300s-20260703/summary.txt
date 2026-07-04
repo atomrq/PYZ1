@@ -1,0 +1,6 @@
+.omo/evidence/oracle-long-300s-20260703/b09-manifest.json
+runs 3 exit_counts {'124': 3} summary_rows 0
+timeouts ['.benchmark-09.Z1:default', '.benchmark-09.Z1:spplus', '.benchmark-09.Z1:selfz']
+.omo/evidence/oracle-long-300s-20260703/ppa-manifest.json
+runs 3 exit_counts {'0': 2, '124': 1} summary_rows 2
+timeouts ['.benchmark-11.Z1:ppa']

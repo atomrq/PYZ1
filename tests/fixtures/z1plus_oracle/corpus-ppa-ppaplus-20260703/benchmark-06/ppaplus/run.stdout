@@ -1,0 +1,71 @@
+[1;32;40m    _____  ___  [1;37;40m
+[1;32;40m   /__  / /__ |    _    [1;37;40m
+[1;32;40m     / /    | |  _| |_     (c) 2022 mk.ethz.ch[1;37;40m
+[1;32;40m    / /_    | | |_   _| [1;37;40m
+[1;32;40m   /____/   |_|   |_|   [1;37;40m
+[1;32;40m                        [1;37;40m
+working directory:      /public/home/jxm/codex_tmp/pyz1_oracle_full_20260703_164229/oracle_ppa/benchmark-06/ppaplus
+installation directory: /public/home/jxm/codex_tmp/pyz1_oracle_full_20260703_164229/oracle_ppa/_z1plus_install
+[1;32;40m
+assuming Z1-formatted configuration file[1;37;40m
+[1;32;40m
+Z1+parameters contains:[1;37;40m
+&parameters
+stats = .False.
+logfile = .False.
+lmax_factor = 1.0
+thickness = 0.002
+self_entanglement = .False.
+basic_SP = .True.
+calc_PPA = .True.
+calc_CPPA = .False.
+/
+
+[Z1+] removing PPA+summary.dat
+[Z1+] removing PPA+summary.html
+[Z1+] finished cleaning
+[1;32;40m0[1;37;40m
+                       PPA+ atoms (init)       35000
+                             PPA+ chains         100
+                                PPA+ box    85.14970     85.14991     85.14953
+                     PPA+ number density     0.05669
+                            PPA+ min box    85.14953
+                                PPA+ epc     0.00000
+                    PPA+ init mean bondl     0.95937
+               PPA+ init max bondl (all)     1.14504
+                               PPA+ rcut     1.12246
+                                 PPA+ M           46           46           46
+                                 PPA+ Mi          -1           -1           -1
+                                 PPA+ Mf           1            1            1
+                            PPA+ binsize     1.85108      1.85108      1.85108
+                           PPA+ max_list       99210
+            PPA+ FENE spring coefficient   108.64977
+                          PPA+ FENE Rmax     1.50000
+                          PPA+ time step     0.00800      0.00800      0.01000      0.01000      0.01000
+                       PPA+ temperature      0.10000      0.05000      0.00500      0.00100      0.00010
+                             PPA+ steps         1249         1249         1000         1000         1000
+________________________________________________________________________________PPA+ on the fly
+                                                                                
+PPA+     step     time phase      T skin      Lpp       secs   listsize  refresh timestep  steps/se   LJu/sec
+PPA+        1      0.0     1 0.1000 0.70  331.782        0.1      15155        1  0.00800       9.5      2664
+PPA+      126      1.0     1 0.1000 0.70  149.209        0.3      11435        5  0.00800     465.6    130356
+PPA+      251      2.0     1 0.1000 0.70  107.283        0.4      10116        9  0.00800     678.1    189859
+PPA+      376      3.0     1 0.1000 0.70   85.579        0.5      10672       12  0.00800     823.4    230561
+PPA+      501      4.0     1 0.1000 0.70   72.135        0.5      12475       16  0.00800     911.5    255208
+PPA+      626      5.0     1 0.1000 0.70   62.920        0.6      16747       20  0.00800     972.6    272324
+PPA+      751      6.0     1 0.1000 0.70   56.166        0.7      23107       24  0.00800    1014.4    284029
+PPA+      876      7.0     1 0.1000 0.70   51.013        0.8      28942       28  0.00800    1042.1    291797
+PPA+     1001      8.0     1 0.1000 0.70   46.952        0.9      35860        2  0.00800    1059.7    296708
+PPA+     1126      9.0     1 0.1000 0.70   43.740        1.1      40895        6  0.00800    1070.8    299833
+PPA+     step     time phase      T skin      Lpp       secs   listsize  refresh timestep  steps/se   LJu/sec
+PPA+     1251     10.0     2 0.0500 0.70   41.198        1.2      47569        1  0.00800    1069.4    299430
+PPA+     1376     11.0     2 0.0500 0.70   39.599        1.3      52720        4  0.00800    1078.8    302059
+PPA+     1501     12.0     2 0.0500 0.70   38.156        1.4      57081        7  0.00800    1084.9    303774
+PPA+     1626     13.0     2 0.0500 0.70   36.894        1.5      61822       10  0.00800    1088.5    304786
+PPA+     1751     14.0     2 0.0500 0.70   35.795        1.6      69467       13  0.00800    1089.9    305166
+PPA+     1876     15.0     2 0.0500 0.70   34.829        1.7      74839       15  0.00800    1094.3    306411
+PPA+     2001     16.0     2 0.0500 0.70   33.983        1.8      80414       18  0.00800    1091.6    305649
+PPA+     2126     17.0     2 0.0500 0.70   33.234        2.0      85737       21  0.00800    1087.8    304586
+PPA+     2251     18.0     2 0.0500 0.70   32.571        2.1      91114       24  0.00800    1082.5    303099
+PPA+     2376     19.0     2 0.0500 0.70   31.981        2.2      96319       27  0.00800    1077.3    301653
+[1;31;40mCRASHED. contact mk[1;37;40m

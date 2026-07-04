@@ -1,0 +1,74 @@
+FFF                                                                      [100%]
+=================================== FAILURES ===================================
+___________ test_generate_oracle_fixtures_when_fake_wrapper_succeeds ___________
+
+tmp_path = PosixPath('/private/var/folders/8m/1t87yc1x1p701t_8qv3flk4h0000gp/T/pytest-of-jiaxm/pytest-2255/test_generate_oracle_fixtures_0')
+
+    def test_generate_oracle_fixtures_when_fake_wrapper_succeeds(tmp_path: Path) -> None:
+        install_dir = tmp_path / "install"
+        benchmarks_dir = tmp_path / "benchmarks"
+        out_dir = tmp_path / "oracle"
+        _write_fake_install(install_dir)
+        _write_benchmark(benchmarks_dir / ".benchmark-01.Z1")
+        _write_benchmark(benchmarks_dir / ".benchmark-02.Z1")
+    
+>       request = OracleGenerationRequest(
+            benchmarks_dir=benchmarks_dir,
+            out_dir=out_dir,
+            z1_install_dir=install_dir,
+            mode_names=("default", "spplus"),
+            allow_non_linux=True,
+            platform_name="Darwin",
+            timeout_seconds=None,
+        )
+E       TypeError: OracleGenerationRequest.__init__() got an unexpected keyword argument 'timeout_seconds'
+
+tests/test_oracle.py:25: TypeError
+_______ test_generate_oracle_fixtures_when_macos_without_executor_fails ________
+
+tmp_path = PosixPath('/private/var/folders/8m/1t87yc1x1p701t_8qv3flk4h0000gp/T/pytest-of-jiaxm/pytest-2255/test_generate_oracle_fixtures_1')
+
+    def test_generate_oracle_fixtures_when_macos_without_executor_fails(
+        tmp_path: Path,
+    ) -> None:
+>       request = OracleGenerationRequest(
+            benchmarks_dir=tmp_path,
+            out_dir=tmp_path / "out",
+            z1_install_dir=tmp_path / "install",
+            mode_names=("default",),
+            allow_non_linux=False,
+            platform_name="Darwin",
+            timeout_seconds=None,
+        )
+E       TypeError: OracleGenerationRequest.__init__() got an unexpected keyword argument 'timeout_seconds'
+
+tests/test_oracle.py:49: TypeError
+_______ test_generate_oracle_fixtures_when_wrapper_times_out_records_run _______
+
+tmp_path = PosixPath('/private/var/folders/8m/1t87yc1x1p701t_8qv3flk4h0000gp/T/pytest-of-jiaxm/pytest-2255/test_generate_oracle_fixtures_2')
+
+    def test_generate_oracle_fixtures_when_wrapper_times_out_records_run(
+        tmp_path: Path,
+    ) -> None:
+        install_dir = tmp_path / "install"
+        benchmarks_dir = tmp_path / "benchmarks"
+        out_dir = tmp_path / "oracle"
+        _write_fake_install(install_dir, delay_seconds=2)
+        _write_benchmark(benchmarks_dir / ".benchmark-01.Z1")
+>       request = OracleGenerationRequest(
+            benchmarks_dir=benchmarks_dir,
+            out_dir=out_dir,
+            z1_install_dir=install_dir,
+            mode_names=("default",),
+            allow_non_linux=True,
+            platform_name="Darwin",
+            timeout_seconds=0.1,
+        )
+E       TypeError: OracleGenerationRequest.__init__() got an unexpected keyword argument 'timeout_seconds'
+
+tests/test_oracle.py:71: TypeError
+=========================== short test summary info ============================
+FAILED tests/test_oracle.py::test_generate_oracle_fixtures_when_fake_wrapper_succeeds
+FAILED tests/test_oracle.py::test_generate_oracle_fixtures_when_macos_without_executor_fails
+FAILED tests/test_oracle.py::test_generate_oracle_fixtures_when_wrapper_times_out_records_run
+3 failed in 0.08s

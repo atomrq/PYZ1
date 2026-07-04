@@ -1,0 +1,9 @@
+....                                                                     [100%]
+4 passed in 0.06s
+............................................                             [100%]
+44 passed in 1.19s
+All checks passed!
+0 errors, 0 warnings, 0 notes
+     152 src/pyz1/cli.py
+      71 tests/test_cli_scaffold.py
+     223 total

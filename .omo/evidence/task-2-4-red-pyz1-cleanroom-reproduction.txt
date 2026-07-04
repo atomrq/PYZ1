@@ -1,0 +1,27 @@
+
+==================================== ERRORS ====================================
+____________________ ERROR collecting tests/test_models.py _____________________
+ImportError while importing test module '/Users/jiaxm/Contents/CodexProjects/Z1/tests/test_models.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+../../../.local/share/mamba/envs/pyz1/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_models.py:5: in <module>
+    from pyz1.models import Chain, Snapshot, Vector3
+E   ModuleNotFoundError: No module named 'pyz1.models'
+_____________________ ERROR collecting tests/test_z1_io.py _____________________
+ImportError while importing test module '/Users/jiaxm/Contents/CodexProjects/Z1/tests/test_z1_io.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+../../../.local/share/mamba/envs/pyz1/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_z1_io.py:7: in <module>
+    from pyz1.z1_io import parse_z1_text, read_z1_file, write_z1_text
+E   ModuleNotFoundError: No module named 'pyz1.z1_io'
+=========================== short test summary info ============================
+ERROR tests/test_models.py
+ERROR tests/test_z1_io.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 2 errors during collection !!!!!!!!!!!!!!!!!!!!
+2 errors in 0.06s

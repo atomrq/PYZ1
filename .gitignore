@@ -1,0 +1,15 @@
+.codegraph
+.codegraph/
+.memsearch/
+.pytest_cache/
+.ruff_cache/
+__pycache__/
+*.py[cod]
+*$py.class
+
+src/*.egg-info/
+.venv/
+venv/
+
+docs/references/papers/
+.DS_Store

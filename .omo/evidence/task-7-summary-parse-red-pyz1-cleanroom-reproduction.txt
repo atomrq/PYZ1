@@ -1,0 +1,121 @@
+...F                                                                     [100%]
+=================================== FAILURES ===================================
+_____ test_generate_oracle_fixtures_when_summary_is_unparseable_continues ______
+
+tmp_path = PosixPath('/private/var/folders/8m/1t87yc1x1p701t_8qv3flk4h0000gp/T/pytest-of-jiaxm/pytest-2258/test_generate_oracle_fixtures_3')
+
+    def test_generate_oracle_fixtures_when_summary_is_unparseable_continues(
+        tmp_path: Path,
+    ) -> None:
+        install_dir = tmp_path / "install"
+        benchmarks_dir = tmp_path / "benchmarks"
+        out_dir = tmp_path / "oracle"
+        _write_fake_install(install_dir, summary_line="1 1 3 bad 2")
+        _write_benchmark(benchmarks_dir / ".benchmark-01.Z1")
+        request = OracleGenerationRequest(
+            benchmarks_dir=benchmarks_dir,
+            out_dir=out_dir,
+            z1_install_dir=install_dir,
+            mode_names=("default",),
+            allow_non_linux=True,
+            platform_name="Darwin",
+            timeout_seconds=None,
+        )
+    
+>       manifest = generate_oracle_fixtures(request)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_oracle.py:108: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/pyz1/oracle.py:100: in generate_oracle_fixtures
+    runs = tuple(
+src/pyz1/oracle.py:101: in <genexpr>
+    _run_benchmark_mode(
+src/pyz1/oracle.py:238: in _run_benchmark_mode
+    summary_rows = len(read_summary_file(summary_path)) if summary_path.exists() else 0
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/pyz1/output_io.py:26: in read_summary_file
+    return parse_summary_text(path.read_text(encoding="utf-8"))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/pyz1/output_io.py:32: in parse_summary_text
+    records.append(_parse_summary_record(raw.split(), line_number=index))
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+fields = ['1', '1', '3', 'bad', '2']
+
+    def _parse_summary_record(fields: list[str], *, line_number: int) -> Z1SummaryRecord:
+        if len(fields) != SUMMARY_COLUMN_COUNT:
+>           raise Z1OutputParseError(
+                line_number=line_number,
+                reason=f"expected 15 summary columns, got {len(fields)}",
+            )
+E           pyz1.errors.Z1OutputParseError: line 1: expected 15 summary columns, got 5
+
+src/pyz1/output_io.py:88: Z1OutputParseError
+
+During handling of the above exception, another exception occurred:
+
+self = <contextlib._GeneratorContextManager object at 0x1029bd590>
+typ = <class 'pyz1.errors.Z1OutputParseError'>
+value = Z1OutputParseError(line_number=1, reason='expected 15 summary columns, got 5')
+traceback = <traceback object at 0x1029be5c0>
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+                next(self.gen)
+            except StopIteration:
+                return False
+            else:
+                try:
+                    raise RuntimeError("generator didn't stop")
+                finally:
+                    self.gen.close()
+        else:
+            if value is None:
+                # Need to force instantiation so we can reliably
+                # tell if we get the same exception back
+                value = typ()
+            try:
+                self.gen.throw(typ, value, traceback)
+            except StopIteration as exc:
+                # Suppress StopIteration *unless* it's the same exception that
+                # was passed to throw().  This prevents a StopIteration
+                # raised inside the "with" statement from being suppressed.
+                return exc is not value
+            except RuntimeError as exc:
+                # Don't re-raise the passed in exception. (issue27122)
+                if exc is value:
+                    exc.__traceback__ = traceback
+                    return False
+                # Avoid suppressing if a StopIteration exception
+                # was passed to throw() and later wrapped into a RuntimeError
+                # (see PEP 479 for sync generators; async generators also
+                # have this behavior). But do this only if the exception wrapped
+                # by the RuntimeError is actually Stop(Async)Iteration (see
+                # issue29692).
+                if (
+                    isinstance(value, StopIteration)
+                    and exc.__cause__ is value
+                ):
+                    value.__traceback__ = traceback
+                    return False
+                raise
+            except BaseException as exc:
+                # only re-raise if it's *not* the exception that was
+                # passed to throw(), because __exit__() must not raise
+                # an exception unless __exit__() itself failed.  But throw()
+                # has to raise the exception to signal propagation, so this
+                # fixes the impedance mismatch between the throw() protocol
+                # and the __exit__() protocol.
+                if exc is not value:
+                    raise
+>               exc.__traceback__ = traceback
+                ^^^^^^^^^^^^^^^^^
+E               TypeError: super(type, obj): obj must be an instance or subtype of type
+
+../../../.local/share/mamba/envs/pyz1/lib/python3.11/contextlib.py:191: TypeError
+=========================== short test summary info ============================
+FAILED tests/test_oracle.py::test_generate_oracle_fixtures_when_summary_is_unparseable_continues
+1 failed, 3 passed in 3.10s

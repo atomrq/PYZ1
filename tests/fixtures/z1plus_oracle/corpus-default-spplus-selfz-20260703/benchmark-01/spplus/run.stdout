@@ -1,0 +1,100 @@
+[1;32;40m    _____  ___  [1;37;40m
+[1;32;40m   /__  / /__ |    _    [1;37;40m
+[1;32;40m     / /    | |  _| |_     (c) 2022 mk.ethz.ch[1;37;40m
+[1;32;40m    / /_    | | |_   _| [1;37;40m
+[1;32;40m   /____/   |_|   |_|   [1;37;40m
+[1;32;40m                        [1;37;40m
+working directory:      /public/home/jxm/codex_tmp/pyz1_oracle_full_20260703_164229/oracle_timeout/benchmark-01/spplus
+installation directory: /public/home/jxm/codex_tmp/pyz1_oracle_full_20260703_164229/oracle_timeout/_z1plus_install
+[1;32;40m
+assuming Z1-formatted configuration file[1;37;40m
+[1;32;40m
+Z1+parameters contains:[1;37;40m
+&parameters
+stats = .False.
+logfile = .False.
+lmax_factor = 1.0
+thickness = 0.002
+self_entanglement = .False.
+basic_SP = .False.
+calc_PPA = .False.
+calc_CPPA = .False.
+/
+
+[Z1+] removing Z1+summary.dat
+[Z1+] removing Z1+summary.html
+[Z1+] finished cleaning
+[1;32;40m0[1;37;40m
+       Z1+ init mean bondl (true chains)     0.99999
+                Z1+ init max bondl (all)     2.00000
+                        Z1+ atoms (init)         611
+                        Z1+ nodes (init)         621
+                              Z1+ chains         301
+                         Z1+ true chains           1
+                                 Z1+ box     4.73720      4.73720      4.73720
+                      Z1+ number density     5.74746
+                             Z1+ min box     4.73720
+                                 Z1+ epc     0.00000
+       Z1+ init mean bondl (true chains)     0.99999
+      Z1+ init mean bondl (+extra nodes)     0.50000
+                Z1+ init max bondl (all)     2.00000
+                                Z1+ lmax     2.00000
+                           Z1+ thickness     0.00200
+                                Z1+ rcut     1.73205
+                                  Z1+ M            3            3            3
+                                  Z1+ Mi          -1           -1           -1
+                                  Z1+ Mf           1            1            1
+                             Z1+ binsize     1.57907      1.57907      1.57907
+________________________________________________________________________________ legend
+                                                                                
+Z1+ (legend)    pro: progress
+Z1+ (legend)   rcut: cutoff radius
+Z1+ (legend)    vis: visits
+Z1+ (legend)    o  : crossings
+Z1+ (legend)    new: new nodes
+Z1+ (legend)    ---: too long
+Z1+ (legend)    ?  : ghost nodes
+Z1+ (legend)    x  : erased
+Z1+ (legend)  bondl: mean edge length
+Z1+ (legend)  nodes: number of nodes
+Z1+ (legend)  maxID: largest node ID
+Z1+ (legend) handle: # crosspoints handled
+Z1+ (legend)   mem%: percentage of allocated memory used
+________________________________________________________________________________ Z1+ on the fly
+                                                                                
+Z1+  scan  < Lpp >    pro    rcut    vis      o    new    ---      ?      x bondl    nodes    maxID    handled mem%    secs
+Z1+     0   10.000      0   1.732      0      0      0      0      0      0  0.50      621        0          0  0.0     0.0
+Z1+     1    6.885     31   1.732     33     16     14      0      0     17  0.41      618      623         33 83.8     0.0
+Z1+     2    6.834      3   1.732     17     15      1      0      0      2  0.43      617      623         50 83.8     0.0
+Z1+     3    6.834      0   1.732     15     15      0      0      0      0  0.43      617      623         65 83.8     0.0
+Z1+     4    6.834      0   1.732     15     15      0      0      0      0  0.43      617      623         80 83.8     0.0
+                       identifying kinks
+Z1+     4    6.830      0   2.369      0      0      0      0      0      0  0.49      615      623         80 83.8     0.0
+________________________________________________________________________________ Z1+ results for true chains
+                                  chains           1
+                                 < Lpp >     6.82982
+                                   < Z >    13.00000
+                                     Ree     0.85998
+                                     app     0.10829
+                                     bpp   205.57771
+                                   < N >    11.00000
+                   Ne_CK: classical kink     0.78014 (defined in DOI 10.1103/PhysRevE.80.031803)
+                   Ne_MK:  modified kink     0.84615 (defined in DOI 10.1103/PhysRevE.80.031803)
+                   Ne_CC: classical coil     0.15855 (defined in DOI 10.1103/PhysRevE.80.031803)
+                   Ne_MC:  modified coil     0.16110 (defined in DOI 10.1103/PhysRevE.80.031803)
+________________________________________________________________________________ postprocessing Z1+ results
+                          creating _line
+                 creating Z1+summary.dat
+                creating Z1+summary.html
+            analyzing+saving unfolded SP
+________________________________________________________________________________ generated files
+                                                                                
+ 1) N_values.dat
+ 2) Ree_values.dat
+ 3) Lpp_values.dat
+ 4) Z_values.dat
+ 5) Z1+SP.dat
+ 6) Z1+summary.dat
+ 7) Z1+summary.html
+ 8) Z1+initconfig.dat
+Z1+ finished after 0.042665999 seconds

@@ -1,0 +1,89 @@
+[1;32;40m    _____  ___  [1;37;40m
+[1;32;40m   /__  / /__ |    _    [1;37;40m
+[1;32;40m     / /    | |  _| |_     (c) 2022 mk.ethz.ch[1;37;40m
+[1;32;40m    / /_    | | |_   _| [1;37;40m
+[1;32;40m   /____/   |_|   |_|   [1;37;40m
+[1;32;40m                        [1;37;40m
+working directory:      /public/home/jxm/codex_tmp/pyz1_oracle_full_20260703_164229/oracle_ppa/benchmark-05/ppaplus
+installation directory: /public/home/jxm/codex_tmp/pyz1_oracle_full_20260703_164229/oracle_ppa/_z1plus_install
+[1;32;40m
+assuming Z1-formatted configuration file[1;37;40m
+[1;32;40m
+Z1+parameters contains:[1;37;40m
+&parameters
+stats = .False.
+logfile = .False.
+lmax_factor = 1.0
+thickness = 0.002
+self_entanglement = .False.
+basic_SP = .True.
+calc_PPA = .True.
+calc_CPPA = .False.
+/
+
+[Z1+] removing PPA+summary.dat
+[Z1+] removing PPA+summary.html
+[Z1+] finished cleaning
+[1;32;40m0[1;37;40m
+                       PPA+ atoms (init)        1000
+                             PPA+ chains          50
+                                PPA+ box    20.00000     20.00000     20.00000
+                     PPA+ number density     0.12500
+                            PPA+ min box    20.00000
+                                PPA+ epc     0.00000
+                    PPA+ init mean bondl     1.00000
+               PPA+ init max bondl (all)     1.00075
+                               PPA+ rcut     1.12246
+                                 PPA+ M           10           10           10
+                                 PPA+ Mi          -1           -1           -1
+                                 PPA+ Mf           1            1            1
+                            PPA+ binsize     2.00000      2.00000      2.00000
+                           PPA+ max_list        6250
+            PPA+ FENE spring coefficient    99.99996
+                          PPA+ FENE Rmax     1.50000
+                          PPA+ time step     0.00800      0.00800      0.01000      0.01000      0.01000
+                       PPA+ temperature      0.10000      0.05000      0.00500      0.00100      0.00010
+                             PPA+ steps         1249         1249         1000         1000         1000
+________________________________________________________________________________PPA+ on the fly
+                                                                                
+PPA+     step     time phase      T skin      Lpp       secs   listsize  refresh timestep  steps/se   LJu/sec
+PPA+        1      0.0     1 0.1000 0.70 ********        0.0       2500        2  0.00800     190.1      1521
+PPA+      126      1.0     2 0.0500 0.70 ********        0.0       1992       10  0.00800    8141.6     65133
+PPA+      201      1.8     3 0.0050 0.60 ********        0.0       1618        3  0.01000   10524.1     92047
+PPA+      301      2.8     4 0.0010 0.30 ********        0.0        811        5  0.01000   12919.0    118374
+PPA+      401      3.8     5 0.0001 0.20 ********        0.0        570        5  0.01000   14782.9    138539
+PPA+      501      4.8     5 0.0001 0.20 ********        0.0        585        9  0.01000   16407.4    155821
+PPA+      601      5.8     5 0.0001 0.20 ********        0.0        614       13  0.01000   17693.1    169512
+PPA+      701      6.8     5 0.0001 0.20 ********        0.0        628       17  0.01000   18741.8    180681
+PPA+      801      7.8     5 0.0001 0.20 ********        0.0        637       21  0.01000   19608.8    189919
+PPA+      901      8.8     5 0.0001 0.20 ********        0.0        626       24  0.01000   20487.1    199140
+PPA+     step     time phase      T skin      Lpp       secs   listsize  refresh timestep  steps/se   LJu/sec
+PPA+     1001      9.8     5 0.0001 0.20 ********        0.0        617       27  0.01000   21264.4    207291
+PPA+     1101     10.8     5 0.0001 0.25 ********        0.1        717        1  0.01000   21786.4    212878
+PPA+     1201     11.8     5 0.0001 0.25 ********        0.1        716        4  0.01000   22336.7    218680
+PPA+     1301     12.8     5 0.0001 0.25 ********        0.1        725        6  0.01000   22966.4    225215
+                      saving unfolded PP
+________________________________________________________________________________PPA+ results for true chains
+                                  chains          50
+                                 < Lpp >************
+                                   < Z >    -1.00000
+                                     Ree     9.46593
+                                     app     0.00000
+                                     bpp************
+                                   < N >    20.00000
+                   Ne_CC: classical coil     0.00000 (defined in DOI 10.1103/PhysRevE.80.031803)
+                   Ne_MC:  modified coil     0.00000 (defined in DOI 10.1103/PhysRevE.80.031803)
+________________________________________________________________________________ postprocessing PPA+ results
+                          creating _line
+                creating PPA+summary.dat
+               creating PPA+summary.html
+________________________________________________________________________________ generated files
+                                                                                
+ 1) N_values.dat
+ 2) Ree_values.dat
+ 3) Lpp_values.dat
+ 4) PPA+.dat
+ 5) PPA+summary.dat
+ 6) PPA+summary.html
+ 7) Z1+initconfig.dat
+Z1+ finished after 0.060205001 seconds

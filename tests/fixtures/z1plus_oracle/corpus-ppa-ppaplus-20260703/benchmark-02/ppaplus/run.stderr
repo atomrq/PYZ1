@@ -1,0 +1,81 @@
+perl: warning: Setting locale failed.
+perl: warning: Please check that your locale settings:
+	LANGUAGE = (unset),
+	LC_ALL = "C.UTF-8",
+	LC_CTYPE = "C.UTF-8",
+	LANG = "en_US.UTF-8"
+    are supported and installed on your system.
+perl: warning: Falling back to the standard locale ("C").
+      _____  ___          
+     /__  / /__ |    _    
+       / /    | |  _| |_      (c) 2022 mk@mat.ethz.ch
+      / /_    | | |_   _| 
+     /____/   |_|   |_|      This executable was licensed for CPC                                                                             
+                             renew your license in < 34909 days
+________________________________________________________________________________ about
+                                                                                
+(c) mk@mat.ethz.ch (Z1+) version 1 June 2022 http://www.complexfluids.ethz.ch
+Z1+ is online at http://www.complexfluids.ethz.ch/Z1+
+Consider mentioning these publications when making use of Z1+ results in your research:
+ [1] http://doi.org/10.1016/j.cpc.2005.01.020
+ [2] http://doi.org/10.1021/ma062457k
+ [3] http://doi.org/10.1103/PhysRevE.80.031803
+ [4] http://doi.org/10.3390/ijms10115054
+ [5] The Z1+ package: Shortest multiple disconnected path for
+     the analysis of entanglements in macromolecular systems,
+     Comput. Phys. Commun. (2022) in press.
+                                                                                
+*** Error in `/public/home/jxm/codex_tmp/pyz1_oracle_full_20260703_164229/oracle_ppa/_z1plus_install/Z1+.ex': free(): invalid next size (normal): 0x00000000013cdac0 ***
+======= Backtrace: =========
+/lib64/libc.so.6(+0x81299)[0x2b35549f4299]
+/lib64/libc.so.6(__open_catalog+0x6a4)[0x2b35549a85d4]
+/lib64/libc.so.6(catopen+0x48)[0x2b35549a7c48]
+/public/home/jxm/codex_tmp/pyz1_oracle_full_20260703_164229/oracle_ppa/_z1plus_install/Z1+.ex[0x445c31]
+/public/home/jxm/codex_tmp/pyz1_oracle_full_20260703_164229/oracle_ppa/_z1plus_install/Z1+.ex[0x44b3fd]
+/lib64/libpthread.so.0(+0xf630)[0x2b3554766630]
+/public/home/jxm/codex_tmp/pyz1_oracle_full_20260703_164229/oracle_ppa/_z1plus_install/Z1+.ex[0x429e2a]
+/public/home/jxm/codex_tmp/pyz1_oracle_full_20260703_164229/oracle_ppa/_z1plus_install/Z1+.ex[0x427348]
+/public/home/jxm/codex_tmp/pyz1_oracle_full_20260703_164229/oracle_ppa/_z1plus_install/Z1+.ex[0x426779]
+/public/home/jxm/codex_tmp/pyz1_oracle_full_20260703_164229/oracle_ppa/_z1plus_install/Z1+.ex[0x442e06]
+/public/home/jxm/codex_tmp/pyz1_oracle_full_20260703_164229/oracle_ppa/_z1plus_install/Z1+.ex[0x402e1e]
+/lib64/libc.so.6(__libc_start_main+0xf5)[0x2b3554995555]
+/public/home/jxm/codex_tmp/pyz1_oracle_full_20260703_164229/oracle_ppa/_z1plus_install/Z1+.ex[0x402d29]
+======= Memory map: ========
+00400000-0053f000 r-xp 00000000 00:2d 56008633359                        /public/home/jxm/codex_tmp/pyz1_oracle_full_20260703_164229/oracle_ppa/_z1plus_install/Z1+.ex
+0073e000-0073f000 r--p 0013e000 00:2d 56008633359                        /public/home/jxm/codex_tmp/pyz1_oracle_full_20260703_164229/oracle_ppa/_z1plus_install/Z1+.ex
+0073f000-00749000 rw-p 0013f000 00:2d 56008633359                        /public/home/jxm/codex_tmp/pyz1_oracle_full_20260703_164229/oracle_ppa/_z1plus_install/Z1+.ex
+00749000-0079c000 rw-p 00000000 00:00 0 
+01395000-013df000 rw-p 00000000 00:00 0                                  [heap]
+2b3554231000-2b3554253000 r-xp 00000000 08:03 58986004                   /usr/lib64/ld-2.17.so
+2b3554253000-2b3554255000 rw-p 00000000 00:00 0 
+2b355428d000-2b35542ea000 rw-p 00000000 00:00 0 
+2b3554452000-2b3554453000 r--p 00021000 08:03 58986004                   /usr/lib64/ld-2.17.so
+2b3554453000-2b3554454000 rw-p 00022000 08:03 58986004                   /usr/lib64/ld-2.17.so
+2b3554454000-2b3554455000 rw-p 00000000 00:00 0 
+2b3554455000-2b3554556000 r-xp 00000000 08:03 58986019                   /usr/lib64/libm-2.17.so
+2b3554556000-2b3554755000 ---p 00101000 08:03 58986019                   /usr/lib64/libm-2.17.so
+2b3554755000-2b3554756000 r--p 00100000 08:03 58986019                   /usr/lib64/libm-2.17.so
+2b3554756000-2b3554757000 rw-p 00101000 08:03 58986019                   /usr/lib64/libm-2.17.so
+2b3554757000-2b355476e000 r-xp 00000000 08:03 58986037                   /usr/lib64/libpthread-2.17.so
+2b355476e000-2b355496d000 ---p 00017000 08:03 58986037                   /usr/lib64/libpthread-2.17.so
+2b355496d000-2b355496e000 r--p 00016000 08:03 58986037                   /usr/lib64/libpthread-2.17.so
+2b355496e000-2b355496f000 rw-p 00017000 08:03 58986037                   /usr/lib64/libpthread-2.17.so
+2b355496f000-2b3554973000 rw-p 00000000 00:00 0 
+2b3554973000-2b3554b37000 r-xp 00000000 08:03 58986011                   /usr/lib64/libc-2.17.so
+2b3554b37000-2b3554d36000 ---p 001c4000 08:03 58986011                   /usr/lib64/libc-2.17.so
+2b3554d36000-2b3554d3a000 r--p 001c3000 08:03 58986011                   /usr/lib64/libc-2.17.so
+2b3554d3a000-2b3554d3c000 rw-p 001c7000 08:03 58986011                   /usr/lib64/libc-2.17.so
+2b3554d3c000-2b3554d41000 rw-p 00000000 00:00 0 
+2b3554d41000-2b3554d56000 r-xp 00000000 08:03 58982419                   /usr/lib64/libgcc_s-4.8.5-20150702.so.1
+2b3554d56000-2b3554f55000 ---p 00015000 08:03 58982419                   /usr/lib64/libgcc_s-4.8.5-20150702.so.1
+2b3554f55000-2b3554f56000 r--p 00014000 08:03 58982419                   /usr/lib64/libgcc_s-4.8.5-20150702.so.1
+2b3554f56000-2b3554f57000 rw-p 00015000 08:03 58982419                   /usr/lib64/libgcc_s-4.8.5-20150702.so.1
+2b3554f57000-2b3554f59000 r-xp 00000000 08:03 58986017                   /usr/lib64/libdl-2.17.so
+2b3554f59000-2b3555159000 ---p 00002000 08:03 58986017                   /usr/lib64/libdl-2.17.so
+2b3555159000-2b355515a000 r--p 00002000 08:03 58986017                   /usr/lib64/libdl-2.17.so
+2b355515a000-2b355515b000 rw-p 00003000 08:03 58986017                   /usr/lib64/libdl-2.17.so
+2b3558000000-2b3558021000 rw-p 00000000 00:00 0 
+2b3558021000-2b355c000000 ---p 00000000 00:00 0 
+7fff9a74c000-7fff9a76d000 rw-p 00000000 00:00 0                          [stack]
+7fff9a791000-7fff9a793000 r-xp 00000000 00:00 0                          [vdso]
+ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsyscall]

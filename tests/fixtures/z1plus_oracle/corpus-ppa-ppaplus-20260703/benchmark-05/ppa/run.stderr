@@ -1,0 +1,90 @@
+perl: warning: Setting locale failed.
+perl: warning: Please check that your locale settings:
+	LANGUAGE = (unset),
+	LC_ALL = "C.UTF-8",
+	LC_CTYPE = "C.UTF-8",
+	LANG = "en_US.UTF-8"
+    are supported and installed on your system.
+perl: warning: Falling back to the standard locale ("C").
+      _____  ___          
+     /__  / /__ |    _    
+       / /    | |  _| |_      (c) 2022 mk@mat.ethz.ch
+      / /_    | | |_   _| 
+     /____/   |_|   |_|      This executable was licensed for CPC                                                                             
+                             renew your license in < 34909 days
+________________________________________________________________________________ about
+                                                                                
+(c) mk@mat.ethz.ch (Z1+) version 1 June 2022 http://www.complexfluids.ethz.ch
+Z1+ is online at http://www.complexfluids.ethz.ch/Z1+
+Consider mentioning these publications when making use of Z1+ results in your research:
+ [1] http://doi.org/10.1016/j.cpc.2005.01.020
+ [2] http://doi.org/10.1021/ma062457k
+ [3] http://doi.org/10.1103/PhysRevE.80.031803
+ [4] http://doi.org/10.3390/ijms10115054
+ [5] The Z1+ package: Shortest multiple disconnected path for
+     the analysis of entanglements in macromolecular systems,
+     Comput. Phys. Commun. (2022) in press.
+                                                                                
+*** Error in `/public/home/jxm/codex_tmp/pyz1_oracle_full_20260703_164229/oracle_ppa/_z1plus_install/Z1+.ex': free(): invalid next size (normal): 0x00000000011f7920 ***
+======= Backtrace: =========
+/lib64/libc.so.6(+0x81299)[0x2b3cfc9ee299]
+/lib64/libc.so.6(fclose+0x177)[0x2b3cfc9db1b7]
+/public/home/jxm/codex_tmp/pyz1_oracle_full_20260703_164229/oracle_ppa/_z1plus_install/Z1+.ex[0x4edc2c]
+/public/home/jxm/codex_tmp/pyz1_oracle_full_20260703_164229/oracle_ppa/_z1plus_install/Z1+.ex[0x4ed5b3]
+/public/home/jxm/codex_tmp/pyz1_oracle_full_20260703_164229/oracle_ppa/_z1plus_install/Z1+.ex[0x4ef2d2]
+/public/home/jxm/codex_tmp/pyz1_oracle_full_20260703_164229/oracle_ppa/_z1plus_install/Z1+.ex[0x4ed2b1]
+/public/home/jxm/codex_tmp/pyz1_oracle_full_20260703_164229/oracle_ppa/_z1plus_install/Z1+.ex[0x49ed74]
+/public/home/jxm/codex_tmp/pyz1_oracle_full_20260703_164229/oracle_ppa/_z1plus_install/Z1+.ex[0x49eb86]
+/public/home/jxm/codex_tmp/pyz1_oracle_full_20260703_164229/oracle_ppa/_z1plus_install/Z1+.ex[0x4466ec]
+/public/home/jxm/codex_tmp/pyz1_oracle_full_20260703_164229/oracle_ppa/_z1plus_install/Z1+.ex[0x44b3fd]
+/lib64/libpthread.so.0(+0xf630)[0x2b3cfc760630]
+/public/home/jxm/codex_tmp/pyz1_oracle_full_20260703_164229/oracle_ppa/_z1plus_install/Z1+.ex[0x43b376]
+/public/home/jxm/codex_tmp/pyz1_oracle_full_20260703_164229/oracle_ppa/_z1plus_install/Z1+.ex[0x437760]
+/public/home/jxm/codex_tmp/pyz1_oracle_full_20260703_164229/oracle_ppa/_z1plus_install/Z1+.ex[0x436ba1]
+/public/home/jxm/codex_tmp/pyz1_oracle_full_20260703_164229/oracle_ppa/_z1plus_install/Z1+.ex[0x442dc4]
+/public/home/jxm/codex_tmp/pyz1_oracle_full_20260703_164229/oracle_ppa/_z1plus_install/Z1+.ex[0x402e1e]
+/lib64/libc.so.6(__libc_start_main+0xf5)[0x2b3cfc98f555]
+/public/home/jxm/codex_tmp/pyz1_oracle_full_20260703_164229/oracle_ppa/_z1plus_install/Z1+.ex[0x402d29]
+======= Memory map: ========
+00400000-0053f000 r-xp 00000000 00:2d 56008633359                        /public/home/jxm/codex_tmp/pyz1_oracle_full_20260703_164229/oracle_ppa/_z1plus_install/Z1+.ex
+0073e000-0073f000 r--p 0013e000 00:2d 56008633359                        /public/home/jxm/codex_tmp/pyz1_oracle_full_20260703_164229/oracle_ppa/_z1plus_install/Z1+.ex
+0073f000-00749000 rw-p 0013f000 00:2d 56008633359                        /public/home/jxm/codex_tmp/pyz1_oracle_full_20260703_164229/oracle_ppa/_z1plus_install/Z1+.ex
+00749000-0079c000 rw-p 00000000 00:00 0 
+011c0000-01207000 rw-p 00000000 00:00 0                                  [heap]
+2b3cfc22b000-2b3cfc24d000 r-xp 00000000 08:03 58986004                   /usr/lib64/ld-2.17.so
+2b3cfc24d000-2b3cfc274000 rw-p 00000000 00:00 0 
+2b3cfc287000-2b3cfc28b000 rw-p 00000000 00:00 0 
+2b3cfc44c000-2b3cfc44d000 r--p 00021000 08:03 58986004                   /usr/lib64/ld-2.17.so
+2b3cfc44d000-2b3cfc44e000 rw-p 00022000 08:03 58986004                   /usr/lib64/ld-2.17.so
+2b3cfc44e000-2b3cfc44f000 rw-p 00000000 00:00 0 
+2b3cfc44f000-2b3cfc550000 r-xp 00000000 08:03 58986019                   /usr/lib64/libm-2.17.so
+2b3cfc550000-2b3cfc74f000 ---p 00101000 08:03 58986019                   /usr/lib64/libm-2.17.so
+2b3cfc74f000-2b3cfc750000 r--p 00100000 08:03 58986019                   /usr/lib64/libm-2.17.so
+2b3cfc750000-2b3cfc751000 rw-p 00101000 08:03 58986019                   /usr/lib64/libm-2.17.so
+2b3cfc751000-2b3cfc768000 r-xp 00000000 08:03 58986037                   /usr/lib64/libpthread-2.17.so
+2b3cfc768000-2b3cfc967000 ---p 00017000 08:03 58986037                   /usr/lib64/libpthread-2.17.so
+2b3cfc967000-2b3cfc968000 r--p 00016000 08:03 58986037                   /usr/lib64/libpthread-2.17.so
+2b3cfc968000-2b3cfc969000 rw-p 00017000 08:03 58986037                   /usr/lib64/libpthread-2.17.so
+2b3cfc969000-2b3cfc96d000 rw-p 00000000 00:00 0 
+2b3cfc96d000-2b3cfcb31000 r-xp 00000000 08:03 58986011                   /usr/lib64/libc-2.17.so
+2b3cfcb31000-2b3cfcd30000 ---p 001c4000 08:03 58986011                   /usr/lib64/libc-2.17.so
+2b3cfcd30000-2b3cfcd34000 r--p 001c3000 08:03 58986011                   /usr/lib64/libc-2.17.so
+2b3cfcd34000-2b3cfcd36000 rw-p 001c7000 08:03 58986011                   /usr/lib64/libc-2.17.so
+2b3cfcd36000-2b3cfcd3b000 rw-p 00000000 00:00 0 
+2b3cfcd3b000-2b3cfcd50000 r-xp 00000000 08:03 58982419                   /usr/lib64/libgcc_s-4.8.5-20150702.so.1
+2b3cfcd50000-2b3cfcf4f000 ---p 00015000 08:03 58982419                   /usr/lib64/libgcc_s-4.8.5-20150702.so.1
+2b3cfcf4f000-2b3cfcf50000 r--p 00014000 08:03 58982419                   /usr/lib64/libgcc_s-4.8.5-20150702.so.1
+2b3cfcf50000-2b3cfcf51000 rw-p 00015000 08:03 58982419                   /usr/lib64/libgcc_s-4.8.5-20150702.so.1
+2b3cfcf51000-2b3cfcf53000 r-xp 00000000 08:03 58986017                   /usr/lib64/libdl-2.17.so
+2b3cfcf53000-2b3cfd153000 ---p 00002000 08:03 58986017                   /usr/lib64/libdl-2.17.so
+2b3cfd153000-2b3cfd154000 r--p 00002000 08:03 58986017                   /usr/lib64/libdl-2.17.so
+2b3cfd154000-2b3cfd155000 rw-p 00003000 08:03 58986017                   /usr/lib64/libdl-2.17.so
+2b3d00000000-2b3d00021000 rw-p 00000000 00:00 0 
+2b3d00021000-2b3d04000000 ---p 00000000 00:00 0 
+7ffd1682e000-7ffd1684f000 rw-p 00000000 00:00 0                          [stack]
+7ffd168cd000-7ffd168cf000 r-xp 00000000 00:00 0                          [vdso]
+ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsyscall]
+forrtl: severe (174): SIGSEGV, segmentation fault occurred
+Image              PC                Routine            Line        Source             
+
+Stack trace terminated abnormally.

@@ -1,0 +1,515 @@
+{
+  "generator": "pyz1.oracle",
+  "platform_name": "Linux",
+  "runs": [
+    {
+      "arguments": [
+        "-PPA"
+      ],
+      "benchmark": ".benchmark-01.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "135962f646096a000cd80c92ce8d44d6da6b9bf3bac2d98c41a929fbaf0dc7ab",
+      "mode": "ppa",
+      "output_sha256": {
+        "path": "45e8a753ac3e4b709816014c894e8c1bebd7b018b136a062d0f568d069f9a4ca",
+        "summary": "d441141e2709ba68b695f4a00c27440975ae5ce9ce1cc445f88c1f445b09e54b"
+      },
+      "outputs": {
+        "path": "benchmark-01/ppa/PPA.dat",
+        "summary": "benchmark-01/ppa/PPA-summary.dat"
+      },
+      "stderr_path": "benchmark-01/ppa/run.stderr",
+      "stdout_path": "benchmark-01/ppa/run.stdout",
+      "summary_rows": 1,
+      "work_dir": "benchmark-01/ppa"
+    },
+    {
+      "arguments": [
+        "-PPA+"
+      ],
+      "benchmark": ".benchmark-01.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "135962f646096a000cd80c92ce8d44d6da6b9bf3bac2d98c41a929fbaf0dc7ab",
+      "mode": "ppaplus",
+      "output_sha256": {
+        "path": "51fa896847bac85298bb63d4fe1dc1592d329e879d58dd046384b71ae6cf2e6e",
+        "summary": "b23aa5d79b950b326d18a9b1798aeaf2f160e2c8ab4252f618175f15808dc26b"
+      },
+      "outputs": {
+        "path": "benchmark-01/ppaplus/PPA+.dat",
+        "summary": "benchmark-01/ppaplus/PPA+summary.dat"
+      },
+      "stderr_path": "benchmark-01/ppaplus/run.stderr",
+      "stdout_path": "benchmark-01/ppaplus/run.stdout",
+      "summary_rows": 1,
+      "work_dir": "benchmark-01/ppaplus"
+    },
+    {
+      "arguments": [
+        "-PPA"
+      ],
+      "benchmark": ".benchmark-02.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "7f6575c6f07ec14fa0e5de3cd90465160a4cde0739bbc0cbfe4fa9319543f353",
+      "mode": "ppa",
+      "output_sha256": {},
+      "outputs": {},
+      "stderr_path": "benchmark-02/ppa/run.stderr",
+      "stdout_path": "benchmark-02/ppa/run.stdout",
+      "summary_rows": 0,
+      "work_dir": "benchmark-02/ppa"
+    },
+    {
+      "arguments": [
+        "-PPA+"
+      ],
+      "benchmark": ".benchmark-02.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "7f6575c6f07ec14fa0e5de3cd90465160a4cde0739bbc0cbfe4fa9319543f353",
+      "mode": "ppaplus",
+      "output_sha256": {},
+      "outputs": {},
+      "stderr_path": "benchmark-02/ppaplus/run.stderr",
+      "stdout_path": "benchmark-02/ppaplus/run.stdout",
+      "summary_rows": 0,
+      "work_dir": "benchmark-02/ppaplus"
+    },
+    {
+      "arguments": [
+        "-PPA"
+      ],
+      "benchmark": ".benchmark-03.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "d1b91bccf4adecbad46e7db5d21e74eadb62ca7c94a73d2d4ec70a2405e62a16",
+      "mode": "ppa",
+      "output_sha256": {},
+      "outputs": {},
+      "stderr_path": "benchmark-03/ppa/run.stderr",
+      "stdout_path": "benchmark-03/ppa/run.stdout",
+      "summary_rows": 0,
+      "work_dir": "benchmark-03/ppa"
+    },
+    {
+      "arguments": [
+        "-PPA+"
+      ],
+      "benchmark": ".benchmark-03.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "d1b91bccf4adecbad46e7db5d21e74eadb62ca7c94a73d2d4ec70a2405e62a16",
+      "mode": "ppaplus",
+      "output_sha256": {},
+      "outputs": {},
+      "stderr_path": "benchmark-03/ppaplus/run.stderr",
+      "stdout_path": "benchmark-03/ppaplus/run.stdout",
+      "summary_rows": 0,
+      "work_dir": "benchmark-03/ppaplus"
+    },
+    {
+      "arguments": [
+        "-PPA"
+      ],
+      "benchmark": ".benchmark-04.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "c4a2bfe6f11a47b4345005e91700c8b2778ae70c97544cc4a99c9d674c522e06",
+      "mode": "ppa",
+      "output_sha256": {
+        "path": "99cef9a440ad63a52c5f04e29268daca44a49a0dc67bd3e1159886e308ad4ca4",
+        "summary": "816f39934e8257c0b057b4448e8d34cb0983bfc820e1c34c50ad96aa03bfccfc"
+      },
+      "outputs": {
+        "path": "benchmark-04/ppa/PPA.dat",
+        "summary": "benchmark-04/ppa/PPA-summary.dat"
+      },
+      "stderr_path": "benchmark-04/ppa/run.stderr",
+      "stdout_path": "benchmark-04/ppa/run.stdout",
+      "summary_rows": 1,
+      "work_dir": "benchmark-04/ppa"
+    },
+    {
+      "arguments": [
+        "-PPA+"
+      ],
+      "benchmark": ".benchmark-04.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "c4a2bfe6f11a47b4345005e91700c8b2778ae70c97544cc4a99c9d674c522e06",
+      "mode": "ppaplus",
+      "output_sha256": {
+        "path": "ea414b6421671cbb2cdacd83e74713850bf0a0d13083b031c2011e5b8036d959",
+        "summary": "28507723fac2b9c7410a05101d31f41a98184a7f7e37b060ac035d85ebe3ac59"
+      },
+      "outputs": {
+        "path": "benchmark-04/ppaplus/PPA+.dat",
+        "summary": "benchmark-04/ppaplus/PPA+summary.dat"
+      },
+      "stderr_path": "benchmark-04/ppaplus/run.stderr",
+      "stdout_path": "benchmark-04/ppaplus/run.stdout",
+      "summary_rows": 1,
+      "work_dir": "benchmark-04/ppaplus"
+    },
+    {
+      "arguments": [
+        "-PPA"
+      ],
+      "benchmark": ".benchmark-05.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "b8a74b63d4cf8196cd5d71090f048e43ac2b26ba01853774a33ecbeaedd32889",
+      "mode": "ppa",
+      "output_sha256": {},
+      "outputs": {},
+      "stderr_path": "benchmark-05/ppa/run.stderr",
+      "stdout_path": "benchmark-05/ppa/run.stdout",
+      "summary_rows": 0,
+      "work_dir": "benchmark-05/ppa"
+    },
+    {
+      "arguments": [
+        "-PPA+"
+      ],
+      "benchmark": ".benchmark-05.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "b8a74b63d4cf8196cd5d71090f048e43ac2b26ba01853774a33ecbeaedd32889",
+      "mode": "ppaplus",
+      "output_sha256": {
+        "path": "71c13f3522b149cc43da85e180563d34a28fed306f718e53c47780eff883aa94",
+        "summary": "2643e2dcca4bd601b6a56ea97d0efc59a38d86eaa7c4688a9df17e64010bd4cd"
+      },
+      "outputs": {
+        "path": "benchmark-05/ppaplus/PPA+.dat",
+        "summary": "benchmark-05/ppaplus/PPA+summary.dat"
+      },
+      "stderr_path": "benchmark-05/ppaplus/run.stderr",
+      "stdout_path": "benchmark-05/ppaplus/run.stdout",
+      "summary_rows": 0,
+      "work_dir": "benchmark-05/ppaplus"
+    },
+    {
+      "arguments": [
+        "-PPA"
+      ],
+      "benchmark": ".benchmark-06.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "a11d3dd1bf4b783f128c6d608a61b009e7df69b137abdc02fddf0fe028e1a1b3",
+      "mode": "ppa",
+      "output_sha256": {},
+      "outputs": {},
+      "stderr_path": "benchmark-06/ppa/run.stderr",
+      "stdout_path": "benchmark-06/ppa/run.stdout",
+      "summary_rows": 0,
+      "work_dir": "benchmark-06/ppa"
+    },
+    {
+      "arguments": [
+        "-PPA+"
+      ],
+      "benchmark": ".benchmark-06.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "a11d3dd1bf4b783f128c6d608a61b009e7df69b137abdc02fddf0fe028e1a1b3",
+      "mode": "ppaplus",
+      "output_sha256": {},
+      "outputs": {},
+      "stderr_path": "benchmark-06/ppaplus/run.stderr",
+      "stdout_path": "benchmark-06/ppaplus/run.stdout",
+      "summary_rows": 0,
+      "work_dir": "benchmark-06/ppaplus"
+    },
+    {
+      "arguments": [
+        "-PPA"
+      ],
+      "benchmark": ".benchmark-07.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 124,
+      "input_sha256": "fb47a3b0638a59c222b2c367b78e7d7cb6b9871212e5c16bd06a3217d8937466",
+      "mode": "ppa",
+      "output_sha256": {},
+      "outputs": {},
+      "stderr_path": "benchmark-07/ppa/run.stderr",
+      "stdout_path": "benchmark-07/ppa/run.stdout",
+      "summary_rows": 0,
+      "work_dir": "benchmark-07/ppa"
+    },
+    {
+      "arguments": [
+        "-PPA+"
+      ],
+      "benchmark": ".benchmark-07.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "fb47a3b0638a59c222b2c367b78e7d7cb6b9871212e5c16bd06a3217d8937466",
+      "mode": "ppaplus",
+      "output_sha256": {
+        "path": "749617765d4bbfd773a7a4f809f7b5d0bb399321559f7663296e9385ec1af5c4",
+        "summary": "4dfa0ed89ed70f7aaca564195c485bfb962f4e0f30cfc54cc3055d9503cdf129"
+      },
+      "outputs": {
+        "path": "benchmark-07/ppaplus/PPA+.dat",
+        "summary": "benchmark-07/ppaplus/PPA+summary.dat"
+      },
+      "stderr_path": "benchmark-07/ppaplus/run.stderr",
+      "stdout_path": "benchmark-07/ppaplus/run.stdout",
+      "summary_rows": 1,
+      "work_dir": "benchmark-07/ppaplus"
+    },
+    {
+      "arguments": [
+        "-PPA"
+      ],
+      "benchmark": ".benchmark-08.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "8beb0eea80839b4f2c9c14c649c30c7babb35a84fecb1294c737e3edb9ee2314",
+      "mode": "ppa",
+      "output_sha256": {},
+      "outputs": {},
+      "stderr_path": "benchmark-08/ppa/run.stderr",
+      "stdout_path": "benchmark-08/ppa/run.stdout",
+      "summary_rows": 0,
+      "work_dir": "benchmark-08/ppa"
+    },
+    {
+      "arguments": [
+        "-PPA+"
+      ],
+      "benchmark": ".benchmark-08.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "8beb0eea80839b4f2c9c14c649c30c7babb35a84fecb1294c737e3edb9ee2314",
+      "mode": "ppaplus",
+      "output_sha256": {},
+      "outputs": {},
+      "stderr_path": "benchmark-08/ppaplus/run.stderr",
+      "stdout_path": "benchmark-08/ppaplus/run.stdout",
+      "summary_rows": 0,
+      "work_dir": "benchmark-08/ppaplus"
+    },
+    {
+      "arguments": [
+        "-PPA"
+      ],
+      "benchmark": ".benchmark-09.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "972cb13323575055293726431e6e398cfdf21dfec36845952e3d41b3ab1514a3",
+      "mode": "ppa",
+      "output_sha256": {},
+      "outputs": {},
+      "stderr_path": "benchmark-09/ppa/run.stderr",
+      "stdout_path": "benchmark-09/ppa/run.stdout",
+      "summary_rows": 0,
+      "work_dir": "benchmark-09/ppa"
+    },
+    {
+      "arguments": [
+        "-PPA+"
+      ],
+      "benchmark": ".benchmark-09.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "972cb13323575055293726431e6e398cfdf21dfec36845952e3d41b3ab1514a3",
+      "mode": "ppaplus",
+      "output_sha256": {},
+      "outputs": {},
+      "stderr_path": "benchmark-09/ppaplus/run.stderr",
+      "stdout_path": "benchmark-09/ppaplus/run.stdout",
+      "summary_rows": 0,
+      "work_dir": "benchmark-09/ppaplus"
+    },
+    {
+      "arguments": [
+        "-PPA"
+      ],
+      "benchmark": ".benchmark-10.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 124,
+      "input_sha256": "d05215b11477c3f9dea5a0e40a9902dde48344571cd3b785cabf2a5583b50876",
+      "mode": "ppa",
+      "output_sha256": {},
+      "outputs": {},
+      "stderr_path": "benchmark-10/ppa/run.stderr",
+      "stdout_path": "benchmark-10/ppa/run.stdout",
+      "summary_rows": 0,
+      "work_dir": "benchmark-10/ppa"
+    },
+    {
+      "arguments": [
+        "-PPA+"
+      ],
+      "benchmark": ".benchmark-10.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "d05215b11477c3f9dea5a0e40a9902dde48344571cd3b785cabf2a5583b50876",
+      "mode": "ppaplus",
+      "output_sha256": {
+        "path": "1fd2b6615ac07762b2f0fea3f86a5b1db8362ac6efcef0f4932534a8c4b07f7a",
+        "summary": "dac5115b3234eff25231ddfd41c0cf56549f39bb6259ea8ee4923bd886dd10d3"
+      },
+      "outputs": {
+        "path": "benchmark-10/ppaplus/PPA+.dat",
+        "summary": "benchmark-10/ppaplus/PPA+summary.dat"
+      },
+      "stderr_path": "benchmark-10/ppaplus/run.stderr",
+      "stdout_path": "benchmark-10/ppaplus/run.stdout",
+      "summary_rows": 1,
+      "work_dir": "benchmark-10/ppaplus"
+    },
+    {
+      "arguments": [
+        "-PPA"
+      ],
+      "benchmark": ".benchmark-11.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 124,
+      "input_sha256": "fdded28439e49cc016fade5e820cf9cf5b84545c24872407acef018ac54121f5",
+      "mode": "ppa",
+      "output_sha256": {},
+      "outputs": {},
+      "stderr_path": "benchmark-11/ppa/run.stderr",
+      "stdout_path": "benchmark-11/ppa/run.stdout",
+      "summary_rows": 0,
+      "work_dir": "benchmark-11/ppa"
+    },
+    {
+      "arguments": [
+        "-PPA+"
+      ],
+      "benchmark": ".benchmark-11.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "fdded28439e49cc016fade5e820cf9cf5b84545c24872407acef018ac54121f5",
+      "mode": "ppaplus",
+      "output_sha256": {
+        "path": "6ded690779795b8ad26edd936009556afc95b8fca502c8c4512cb9a868a75a8b",
+        "summary": "0fbd8feb3c0fbfb145458539bb3990de82f7a32b7f425ce9e83799583b4486b5"
+      },
+      "outputs": {
+        "path": "benchmark-11/ppaplus/PPA+.dat",
+        "summary": "benchmark-11/ppaplus/PPA+summary.dat"
+      },
+      "stderr_path": "benchmark-11/ppaplus/run.stderr",
+      "stdout_path": "benchmark-11/ppaplus/run.stdout",
+      "summary_rows": 1,
+      "work_dir": "benchmark-11/ppaplus"
+    },
+    {
+      "arguments": [
+        "-PPA"
+      ],
+      "benchmark": ".benchmark-12.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "6aadd357aac297571378c97f11fec6bec6fd055c78ef854545dc2705b2271021",
+      "mode": "ppa",
+      "output_sha256": {
+        "path": "9510c7ff0a364dee6800de891ece9bc1c56d5661e24985145490f85cfff44645",
+        "summary": "321e822f59a564d907fabb9b36253b8f90a450f7ea42eb0cf81ab8bcd73886c5"
+      },
+      "outputs": {
+        "path": "benchmark-12/ppa/PPA.dat",
+        "summary": "benchmark-12/ppa/PPA-summary.dat"
+      },
+      "stderr_path": "benchmark-12/ppa/run.stderr",
+      "stdout_path": "benchmark-12/ppa/run.stdout",
+      "summary_rows": 1,
+      "work_dir": "benchmark-12/ppa"
+    },
+    {
+      "arguments": [
+        "-PPA+"
+      ],
+      "benchmark": ".benchmark-12.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "6aadd357aac297571378c97f11fec6bec6fd055c78ef854545dc2705b2271021",
+      "mode": "ppaplus",
+      "output_sha256": {
+        "path": "ea461d8a05ba9676629583ea49c496c2714ff6a1deecb1d2dd9f9079edaf0296",
+        "summary": "2a3118e3dd189832177d70e054c3709edf6ccf3cc1bb078b948f16f9b8f2ac8b"
+      },
+      "outputs": {
+        "path": "benchmark-12/ppaplus/PPA+.dat",
+        "summary": "benchmark-12/ppaplus/PPA+summary.dat"
+      },
+      "stderr_path": "benchmark-12/ppaplus/run.stderr",
+      "stdout_path": "benchmark-12/ppaplus/run.stdout",
+      "summary_rows": 1,
+      "work_dir": "benchmark-12/ppaplus"
+    },
+    {
+      "arguments": [
+        "-PPA"
+      ],
+      "benchmark": ".benchmark-13.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "158db4a796b6fa9717338f7947fbc385d3b6edc39c1667f2f72b65ae32495f39",
+      "mode": "ppa",
+      "output_sha256": {},
+      "outputs": {},
+      "stderr_path": "benchmark-13/ppa/run.stderr",
+      "stdout_path": "benchmark-13/ppa/run.stdout",
+      "summary_rows": 0,
+      "work_dir": "benchmark-13/ppa"
+    },
+    {
+      "arguments": [
+        "-PPA+"
+      ],
+      "benchmark": ".benchmark-13.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "158db4a796b6fa9717338f7947fbc385d3b6edc39c1667f2f72b65ae32495f39",
+      "mode": "ppaplus",
+      "output_sha256": {},
+      "outputs": {},
+      "stderr_path": "benchmark-13/ppaplus/run.stderr",
+      "stdout_path": "benchmark-13/ppaplus/run.stdout",
+      "summary_rows": 0,
+      "work_dir": "benchmark-13/ppaplus"
+    },
+    {
+      "arguments": [
+        "-PPA"
+      ],
+      "benchmark": ".benchmark-14.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "1f7fdee5eb2f06ab4beaa5beaaf328e8b1a1494ad04a871cd5f4e5a711b70e00",
+      "mode": "ppa",
+      "output_sha256": {},
+      "outputs": {},
+      "stderr_path": "benchmark-14/ppa/run.stderr",
+      "stdout_path": "benchmark-14/ppa/run.stdout",
+      "summary_rows": 0,
+      "work_dir": "benchmark-14/ppa"
+    },
+    {
+      "arguments": [
+        "-PPA+"
+      ],
+      "benchmark": ".benchmark-14.Z1",
+      "binary_sha256": "e6f0d3f29ca91f7e147cd94f8507b6108535c70e10d3380deff4dda6c8659020",
+      "exit_code": 0,
+      "input_sha256": "1f7fdee5eb2f06ab4beaa5beaaf328e8b1a1494ad04a871cd5f4e5a711b70e00",
+      "mode": "ppaplus",
+      "output_sha256": {},
+      "outputs": {},
+      "stderr_path": "benchmark-14/ppaplus/run.stderr",
+      "stdout_path": "benchmark-14/ppaplus/run.stdout",
+      "summary_rows": 0,
+      "work_dir": "benchmark-14/ppaplus"
+    }
+  ],
+  "schema_version": 1
+}

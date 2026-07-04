@@ -1,0 +1,28 @@
+5:reconstructed from papers and oracle fixtures, and what parity evidence is
+13:PPA/PPA+ Fortran modules. It does not include the full default geometrical Z1+
+19:- The private distribution includes `module-functions.f90` and `module-Z1.f90`.
+22:- `Z1+.ex` may be used only as an oracle fixture generator on Linux.
+65:10. classical kink estimator `NeCK`
+86:extra `chain node` pair appears in SP+ mode and identifies the other node
+96:- `PPA.dat`
+97:- `PPA+.dat`
+98:- `PPA-summary.dat`
+99:- `PPA+summary.dat`
+118:- `NeCK`
+127:## PPA And PPA+ Contract
+129:The visible `module-CPPA.f90` and `module-PPA.f90` are source-available and may
+130:be ported directly to Python with tests against oracle fixtures. The port must
+139:- `PPA.dat`, `PPA+.dat`, `PPA-summary.dat`, and `PPA+summary.dat` output
+141:PPA/PPA+ parity is numeric and must use documented tolerances. The tolerances
+146:The default Z1+ reducer is not source-available. Its Python implementation must
+147:be clean-room from the papers, visible I/O contracts, and oracle behavior.
+157:- SP+ pairing for entanglement nodes
+160:show measured agreement for `Lpp`, `Z`, shortest-path structure, and SP+ pairing
+168:The wrapper behavior is part of the oracle contract:
+176:Each oracle fixture run must record:
+188:The current first oracle slice is `benchmark-04` in default and SP+ modes. Its
+190:`.omo/evidence/pyz1-benchmark-04-oracle-and-parity.md`.
+201:- Z1+ SP+ pairing parser
+203:- `benchmark-04` basic/SP+ oracle fixture parity
+209:- all-14 benchmark oracle manifest
+211:- PPA/PPA+ Python port
