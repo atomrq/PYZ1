@@ -205,6 +205,36 @@ def test_reduce_snapshot_when_benchmark_04_matches_oracle_kink_structure() -> No
     assert result.summary.z_values == (1, 0, 0, 0, 0)
 
 
+def test_reduce_snapshot_when_benchmark_04_matches_oracle_kink_source() -> None:
+    snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-04.Z1")
+    oracle = read_shortest_path_file(
+        Path("tests/fixtures/z1plus_oracle/benchmark-04/spplus/Z1+SP.dat"),
+    )
+
+    result = reduce_snapshot(snapshot, ReducerSettings(pairing_enabled=True))
+
+    actual_kink = result.shortest_path.chains[0].nodes[1]
+    oracle_kink = oracle.chains[0].nodes[1]
+    assert isclose(
+        actual_kink.source_bead,
+        oracle_kink.source_bead,
+        abs_tol=FLOAT_TOLERANCE,
+    )
+
+
+def test_reduce_snapshot_when_benchmark_04_matches_oracle_pairing() -> None:
+    snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-04.Z1")
+    oracle = read_shortest_path_file(
+        Path("tests/fixtures/z1plus_oracle/benchmark-04/spplus/Z1+SP.dat"),
+    )
+
+    result = reduce_snapshot(snapshot, ReducerSettings(pairing_enabled=True))
+
+    actual_kink = result.shortest_path.chains[0].nodes[1]
+    oracle_kink = oracle.chains[0].nodes[1]
+    assert actual_kink.pair == oracle_kink.pair
+
+
 def assert_vector_close(actual: Vector3, expected: Vector3) -> None:
     assert isclose(actual.x, expected.x, abs_tol=FLOAT_TOLERANCE)
     assert isclose(actual.y, expected.y, abs_tol=FLOAT_TOLERANCE)

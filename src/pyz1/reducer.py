@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from math import sqrt
 from typing import TYPE_CHECKING
 
 from pyz1.geometry import (
@@ -43,6 +42,12 @@ class ReducerResult:
     summary: SummaryOutputs
 
 
+@dataclass(frozen=True, slots=True)
+class _PreservedChains:
+    chains: tuple[Chain, ...]
+    source_beads: tuple[tuple[float, ...], ...]
+
+
 def reduce_snapshot(
     snapshot: Snapshot,
     settings: ReducerSettings | None = None,
@@ -51,11 +56,9 @@ def reduce_snapshot(
     box = GeometryBox(lengths=snapshot.box, shear=snapshot.shear or 0.0)
     chains = tuple(unfold_chain(chain, box) for chain in snapshot.true_chains)
     reduced_chains = _reduce_chains(chains, active_settings)
-    reduced_chains = _preserve_close_contacts(chains, reduced_chains, active_settings)
-    source_beads = tuple(
-        _source_beads_for_chain(original_chain, reduced_chain)
-        for original_chain, reduced_chain in zip(chains, reduced_chains, strict=True)
-    )
+    preserved = _preserve_close_contacts(chains, reduced_chains, active_settings)
+    reduced_chains = preserved.chains
+    source_beads = preserved.source_beads
     pairings = (
         _build_pairings(reduced_chains) if active_settings.pairing_enabled else ()
     )
@@ -205,12 +208,32 @@ class _ContactCandidate:
     distance: float
 
 
+@dataclass(frozen=True, slots=True)
+class _TraceNode:
+    position: Vector3
+    source_bead: float
+
+
+@dataclass(frozen=True, slots=True)
+class _PreservedKinkCandidate:
+    position: Vector3
+    source_bead: float
+
+
 def _preserve_close_contacts(
     original_chains: tuple[Chain, ...],
     reduced_chains: tuple[Chain, ...],
     settings: ReducerSettings,
-) -> tuple[Chain, ...]:
+) -> _PreservedChains:
     preserved_nodes = list(reduced_chains)
+    source_beads = [
+        list(_source_beads_for_chain(original_chain, reduced_chain))
+        for original_chain, reduced_chain in zip(
+            original_chains,
+            reduced_chains,
+            strict=True,
+        )
+    ]
     for chain_index, chain in enumerate(original_chains):
         if preserved_nodes[chain_index].node_count > MIN_CHAIN_NODE_COUNT:
             continue
@@ -221,12 +244,22 @@ def _preserve_close_contacts(
         )
         if contact is None:
             continue
-        preserved_nodes[chain_index] = _insert_contact_node(
+        preserved = _blocked_kink_candidate(original_chains, chain_index)
+        if preserved is None:
+            preserved = _contact_kink_candidate(chain, contact)
+        preserved_nodes[chain_index] = _insert_preserved_node(
             reduced_chains[chain_index],
-            chain,
-            contact,
+            preserved.position,
         )
-    return tuple(preserved_nodes)
+        source_beads[chain_index] = [
+            source_beads[chain_index][0],
+            preserved.source_bead,
+            source_beads[chain_index][-1],
+        ]
+    return _PreservedChains(
+        chains=tuple(preserved_nodes),
+        source_beads=tuple(tuple(chain_sources) for chain_sources in source_beads),
+    )
 
 
 def _closest_lower_index_contact(
@@ -252,16 +285,78 @@ def _closest_lower_index_contact(
     return best_contact
 
 
-def _insert_contact_node(
-    reduced_chain: Chain,
+def _blocked_kink_candidate(
+    chains: tuple[Chain, ...],
+    chain_index: int,
+) -> _PreservedKinkCandidate | None:
+    blockers = _blocking_segments(chains, chain_index)
+    current = tuple(
+        _TraceNode(position=node, source_bead=float(index + 1))
+        for index, node in enumerate(chains[chain_index].nodes)
+    )
+    preserved: _PreservedKinkCandidate | None = None
+    node_index = 1
+    while node_index < len(current) - 1:
+        shortcut = Segment(
+            start=current[node_index - 1].position,
+            end=current[node_index + 1].position,
+        )
+        swept_triangle = (
+            current[node_index - 1].position,
+            current[node_index].position,
+            current[node_index + 1].position,
+        )
+        if _shortcut_is_clear(shortcut, swept_triangle, MoveContext(blockers)):
+            current = (*current[:node_index], *current[node_index + 1 :])
+            node_index = max(1, node_index - 1)
+            continue
+        candidate = _candidate_trace_node(current, node_index)
+        evaluation = evaluate_node_move(
+            Chain(tuple(node.position for node in current)),
+            NodeMove(node_index=node_index, position=candidate.position),
+            MoveContext(blockers),
+        )
+        if evaluation.accepted:
+            preserved = _PreservedKinkCandidate(
+                position=candidate.position,
+                source_bead=candidate.source_bead,
+            )
+            current = (*current[:node_index], candidate, *current[node_index + 1 :])
+        node_index += 1
+    return preserved
+
+
+def _candidate_trace_node(
+    nodes: tuple[_TraceNode, ...],
+    node_index: int,
+) -> _TraceNode:
+    previous_node = nodes[node_index - 1]
+    active_node = nodes[node_index]
+    next_node = nodes[node_index + 1]
+    return _TraceNode(
+        position=_midpoint(Segment(previous_node.position, next_node.position)),
+        source_bead=(active_node.source_bead + next_node.source_bead) * 0.5,
+    )
+
+
+def _contact_kink_candidate(
     original_chain: Chain,
     contact: _ContactCandidate,
-) -> Chain:
+) -> _PreservedKinkCandidate:
     segment = Segment(
         start=original_chain.nodes[contact.segment_index],
         end=original_chain.nodes[contact.segment_index + 1],
     )
-    node = _midpoint(segment)
+    return _PreservedKinkCandidate(
+        position=_midpoint(segment),
+        source_bead=contact.segment_index + 1.5,
+    )
+
+
+def _insert_preserved_node(
+    reduced_chain: Chain,
+    node: Vector3,
+) -> Chain:
     return Chain((reduced_chain.nodes[0], node, reduced_chain.nodes[-1]))
 
 
@@ -274,27 +369,29 @@ def _midpoint(segment: Segment) -> Vector3:
 
 
 @dataclass(frozen=True, slots=True)
-class _IndexedNode:
+class _IndexedSegment:
     chain_index: int
     node_index: int
-    position: Vector3
+    segment: Segment
 
 
 def _build_pairings(
     chains: tuple[Chain, ...],
 ) -> tuple[tuple[ShortestPathPair | None, ...], ...]:
-    indexed_nodes = tuple(
-        _IndexedNode(
+    indexed_segments = tuple(
+        _IndexedSegment(
             chain_index=chain_index,
-            node_index=node_index,
-            position=node,
+            node_index=node_index + 1,
+            segment=Segment(start=first, end=second),
         )
         for chain_index, chain in enumerate(chains, start=1)
-        for node_index, node in enumerate(chain.nodes, start=1)
+        for node_index, (first, second) in enumerate(
+            zip(chain.nodes[:-1], chain.nodes[1:], strict=True),
+        )
     )
     return tuple(
         tuple(
-            _pair_for_node(chain_index, node_index, node, indexed_nodes, chain)
+            _pair_for_node(chain_index, node_index, node, indexed_segments, chain)
             for node_index, node in enumerate(chain.nodes)
         )
         for chain_index, chain in enumerate(chains, start=1)
@@ -305,18 +402,21 @@ def _pair_for_node(
     chain_index: int,
     node_index: int,
     node: Vector3,
-    indexed_nodes: tuple[_IndexedNode, ...],
+    indexed_segments: tuple[_IndexedSegment, ...],
     chain: Chain,
 ) -> ShortestPathPair | None:
     if node_index == 0 or node_index == chain.node_count - 1:
         return None
     nearest = min(
         (
-            indexed_node
-            for indexed_node in indexed_nodes
-            if indexed_node.chain_index != chain_index
+            indexed_segment
+            for indexed_segment in indexed_segments
+            if indexed_segment.chain_index != chain_index
         ),
-        key=lambda indexed_node: _distance(node, indexed_node.position),
+        key=lambda indexed_segment: segment_distance(
+            Segment(start=node, end=node),
+            indexed_segment.segment,
+        ),
         default=None,
     )
     if nearest is None:
@@ -366,10 +466,3 @@ def _source_bead_for_position(original_chain: Chain, node: Vector3) -> float:
         best_distance = closest.distance
         best_source_bead = segment_index + 1.0 + closest.second_fraction
     return best_source_bead
-
-
-def _distance(first: Vector3, second: Vector3) -> float:
-    dx = first.x - second.x
-    dy = first.y - second.y
-    dz = first.z - second.z
-    return sqrt(dx * dx + dy * dy + dz * dz)
