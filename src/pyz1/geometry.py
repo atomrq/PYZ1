@@ -66,6 +66,15 @@ class CleanedPath:
 
 
 @dataclass(frozen=True, slots=True)
+class ClosestSegmentPoints:
+    first_fraction: float
+    second_fraction: float
+    first_point: Vector3
+    second_point: Vector3
+    distance: float
+
+
+@dataclass(frozen=True, slots=True)
 class _SegmentParameters:
     first_fraction: float
     second_fraction: float
@@ -90,11 +99,21 @@ def chain_contour(chain: Chain) -> float:
     return sum(_distance(first, second) for first, second in pairwise(chain.nodes))
 
 
-def segment_distance(first: Segment, second: Segment) -> float:
+def closest_segment_points(first: Segment, second: Segment) -> ClosestSegmentPoints:
     parameters = _closest_segment_parameters(first, second, GEOMETRY_TOLERANCE)
     first_point = _lerp(first, parameters.first_fraction)
     second_point = _lerp(second, parameters.second_fraction)
-    return _distance(first_point, second_point)
+    return ClosestSegmentPoints(
+        first_fraction=parameters.first_fraction,
+        second_fraction=parameters.second_fraction,
+        first_point=first_point,
+        second_point=second_point,
+        distance=_distance(first_point, second_point),
+    )
+
+
+def segment_distance(first: Segment, second: Segment) -> float:
+    return closest_segment_points(first, second).distance
 
 
 def segments_cross_xy(first: Segment, second: Segment) -> bool:

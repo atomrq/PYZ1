@@ -10,6 +10,7 @@ from pyz1.geometry import (
     Segment,
     chain_contour,
     clean_collinear_kinks,
+    closest_segment_points,
     evaluate_node_move,
     minimum_image_delta,
     segment_distance,
@@ -57,6 +58,19 @@ def test_segment_distance_when_skew_segments_have_positive_gap() -> None:
     distance = segment_distance(first, second)
 
     assert isclose(distance, 1.0, abs_tol=FLOAT_TOLERANCE)
+
+
+def test_closest_segment_points_returns_contact_fractions() -> None:
+    first = Segment(start=Vector3(0.0, 0.0, 0.0), end=Vector3(2.0, 0.0, 0.0))
+    second = Segment(start=Vector3(1.5, 1.0, 0.0), end=Vector3(1.5, -1.0, 0.0))
+
+    closest = closest_segment_points(first, second)
+
+    assert isclose(closest.distance, 0.0, abs_tol=FLOAT_TOLERANCE)
+    assert isclose(closest.first_fraction, 0.75, abs_tol=FLOAT_TOLERANCE)
+    assert isclose(closest.second_fraction, 0.5, abs_tol=FLOAT_TOLERANCE)
+    assert_vector_close(closest.first_point, Vector3(1.5, 0.0, 0.0))
+    assert_vector_close(closest.second_point, Vector3(1.5, 0.0, 0.0))
 
 
 def test_segments_cross_xy_when_projections_intersect() -> None:

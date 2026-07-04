@@ -10,6 +10,7 @@ from pyz1.geometry import (
     NodeMove,
     Segment,
     clean_collinear_kinks,
+    closest_segment_points,
     evaluate_node_move,
     segment_distance,
     segment_intersects_triangle,
@@ -51,6 +52,10 @@ def reduce_snapshot(
     chains = tuple(unfold_chain(chain, box) for chain in snapshot.true_chains)
     reduced_chains = _reduce_chains(chains, active_settings)
     reduced_chains = _preserve_close_contacts(chains, reduced_chains, active_settings)
+    source_beads = tuple(
+        _source_beads_for_chain(original_chain, reduced_chain)
+        for original_chain, reduced_chain in zip(chains, reduced_chains, strict=True)
+    )
     pairings = (
         _build_pairings(reduced_chains) if active_settings.pairing_enabled else ()
     )
@@ -59,6 +64,7 @@ def reduce_snapshot(
             _to_shortest_path_chain(
                 chain,
                 pairings[chain_index] if pairings else (),
+                source_beads[chain_index],
             )
             for chain_index, chain in enumerate(reduced_chains)
         ),
@@ -324,18 +330,42 @@ def _pair_for_node(
 def _to_shortest_path_chain(
     chain: Chain,
     pairings: tuple[ShortestPathPair | None, ...],
+    source_beads: tuple[float, ...],
 ) -> ShortestPathChain:
     return ShortestPathChain(
         nodes=tuple(
             ShortestPathNode(
                 position=node,
-                source_bead=float(node_index + 1),
+                source_bead=source_beads[node_index],
                 is_entanglement=0 < node_index < chain.node_count - 1,
                 pair=pairings[node_index] if pairings else None,
             )
             for node_index, node in enumerate(chain.nodes)
         ),
     )
+
+
+def _source_beads_for_chain(
+    original_chain: Chain,
+    reduced_chain: Chain,
+) -> tuple[float, ...]:
+    return tuple(
+        _source_bead_for_position(original_chain, node)
+        for node in reduced_chain.nodes
+    )
+
+
+def _source_bead_for_position(original_chain: Chain, node: Vector3) -> float:
+    point = Segment(start=node, end=node)
+    best_source_bead = 1.0
+    best_distance = float("inf")
+    for segment_index, segment in enumerate(_chain_segments(original_chain)):
+        closest = closest_segment_points(point, segment)
+        if closest.distance >= best_distance:
+            continue
+        best_distance = closest.distance
+        best_source_bead = segment_index + 1.0 + closest.second_fraction
+    return best_source_bead
 
 
 def _distance(first: Vector3, second: Vector3) -> float:

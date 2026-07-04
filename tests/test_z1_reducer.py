@@ -105,6 +105,36 @@ def test_reduce_snapshot_when_pairing_enabled_pairs_retained_kink() -> None:
     assert kink.pair == ShortestPathPair(chain_index=2, node_index=1)
 
 
+def test_reduce_snapshot_when_contact_node_keeps_fractional_source_bead() -> None:
+    snapshot = Snapshot(
+        chains=(
+            Chain(
+                (
+                    Vector3(0.0, 0.0, 0.0),
+                    Vector3(1.0, 0.0, 0.0),
+                    Vector3(2.0, 0.0, 0.0),
+                ),
+            ),
+            Chain(
+                (
+                    Vector3(0.5, 0.05, 0.0),
+                    Vector3(0.5, 1.0, 0.0),
+                    Vector3(0.5, 2.0, 0.0),
+                ),
+            ),
+        ),
+        box=Vector3(10.0, 10.0, 10.0),
+        label=None,
+        shear=None,
+    )
+
+    result = reduce_snapshot(snapshot)
+
+    contact_node = result.shortest_path.chains[0].nodes[1]
+    assert contact_node.is_entanglement is True
+    assert isclose(contact_node.source_bead, 1.5, abs_tol=FLOAT_TOLERANCE)
+
+
 def test_reduce_snapshot_when_dumbbell_is_present_excludes_it_from_sp() -> None:
     snapshot = Snapshot(
         chains=(
