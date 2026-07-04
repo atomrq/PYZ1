@@ -50,7 +50,7 @@ def wca_neighbor_pairs(neighbor_input: PpaNeighborInput) -> tuple[PpaNeighborPai
     pairs: list[PpaNeighborPair] = []
 
     for cell, node_indices in cells.items():
-        for neighbor_cell in _neighbor_cells(cell, grid.counts):
+        for neighbor_cell in neighbor_cells(cell, grid.counts):
             for first in node_indices:
                 for second in cells.get(neighbor_cell, ()):
                     if second <= first:
@@ -165,18 +165,21 @@ def _axis_cell_index(
     return min(cell_count - 1, max(0, floor(shifted / cell_width)))
 
 
-def _neighbor_cells(cell: CellKey, counts: CellCounts) -> tuple[CellKey, ...]:
+def neighbor_cells(cell: CellKey, counts: CellCounts) -> tuple[CellKey, ...]:
     cells: list[CellKey] = []
+    seen: set[CellKey] = set()
     for x_offset, y_offset, z_offset in product(
         CELL_OFFSETS,
         CELL_OFFSETS,
         CELL_OFFSETS,
     ):
-        cells.append(
-            (
-                (cell[0] + x_offset) % counts[0],
-                (cell[1] + y_offset) % counts[1],
-                (cell[2] + z_offset) % counts[2],
-            ),
+        neighbor_cell = (
+            (cell[0] + x_offset) % counts[0],
+            (cell[1] + y_offset) % counts[1],
+            (cell[2] + z_offset) % counts[2],
         )
+        if neighbor_cell in seen:
+            continue
+        seen.add(neighbor_cell)
+        cells.append(neighbor_cell)
     return tuple(cells)

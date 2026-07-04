@@ -13,7 +13,7 @@ from pyz1.models import Chain, Snapshot, Vector3
 from pyz1.output_io import read_summary_file
 from pyz1.output_values import read_float_values_file, read_int_values_file
 from pyz1.ppa import PpaMode, PpaPhase, PpaSettings, run_ppa, write_ppa_outputs
-from pyz1.ppa_neighbors import PpaNeighborInput, wca_neighbor_pairs
+from pyz1.ppa_neighbors import PpaNeighborInput, neighbor_cells, wca_neighbor_pairs
 from pyz1.ppa_summary import build_ppa_summary_outputs
 from pyz1.ppa_vector import PpaVector
 from pyz1.z1_io import read_z1_file
@@ -147,6 +147,13 @@ def test_wca_neighbor_pairs_when_boundary_pair_is_near_filters_candidates() -> N
 
     assert tuple((pair.first, pair.second) for pair in neighbors) == ((0, 1),)
     assert isclose(neighbors[0].distance_squared, 0.09, abs_tol=1.0e-12)
+
+
+def test_wca_neighbor_cells_when_grid_axis_collapses_are_unique() -> None:
+    cells = neighbor_cells((0, 0, 0), (1, 2, 1))
+
+    assert len(cells) == len(set(cells))
+    assert cells == ((0, 1, 0), (0, 0, 0))
 
 
 @pytest.mark.parametrize(

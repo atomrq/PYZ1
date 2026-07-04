@@ -26,11 +26,11 @@ evidence still leaves scientific and scalability boundaries open.
 
 Latest gate artifacts:
 
-- `.omo/evidence/task-54-completion-audit/pytest.txt`: `113 passed`
-- `.omo/evidence/task-54-completion-audit/ruff.txt`: `All checks passed!`
-- `.omo/evidence/task-54-completion-audit/basedpyright.txt`:
+- `.omo/evidence/task-55-ppa-coverage/pytest.txt`: `114 passed`
+- `.omo/evidence/task-55-ppa-coverage/ruff.txt`: `All checks passed!`
+- `.omo/evidence/task-55-ppa-coverage/basedpyright.txt`:
   `0 errors, 0 warnings, 0 notes`
-- `.omo/evidence/task-54-completion-audit/package-smoke.txt`: `2 passed`
+- `.omo/evidence/task-55-ppa-coverage/package-smoke.txt`: `2 passed`
 - `.omo/evidence/task-53-reducer-index/default-spplus-after-index.txt`:
   benchmarks 01-05 default/SP+ are `mismatch`; benchmarks 06-14 default/SP+
   are `known-invalid` under `node_count>1000`
@@ -41,7 +41,7 @@ Latest gate artifacts:
 | --- | --- | --- |
 | Full default/SP+ numerical parity | Benchmark 01-05 default/SP+ are still `mismatch`; benchmark-04 SP+ leaves `ne_modified_coil` mismatch | Reported `passed` status or documented scientifically acceptable tolerance for all intended default/SP+ cases |
 | Scalable all-14 default/SP+ regression | Benchmark-06 still timed out at 120 seconds even with bounds index and trace diagnostics disabled | All 14 benchmarks run with measured deltas or a deliberate documented tiered-regression contract accepted as final scope |
-| Full native PPA/PPA+ runtime parity | PPA+ benchmark-04 `Lpp` delta improved but remains `mismatch`; PPA 05 PPA+ coordinate path has Fortran overflow stars | Strict parity, accepted tolerance, or documented upstream-invalid fixture handling for every intended PPA/PPA+ benchmark |
+| Full native PPA/PPA+ runtime parity | PPA+ benchmark-04 `Lpp` delta improved but remains `mismatch`; task-55 quick slice covers 01/04/05 under `max_node_count=1000`, but 05 PPA+ reports non-finite `Lpp`; PPA 05 PPA+ oracle coordinate path has Fortran overflow stars | Strict parity, accepted tolerance, or documented upstream-invalid fixture handling for every intended PPA/PPA+ benchmark |
 | Native `selfZ` implementation | CLI fails explicitly with not-implemented | Implemented `selfZ` reducer behavior and oracle parity evidence, or a final documented non-goal decision |
 | Final scientific caveat review | `README.md`, `docs/pyz1-contract.md`, and `docs/evidence-ledger.md` state limitations | Final user/developer review of caveats and intended production/non-production status |
 
