@@ -244,8 +244,25 @@ def test_write_benchmark_regression_report_when_source_beads_differ_reports_max_
     assert 1.467 < records[0].max_node_source_bead_delta < 1.468
     assert records[0].max_source_delta_chain_index == 1
     assert records[0].max_source_delta_node_index == 5
+    assert records[0].source_bead_residuals is not None
+    assert tuple(
+        (
+            residual.chain_index,
+            residual.node_index,
+            residual.actual_pair_chain_index,
+            residual.expected_pair_chain_index,
+        )
+        for residual in records[0].source_bead_residuals
+    ) == (
+        (1, 2, 268, 268),
+        (1, 3, 241, 241),
+        (1, 4, 160, 160),
+        (1, 5, 130, 130),
+    )
     assert "max node source bead delta" in text
     assert "max source delta chain" in text
+    assert "source bead residual details" in text
+    assert "c1n5[130->130]: 3.92204!=5.39(d=1.46796)" in text
 
 
 def test_compare_spplus_pairing_when_pairing_differs_reports_mismatch() -> None:

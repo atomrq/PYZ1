@@ -40,6 +40,7 @@ if TYPE_CHECKING:
 SOURCE_BEAD_TOLERANCE: Final = 1.0e-9
 SHORTEST_PATH_POSITION_TOLERANCE: Final = 1.0e-3
 CORE_STAGE_NODE_FILENAME: Final = "Z1+NODES-best-match-step1-entry.dat"
+MAX_SOURCE_RESIDUAL_REPORT_DETAILS: Final = 12
 SUMMARY_FIELD_NAMES: Final = (
     "timestep",
     "true_chain_count",
@@ -94,6 +95,17 @@ class SummaryFieldMismatch:
 
 
 @dataclass(frozen=True, slots=True)
+class SourceBeadResidual:
+    chain_index: int
+    node_index: int
+    actual: float
+    expected: float
+    delta: float
+    actual_pair_chain_index: int | None
+    expected_pair_chain_index: int | None
+
+
+@dataclass(frozen=True, slots=True)
 class RegressionRecord:
     benchmark_id: str
     mode: RegressionMode
@@ -143,6 +155,7 @@ class RegressionRecord:
     max_node_source_bead_delta: float | None = None
     max_source_delta_chain_index: int | None = None
     max_source_delta_node_index: int | None = None
+    source_bead_residuals: tuple[SourceBeadResidual, ...] | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -156,6 +169,7 @@ class ShortestPathGeometryComparison:
     max_node_source_bead_delta: float
     max_source_delta_chain_index: int | None
     max_source_delta_node_index: int | None
+    source_bead_residuals: tuple[SourceBeadResidual, ...]
     max_node_actual_pair_fraction: float | None
     max_node_actual_pair_distance: float | None
     max_node_expected_pair_fraction: float | None
@@ -495,6 +509,7 @@ def _compare_benchmark_mode(
             geometry_comparison.max_source_delta_chain_index
         ),
         max_source_delta_node_index=geometry_comparison.max_source_delta_node_index,
+        source_bead_residuals=geometry_comparison.source_bead_residuals,
     )
 
 
@@ -703,6 +718,7 @@ def _shortest_path_snapshot_geometry_comparison(
     max_source_bead_delta = 0.0
     max_source_delta_chain_index: int | None = None
     max_source_delta_node_index: int | None = None
+    source_bead_residuals: list[SourceBeadResidual] = []
     max_actual_pair_geometry: _NodePairGeometry | None = None
     max_expected_pair_geometry: _NodePairGeometry | None = None
     box = GeometryBox(lengths=actual.box)
@@ -720,6 +736,26 @@ def _shortest_path_snapshot_geometry_comparison(
             source_bead_delta = abs(
                 actual_node.source_bead - expected_node.source_bead,
             )
+            if source_bead_delta > SOURCE_BEAD_TOLERANCE:
+                source_bead_residuals.append(
+                    SourceBeadResidual(
+                        chain_index=chain_index + 1,
+                        node_index=node_index + 1,
+                        actual=actual_node.source_bead,
+                        expected=expected_node.source_bead,
+                        delta=source_bead_delta,
+                        actual_pair_chain_index=(
+                            actual_node.pair.chain_index
+                            if actual_node.pair is not None
+                            else None
+                        ),
+                        expected_pair_chain_index=(
+                            expected_node.pair.chain_index
+                            if expected_node.pair is not None
+                            else None
+                        ),
+                    ),
+                )
             if (
                 max_source_delta_chain_index is None
                 or source_bead_delta > max_source_bead_delta
@@ -753,6 +789,7 @@ def _shortest_path_snapshot_geometry_comparison(
         max_node_source_bead_delta=max_source_bead_delta,
         max_source_delta_chain_index=max_source_delta_chain_index,
         max_source_delta_node_index=max_source_delta_node_index,
+        source_bead_residuals=tuple(source_bead_residuals),
         max_node_actual_pair_fraction=(
             max_actual_pair_geometry.fraction
             if max_actual_pair_geometry is not None
@@ -903,6 +940,7 @@ def _format_report(records: tuple[RegressionRecord, ...]) -> str:
             "max node source bead delta | "
             "max source delta chain | "
             "max source delta node | "
+            "source bead residual details | "
             "max node actual pair fraction | "
             "max node actual pair distance | "
             "max node expected pair fraction | "
@@ -929,19 +967,33 @@ def _format_report(records: tuple[RegressionRecord, ...]) -> str:
             "oracle obstacle pair sequence | "
             "summary mismatch details | note |"
         ),
-        (
-            "| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | "
-            "---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | "
-            "---: | ---: | ---: | "
-            "---: | ---: | ---: | ---: | "
-            "---: | ---: | ---: | ---: | "
-            "---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | "
-            "---: | ---: | ---: | ---: | ---: | ---: | ---: | "
-            "--- | --- | --- | --- |"
-        ),
+        _format_report_separator(),
     ]
     lines.extend(_format_record(record) for record in records)
     return "\n".join(lines) + "\n"
+
+
+def _format_report_separator() -> str:
+    right_aligned_columns = (
+        False,
+        False,
+        False,
+        *([True] * 13),
+        False,
+        *([True] * 28),
+        False,
+        False,
+        False,
+        False,
+    )
+    return (
+        "| "
+        + " | ".join(
+            "---:" if right_aligned else "---"
+            for right_aligned in right_aligned_columns
+        )
+        + " |"
+    )
 
 
 def _format_record(record: RegressionRecord) -> str:
@@ -960,6 +1012,7 @@ def _format_record(record: RegressionRecord) -> str:
         f"{_format_optional_float(record.max_node_source_bead_delta)} | "
         f"{_format_optional_int(record.max_source_delta_chain_index)} | "
         f"{_format_optional_int(record.max_source_delta_node_index)} | "
+        f"{_format_source_bead_residuals(record.source_bead_residuals)} | "
         f"{_format_optional_float(record.max_node_actual_pair_fraction)} | "
         f"{_format_optional_float(record.max_node_actual_pair_distance)} | "
         f"{_format_optional_float(record.max_node_expected_pair_fraction)} | "
@@ -1013,6 +1066,32 @@ def _format_int_sequence(values: tuple[int, ...] | None) -> str:
     if len(values) == 0:
         return "none"
     return ",".join(str(value) for value in values)
+
+
+def _format_source_bead_residuals(
+    residuals: tuple[SourceBeadResidual, ...] | None,
+) -> str:
+    if residuals is None:
+        return "n/a"
+    if len(residuals) == 0:
+        return "none"
+    visible = residuals[:MAX_SOURCE_RESIDUAL_REPORT_DETAILS]
+    formatted = "; ".join(_format_source_bead_residual(item) for item in visible)
+    omitted_count = len(residuals) - len(visible)
+    if omitted_count == 0:
+        return formatted
+    return f"{formatted}; ... {omitted_count} more"
+
+
+def _format_source_bead_residual(residual: SourceBeadResidual) -> str:
+    return (
+        f"c{residual.chain_index}n{residual.node_index}"
+        f"[{_format_optional_int(residual.actual_pair_chain_index)}"
+        f"->{_format_optional_int(residual.expected_pair_chain_index)}]: "
+        f"{_format_optional_float(residual.actual)}"
+        f"!={_format_optional_float(residual.expected)}"
+        f"(d={_format_optional_float(residual.delta)})"
+    )
 
 
 def _format_first_projection_fraction(record: RegressionRecord) -> str:

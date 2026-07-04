@@ -11,16 +11,15 @@ For a requirement-by-requirement completion verdict, see
 
 Latest local gate evidence:
 
-- `.omo/evidence/task-65-benchmark03-source-geometry/focused-tests.txt`:
-  `24 passed`
+- `.omo/evidence/task-66-source-bead-rule/focused-tests.txt`: `8 passed`
 - `.omo/evidence/task-55-ppa-coverage/ppa-focused.txt`: `21 passed`
 - `.omo/evidence/task-57-ppa-nan-root/ppa-focused.txt`: `22 passed`
-- `.omo/evidence/task-65-benchmark03-source-geometry/pytest.txt`: `119 passed`
-- `.omo/evidence/task-65-benchmark03-source-geometry/ruff.txt`:
+- `.omo/evidence/task-66-source-bead-rule/pytest.txt`: `119 passed`
+- `.omo/evidence/task-66-source-bead-rule/ruff.txt`:
   `All checks passed!`
-- `.omo/evidence/task-65-benchmark03-source-geometry/basedpyright.txt`:
+- `.omo/evidence/task-66-source-bead-rule/basedpyright.txt`:
   `0 errors, 0 warnings, 0 notes`
-- `.omo/evidence/task-65-benchmark03-source-geometry/package-smoke.txt`:
+- `.omo/evidence/task-66-source-bead-rule/package-smoke.txt`:
   `2 passed`
 
 The package smoke runs `python -m pyz1` for default, SP+, PPA, and PPA+ modes
@@ -140,6 +139,21 @@ but its largest source-bead residual is `1.4679581658620817` at chain 1 node 5.
 The same report surfaces larger source-bead residuals for benchmark-01/02/05,
 so future reducer work can track source-coordinate progress directly instead
 of inferring it from the max-position-delta node.
+
+Task-66 expands the source-bead diagnostic surface from a single max residual
+to shared-node residual details in the benchmark regression report. Evidence in
+`.omo/evidence/task-66-source-bead-rule/benchmark03-source-hypotheses.txt`
+and `.omo/evidence/task-66-source-bead-rule/benchmark03-contour-parameter-probe.txt`
+rules out nearest original-chain projection, XY edge intersection, and
+contour-normalized projection as explanations for benchmark-03 SP+ oracle
+source beads.
+`.omo/evidence/task-66-source-bead-rule/default-spplus-01-05-source-residuals.txt`
+confirms benchmark-04 default/SP+ remain `passed`, while benchmark-01/02/03/05
+remain `mismatch`. `.omo/evidence/task-66-source-bead-rule/benchmark03-spplus.md`
+records that benchmark-03 SP+ still has matching native/oracle obstacle sequence
+`(268, 241, 160, 130)`, but its four source residual details are
+`c1n2[268->268]`, `c1n3[241->241]`, `c1n4[160->160]`, and `c1n5[130->130]`;
+the largest remains `3.92204!=5.39(d=1.46796)`.
 
 ## Latest PPA/PPA+ Oracle Summary Coverage
 
