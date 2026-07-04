@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Final
 
 from pyz1.output_io import (
     format_shortest_path_text,
+    format_summary_text,
     parse_shortest_path_text,
     read_summary_file,
 )
@@ -55,6 +56,7 @@ class RegressionRecord:
     status: RegressionStatus
     lpp_delta: float | None
     z_delta: float | None
+    summary_field_mismatches: int | None
     pairing_mismatches: int | None
     note: str
 
@@ -103,6 +105,7 @@ def _compare_benchmark_mode(
             status=RegressionStatus.KNOWN_INVALID,
             lpp_delta=None,
             z_delta=None,
+            summary_field_mismatches=None,
             pairing_mismatches=None,
             note="missing source or oracle output",
         )
@@ -114,6 +117,7 @@ def _compare_benchmark_mode(
             status=RegressionStatus.KNOWN_INVALID,
             lpp_delta=None,
             z_delta=None,
+            summary_field_mismatches=None,
             pairing_mismatches=None,
             note=f"skipped: node_count>{request.max_node_count}",
         )
@@ -125,6 +129,10 @@ def _compare_benchmark_mode(
         - oracle_summary.mean_shortest_path_contour,
     )
     z_delta = abs(actual_summary.mean_entanglements - oracle_summary.mean_entanglements)
+    summary_field_mismatches = _summary_field_mismatch_count(
+        format_summary_text((actual_summary,)),
+        summary_path.read_text(encoding="utf-8"),
+    )
     pairing_mismatches = _pairing_mismatch_count(mode, result.shortest_path, sp_path)
     status = _status_from_deltas(lpp_delta, z_delta, pairing_mismatches)
     return RegressionRecord(
@@ -133,6 +141,7 @@ def _compare_benchmark_mode(
         status=status,
         lpp_delta=lpp_delta,
         z_delta=z_delta,
+        summary_field_mismatches=summary_field_mismatches,
         pairing_mismatches=pairing_mismatches,
         note=_note_for_status(status),
     )
@@ -168,6 +177,16 @@ def _pairing_mismatch_count(
                 expected_path.read_text(encoding="utf-8"),
             )
             return comparison.mismatched_pair_count
+
+
+def _summary_field_mismatch_count(actual_text: str, expected_text: str) -> int:
+    actual_fields = actual_text.split()
+    expected_fields = expected_text.split()
+    shared_count = min(len(actual_fields), len(expected_fields))
+    return abs(len(actual_fields) - len(expected_fields)) + sum(
+        actual_fields[index] != expected_fields[index]
+        for index in range(shared_count)
+    )
 
 
 def _status_from_deltas(
@@ -210,8 +229,11 @@ def _format_report(records: tuple[RegressionRecord, ...]) -> str:
     lines = [
         "# pyz1 Benchmark Regression",
         "",
-        "| benchmark | mode | status | Lpp delta | Z delta | pair mismatches | note |",
-        "| --- | --- | --- | ---: | ---: | ---: | --- |",
+        (
+            "| benchmark | mode | status | Lpp delta | Z delta | "
+            "summary field mismatches | pair mismatches | note |"
+        ),
+        "| --- | --- | --- | ---: | ---: | ---: | ---: | --- |",
     ]
     lines.extend(_format_record(record) for record in records)
     return "\n".join(lines) + "\n"
@@ -222,6 +244,7 @@ def _format_record(record: RegressionRecord) -> str:
         f"| benchmark-{record.benchmark_id} | {record.mode.value} | "
         f"{record.status.value} | {_format_optional_float(record.lpp_delta)} | "
         f"{_format_optional_float(record.z_delta)} | "
+        f"{_format_optional_int(record.summary_field_mismatches)} | "
         f"{_format_optional_int(record.pairing_mismatches)} | {record.note} |"
     )
 

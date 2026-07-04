@@ -32,6 +32,8 @@ def test_write_benchmark_regression_report_when_oracles_exist_lists_modes(
     assert len(records) == 2
     assert "| benchmark-04 | default |" in text
     assert "| benchmark-04 | spplus |" in text
+    assert "summary field mismatches" in text
+    assert records[1].summary_field_mismatches == 3
 
 
 def test_compare_spplus_pairing_when_pairing_differs_reports_mismatch() -> None:
