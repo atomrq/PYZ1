@@ -14,6 +14,7 @@ from pyz1.ppa import (
     standard_ppa_settings,
     write_ppa_outputs,
 )
+from pyz1.reducer import reduce_snapshot, write_reducer_outputs
 from pyz1.z1_io import read_z1_file
 
 COMPATIBILITY_HELP: Final = """
@@ -126,6 +127,9 @@ def run(
         typer.echo(str(InputFileMissingError(path=parsed.input_file)))
         raise typer.Exit(code=2)
 
+    if parsed.mode == "default":
+        _run_default_mode(parsed)
+        return
     if parsed.mode in ("ppa", "ppaplus"):
         _run_ppa_mode(parsed)
         return
@@ -162,6 +166,15 @@ def _clean_outputs(directory: Path) -> None:
         path = directory / filename
         if path.exists():
             path.unlink()
+
+
+def _run_default_mode(parsed: ParsedCli) -> None:
+    if parsed.input_file is None:
+        typer.echo("default mode requires an input file")
+        raise typer.Exit(code=2)
+    snapshot = read_z1_file(parsed.input_file)
+    write_reducer_outputs(Path.cwd(), reduce_snapshot(snapshot))
+    typer.echo("[pyz1] completed default")
 
 
 def _run_ppa_mode(parsed: ParsedCli) -> None:
