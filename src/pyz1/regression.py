@@ -446,7 +446,7 @@ def _compare_benchmark_mode(
         snapshot,
         oracle_shortest_path,
     )
-    oracle_diagnostics = _oracle_reducer_diagnostics(oracle_dir / "log-stats.Z1")
+    oracle_diagnostics = _oracle_reducer_diagnostics(oracle_dir)
     oracle_core_stage = _oracle_core_stage(oracle_dir / CORE_STAGE_NODE_FILENAME)
     pyz1_core_stage_comparison = _pyz1_core_stage_comparison(
         result.diagnostics.core_stage_nodes,
@@ -898,10 +898,12 @@ def _first_projection_trace(
     return traces[0]
 
 
-def _oracle_reducer_diagnostics(path: Path) -> Z1ReducerScanDiagnostics | None:
-    if not path.exists():
-        return None
-    return reducer_scan_diagnostics(read_z1_log_file(path))
+def _oracle_reducer_diagnostics(oracle_dir: Path) -> Z1ReducerScanDiagnostics | None:
+    for filename in ("log-stats.Z1", "run.stdout"):
+        path = oracle_dir / filename
+        if path.exists():
+            return reducer_scan_diagnostics(read_z1_log_file(path))
+    return None
 
 
 def _oracle_core_stage(path: Path) -> ShortestPathSnapshot | None:

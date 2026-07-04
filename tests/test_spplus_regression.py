@@ -158,6 +158,30 @@ def test_write_benchmark_regression_report_when_stats_log_exists_lists_core_diag
     assert "| 0.733072 | 0.00163761 | 0.733114 | 0.00179606 |" in text
 
 
+def test_write_benchmark_regression_report_when_stdout_has_scan_rows_uses_them(
+    tmp_path: Path,
+) -> None:
+    report_path = tmp_path / "pyz1-benchmark-regression.md"
+
+    records = write_benchmark_regression_report(
+        RegressionRequest(
+            source_dir=SOURCE_Z1,
+            oracle_root=ORACLE_ROOT,
+            report_path=report_path,
+            modes=(RegressionMode.SPPLUS,),
+            benchmark_ids=("01",),
+        ),
+    )
+
+    text = report_path.read_text(encoding="utf-8")
+    assert records[0].oracle_core_node_count == 617
+    assert records[0].oracle_final_node_count == 615
+    assert records[0].oracle_core_crossings == 15
+    assert records[0].oracle_core_ghost_nodes == 0
+    assert "oracle core nodes" in text
+    assert "oracle final nodes" in text
+
+
 def test_write_benchmark_regression_report_when_default_guard_runs_medium_cases(
     tmp_path: Path,
 ) -> None:

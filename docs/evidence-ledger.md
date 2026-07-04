@@ -11,14 +11,14 @@ For a requirement-by-requirement completion verdict, see
 
 Latest local gate evidence:
 
-- `.omo/evidence/task-73-sequence-source-assignment/pytest.txt`: `126 passed`
+- `.omo/evidence/task-74-stdout-scan-diagnostics/pytest.txt`: `127 passed`
 - `.omo/evidence/task-55-ppa-coverage/ppa-focused.txt`: `21 passed`
 - `.omo/evidence/task-57-ppa-nan-root/ppa-focused.txt`: `22 passed`
-- `.omo/evidence/task-73-sequence-source-assignment/ruff.txt`:
+- `.omo/evidence/task-74-stdout-scan-diagnostics/ruff.txt`:
   `All checks passed!`
-- `.omo/evidence/task-73-sequence-source-assignment/basedpyright.txt`:
+- `.omo/evidence/task-74-stdout-scan-diagnostics/basedpyright.txt`:
   `0 errors, 0 warnings, 0 notes`
-- `.omo/evidence/task-73-sequence-source-assignment/package-smoke.txt`:
+- `.omo/evidence/task-74-stdout-scan-diagnostics/package-smoke.txt`:
   `2 passed`
 
 The package smoke runs `python -m pyz1` for default, SP+, PPA, and PPA+ modes
@@ -259,6 +259,18 @@ rules out horizontal/vertical ray-crossing assignment, with benchmark-02
 matching only `0/10` horizontal and `1/10` vertical sources under the local
 near-match threshold. The next reducer work should therefore target default
 Z1+ source/order generation before SP+ pair annotation.
+
+Task-74 extends oracle reducer diagnostics to read `run.stdout` when
+`log-stats.Z1` is not present in the Z1+ oracle fixture directory. Evidence in
+`.omo/evidence/task-74-stdout-scan-diagnostics/regression-01-05-stdout-scan-diagnostics.md`
+records the parsed Z1+ scan rows for benchmarks 01-05 in default and SP+
+modes; for example, benchmark-01 reports core/final node counts `617/615`,
+core crossings `15`, and core ghosts `0`, while benchmark-05 reports
+`322/170`, `85`, and `137`. The generated regression report summary
+`.omo/evidence/task-74-stdout-scan-diagnostics/regression-01-05-stdout-fallback.txt`
+confirms these counters now enter the benchmark regression records for all
+01-05 default/SP+ cases without changing the known status split: benchmark-04
+default/SP+ remain `passed`, while 01/02/03/05 remain `mismatch`.
 
 ## Latest PPA/PPA+ Oracle Summary Coverage
 
