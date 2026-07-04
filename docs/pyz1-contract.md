@@ -261,12 +261,15 @@ Complete now:
   fixtures, with Fortran-overflow coordinates tracked as known-invalid
 - native PPA/PPA+ WCA force path uses deterministic periodic cell-list candidate
   generation instead of scanning every cross-chain pair
+- native PPA/PPA+ summary regression report surface that runs `run_ppa` and
+  compares generated summaries against Z1+ PPA/PPA+ oracle summaries
 
 Not complete yet:
 
 - full PPA/PPA+ benchmark-level runtime parity from native integration output;
-  the WCA path now has a local candidate list, but full native convergence still
-  needs long-run benchmark comparison against Z1+ oracle outputs.
+  the WCA path now has a local candidate list and benchmark-04 PPA+ completes
+  with default accelerated settings, but strict summary parity is still a
+  `mismatch`.
 - default geometrical Z1+ numerical parity for `Lpp`, `Z`, shortest-path
   structure, and SP+ pairings.
 - scalable all-14 benchmark reducer regression without the current
