@@ -235,6 +235,7 @@ class RegressionRecord:
     pyz1_true_chain_contact_candidate_details: (
         tuple[TrueChainContactCandidate, ...] | None
     ) = None
+    oracle_source_nearest_true_chain_contact_sequence: tuple[int, ...] | None = None
     oracle_true_chain_pair_sequence: tuple[int, ...] | None = None
 
 
@@ -704,6 +705,12 @@ def _compare_benchmark_mode(
             candidate.chain_index for candidate in true_chain_contact_candidates
         ),
         pyz1_true_chain_contact_candidate_details=true_chain_contact_candidates,
+        oracle_source_nearest_true_chain_contact_sequence=(
+            _nearest_true_chain_contact_sequence_for_sources(
+                true_chain_contact_candidates,
+                oracle_default_source_sequence,
+            )
+        ),
         oracle_true_chain_pair_sequence=(
             winding_candidate_coverage.oracle_true_chain_pair_sequence
         ),
@@ -1440,6 +1447,27 @@ def _chain_segments(chain: Chain) -> tuple[Segment, ...]:
     )
 
 
+def _nearest_true_chain_contact_sequence_for_sources(
+    candidates: tuple[TrueChainContactCandidate, ...],
+    source_sequence: tuple[float, ...] | None,
+) -> tuple[int, ...] | None:
+    if source_sequence is None:
+        return None
+    if len(candidates) == 0:
+        return ()
+    return tuple(
+        min(
+            candidates,
+            key=lambda candidate: (
+                abs(candidate.source_bead - source_bead),
+                candidate.distance,
+                candidate.chain_index,
+            ),
+        ).chain_index
+        for source_bead in source_sequence
+    )
+
+
 def _oracle_default_source_sequence(
     request: RegressionRequest,
     benchmark_id: str,
@@ -1582,6 +1610,7 @@ def _format_report(records: tuple[RegressionRecord, ...]) -> str:
         "pyz1 true-chain pair sequence | "
         "pyz1 true-chain contact candidate sequence | "
         "pyz1 true-chain contact candidate details | "
+        "oracle-source nearest true-chain contact sequence | "
         "oracle true-chain pair sequence | "
         "summary mismatch details | note |"
     )
@@ -1672,6 +1701,7 @@ def _format_record(record: RegressionRecord) -> str:
         f"{_format_int_sequence(record.pyz1_true_chain_pair_sequence)} | "
         f"{_format_int_sequence(record.pyz1_true_chain_contact_candidate_sequence)} | "
         f"{_format_true_chain_contact_candidates(record)} | "
+        f"{_format_oracle_source_nearest_contact_sequence(record)} | "
         f"{_format_int_sequence(record.oracle_true_chain_pair_sequence)} | "
         f"{_format_summary_field_details(record.summary_field_mismatch_details)} | "
         f"{record.note} |"
@@ -1768,6 +1798,12 @@ def _format_true_chain_contact_candidate(
         f"s={_format_optional_float(candidate.source_bead)} "
         f"other={_format_optional_float(candidate.other_source_bead)} "
         f"d={_format_optional_float(candidate.distance)}"
+    )
+
+
+def _format_oracle_source_nearest_contact_sequence(record: RegressionRecord) -> str:
+    return _format_int_sequence(
+        record.oracle_source_nearest_true_chain_contact_sequence,
     )
 
 
