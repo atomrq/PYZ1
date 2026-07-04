@@ -136,7 +136,7 @@ def test_reduce_snapshot_when_contact_node_keeps_fractional_source_bead() -> Non
     assert isclose(contact_node.source_bead, 1.5, abs_tol=FLOAT_TOLERANCE)
 
 
-def test_reduce_snapshot_when_dumbbell_is_present_excludes_it_from_sp() -> None:
+def test_reduce_snapshot_when_dumbbell_is_present_retains_it_in_sp() -> None:
     snapshot = Snapshot(
         chains=(
             Chain(
@@ -155,7 +155,8 @@ def test_reduce_snapshot_when_dumbbell_is_present_excludes_it_from_sp() -> None:
 
     result = reduce_snapshot(snapshot)
 
-    assert result.shortest_path.chain_count == 1
+    assert result.shortest_path.chain_count == 2
+    assert tuple(chain.node_count for chain in result.shortest_path.chains) == (2, 2)
     assert result.summary.record.true_chain_count == 1
     assert result.summary.n_values == (3,)
 

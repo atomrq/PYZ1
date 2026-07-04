@@ -131,7 +131,12 @@ def reduce_snapshot(
 ) -> ReducerResult:
     active_settings = settings or ReducerSettings()
     box = GeometryBox(lengths=snapshot.box, shear=snapshot.shear or 0.0)
-    chains = tuple(unfold_chain(chain, box) for chain in snapshot.true_chains)
+    chains = tuple(unfold_chain(chain, box) for chain in snapshot.chains)
+    true_chain_indices = tuple(
+        chain_index
+        for chain_index, chain in enumerate(snapshot.chains)
+        if chain.is_true_chain
+    )
     core_trace = (
         _core_trace_diagnostics(chains)
         if active_settings.trace_diagnostics_enabled
@@ -155,11 +160,12 @@ def reduce_snapshot(
         ),
         box=snapshot.box,
     )
+    summary_path = _select_shortest_path_chains(shortest_path, true_chain_indices)
     return ReducerResult(
         shortest_path=shortest_path,
         summary=build_summary_outputs(
             original=snapshot,
-            primitive_path=shortest_path,
+            primitive_path=summary_path,
             timestep=snapshot.label or 1,
         ),
         diagnostics=ReducerDiagnostics(
@@ -181,6 +187,16 @@ def reduce_snapshot(
                 core_trace.transient_blocked_node_count
             ),
         ),
+    )
+
+
+def _select_shortest_path_chains(
+    shortest_path: ShortestPathSnapshot,
+    chain_indices: tuple[int, ...],
+) -> ShortestPathSnapshot:
+    return ShortestPathSnapshot(
+        chains=tuple(shortest_path.chains[index] for index in chain_indices),
+        box=shortest_path.box,
     )
 
 
@@ -844,6 +860,8 @@ def _preserve_close_contacts(
     ]
     projection_traces: list[ProjectionTrace] = []
     for chain_index, chain in enumerate(original_chains):
+        if not chain.is_true_chain:
+            continue
         if preserved_nodes[chain_index].node_count > MIN_CHAIN_NODE_COUNT:
             continue
         contact = _closest_lower_index_contact(

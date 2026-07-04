@@ -11,14 +11,15 @@ For a requirement-by-requirement completion verdict, see
 
 Latest local gate evidence:
 
-- `.omo/evidence/task-59-spplus-lpp/focused-final.txt`: `20 passed`
+- `.omo/evidence/task-60-benchmark01-reducer/focused-after-dumbbells.txt`:
+  `20 passed`
 - `.omo/evidence/task-55-ppa-coverage/ppa-focused.txt`: `21 passed`
 - `.omo/evidence/task-57-ppa-nan-root/ppa-focused.txt`: `22 passed`
-- `.omo/evidence/task-59-spplus-lpp/pytest.txt`: `115 passed`
-- `.omo/evidence/task-59-spplus-lpp/ruff.txt`: `All checks passed!`
-- `.omo/evidence/task-59-spplus-lpp/basedpyright.txt`:
+- `.omo/evidence/task-60-benchmark01-reducer/pytest.txt`: `115 passed`
+- `.omo/evidence/task-60-benchmark01-reducer/ruff.txt`: `All checks passed!`
+- `.omo/evidence/task-60-benchmark01-reducer/basedpyright.txt`:
   `0 errors, 0 warnings, 0 notes`
-- `.omo/evidence/task-59-spplus-lpp/package-smoke.txt`: `2 passed`
+- `.omo/evidence/task-60-benchmark01-reducer/package-smoke.txt`: `2 passed`
 
 The package smoke runs `python -m pyz1` for default, SP+, PPA, and PPA+ modes
 and checks the expected mode-specific output files.
@@ -76,6 +77,16 @@ summary value, while
 `.omo/evidence/task-59-spplus-lpp/default-spplus-01-05.txt` confirms benchmark-04
 default/SP+ are `passed` and the 01/02/03/05 default/SP+ regression categories
 remain true mismatches.
+
+Task-60 aligns the reducer's dumbbell/obstacle contract with Z1+ SP output:
+two-node dumbbells are now retained in `Z1+SP.dat` and participate as blockers,
+while summary outputs still count only true chains. Evidence in
+`.omo/evidence/task-60-benchmark01-reducer/default-spplus-01-05-after-dumbbells.txt`
+shows benchmark-04 default/SP+ remain `passed`; benchmark-01/02/03 default/SP+
+remain `mismatch`, but their `node_count_mismatches` drop from hundreds to
+12/9/3 because the 300 two-node obstacle chains are now present in the native
+SP output. The remaining benchmark-01/02/03 gap is the true-chain multi-obstacle
+kink sequence, not missing obstacle output.
 
 ## Latest PPA/PPA+ Oracle Summary Coverage
 

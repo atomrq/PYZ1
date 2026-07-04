@@ -47,7 +47,8 @@ Supported in the current contract:
 - Coordinate rows: three floats per bead/node.
 - Optional metadata: sentinel `-1`, non-negative label, shear value.
 - True chains are chains with more than two beads. Two-bead dumbbells are
-  parsed but excluded from true-chain statistics.
+  parsed, retained in native shortest-path output, and used as reducer
+  blockers, but they are excluded from true-chain summary statistics.
 
 Parsing must fail with typed errors for malformed headers, missing coordinate
 rows, invalid floats, invalid chain lengths, and unexpected trailing metadata.
@@ -240,7 +241,9 @@ record measured deltas or an explicit skip reason. Current status is:
   node counts match, and final node geometry is within the documented
   shortest-path tolerance.
 - `benchmark-01`, `benchmark-02`, `benchmark-03`, and `benchmark-05` default
-  and SP+ are classified as `mismatch`.
+  and SP+ are classified as `mismatch`. For benchmark-01/02/03, two-node
+  obstacle chains are now retained in native SP output and participate as
+  blockers; the remaining gap is true-chain multi-obstacle kink preservation.
 - SP+ structural comparison counts mismatched `other-chain other-node` pairs.
 - `benchmark-06` and larger benchmark/mode entries are classified as
   `known-invalid` under the current `node_count>1000` performance guard until
@@ -272,6 +275,10 @@ Complete now:
   are now classified as `passed`; the remaining nonzero `Lpp` delta is retained
   as a diagnostic against the rounded three-decimal summary field rather than a
   pass/fail criterion
+- native default/SP+ reducer retains two-node dumbbells in `Z1+SP.dat` and uses
+  them as blockers while summary statistics still count only true chains;
+  benchmark-01/02/03 node-count mismatches drop to 12/9/3 after this contract
+  alignment, but the true-chain obstacle kink sequence still mismatches Z1+
 - benchmark regression report generation and transparent mismatch/skip status
 - default/SP+ benchmark regression runs public benchmarks 01-05 under the
   default `node_count>1000` performance guard and records measured deltas for
@@ -303,8 +310,10 @@ Not complete yet:
   upstream-invalid native overflow fixture, not a parser/writer mismatch.
 - default geometrical Z1+ numerical parity for `Lpp`, `Z`, shortest-path
   structure, and SP+ pairings; benchmark-04 default/SP+ now pass the local
-  report contract, but benchmarks 01/02/03/05 still mismatch and benchmark-06+
-  are still guarded for scalability.
+  report contract, benchmark-01/02/03 now preserve two-node obstacle chains in
+  SP output but still miss the true-chain multi-obstacle kink sequence,
+  benchmark-05 still mismatches, and benchmark-06+ are still guarded for
+  scalability.
 - scalable all-14 benchmark reducer regression without the current
   `node_count>1000` performance guard.
 - self-entanglement (`selfZ`) behavior in the native reducer beyond the current
