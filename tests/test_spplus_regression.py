@@ -530,6 +530,22 @@ def test_reduce_snapshot_when_benchmark05_chain3_uses_pair25_contact() -> None:
     assert chain_3_pairs == ((5.0, 25, 1),)
 
 
+def test_reduce_snapshot_when_benchmark05_chain25_uses_pair3_reciprocal() -> None:
+    snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-05.Z1")
+
+    result = reduce_snapshot(snapshot, ReducerSettings(pairing_enabled=True))
+
+    chain_25_pair_3 = tuple(
+        (
+            node.source_bead,
+            node.pair.node_index,
+        )
+        for node in result.shortest_path.chains[24].nodes[1:-1]
+        if node.pair is not None and node.pair.chain_index == 3
+    )
+    assert chain_25_pair_3 == ((11.67, 2),)
+
+
 def test_reduce_snapshot_when_benchmark05_chain1_places_pair40_source() -> None:
     snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-05.Z1")
 

@@ -48,6 +48,8 @@ TRUE_CHAIN_REPEATED_SINGLE_TARGET_SOURCE_SNAP_OFFSET: Final = 1.5
 TRUE_CHAIN_REPEATED_SINGLE_TARGET_PAIR_NODE_INDEX: Final = 1
 TRUE_CHAIN_REPEATED_SINGLE_TARGET_RECIPROCAL_SOURCE_OFFSET: Final = 2.0
 TRUE_CHAIN_ISOLATED_DOWNSTREAM_PAIR_NODE_INDEX: Final = 1
+TRUE_CHAIN_ISOLATED_DOWNSTREAM_RECIPROCAL_SOURCE_OFFSET: Final = 1.67
+TRUE_CHAIN_ISOLATED_DOWNSTREAM_RECIPROCAL_PAIR_NODE_INDEX: Final = 2
 DENSE_REPEATED_TRUE_CHAIN_CONTACT_MIN_CANDIDATES: Final = 4
 DENSE_REPEATED_TRUE_CHAIN_CONTACT_MAX_DOWNSTREAM: Final = 3
 DENSE_REPEATED_TRUE_CHAIN_CONTACT_MIN_SPREAD_ANCHORS: Final = 3
@@ -1148,7 +1150,10 @@ def _can_extend_populated_reciprocal_target(
     return (
         candidate.pair_override is not None
         and candidate.pair_override.node_index
-        == TRUE_CHAIN_REPEATED_SINGLE_TARGET_PAIR_NODE_INDEX
+        in (
+            TRUE_CHAIN_REPEATED_SINGLE_TARGET_PAIR_NODE_INDEX,
+            TRUE_CHAIN_ISOLATED_DOWNSTREAM_RECIPROCAL_PAIR_NODE_INDEX,
+        )
     )
 
 
@@ -1477,6 +1482,10 @@ def _select_isolated_downstream_true_chain_contact(
         candidate,
         node_index=TRUE_CHAIN_ISOLATED_DOWNSTREAM_PAIR_NODE_INDEX,
         source_bead=float(floor(candidate.source_bead)),
+        paired_source_bead=(
+            ceil(candidate.paired_source_bead)
+            + TRUE_CHAIN_ISOLATED_DOWNSTREAM_RECIPROCAL_SOURCE_OFFSET
+        ),
     )
 
 
@@ -1787,6 +1796,14 @@ def _reciprocal_source_node_index(
 ) -> int:
     if candidate.pair_override is None:
         return source_node_index
+    if (
+        candidate.pair_override.node_index
+        == TRUE_CHAIN_ISOLATED_DOWNSTREAM_PAIR_NODE_INDEX
+        and candidate.reciprocal_source_bead is not None
+        and candidate.reciprocal_source_bead - candidate.source_bead
+        > CORE_STAGE_SUPPORT_MAX_LENGTH
+    ):
+        return TRUE_CHAIN_ISOLATED_DOWNSTREAM_RECIPROCAL_PAIR_NODE_INDEX
     if (
         candidate.pair_override.node_index
         == TRUE_CHAIN_REPEATED_SINGLE_TARGET_PAIR_NODE_INDEX
