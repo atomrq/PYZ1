@@ -26,16 +26,19 @@ evidence still leaves scientific and scalability boundaries open.
 
 Latest gate artifacts:
 
-- `.omo/evidence/task-128-chain15-spplus-residual/pytest.txt`:
-  `172 passed`
-- `.omo/evidence/task-128-chain15-spplus-residual/ruff.txt`:
+- `.omo/evidence/task-129-chain17-spplus-residual/pytest.txt`:
+  remote GPU-cluster split: `68 passed`, `28 passed`, `23 passed`, and SP+
+  shards `9/9/9/9/9/8 passed`
+- `.omo/evidence/task-129-chain17-spplus-residual/ruff.txt`:
   `All checks passed!`
-- `.omo/evidence/task-128-chain15-spplus-residual/basedpyright.txt`:
+- `.omo/evidence/task-129-chain17-spplus-residual/basedpyright.txt`:
   `0 errors, 0 warnings, 0 notes`
-- `.omo/evidence/task-128-chain15-spplus-residual/package-smoke.txt`:
+- `.omo/evidence/task-129-chain17-spplus-residual/package-smoke.txt`:
   `1 passed`
-- `.omo/evidence/task-128-chain15-spplus-residual/diff-check.txt`:
+- `.omo/evidence/task-129-chain17-spplus-residual/diff-check.txt`:
   `git diff --check passed`
+- `.omo/evidence/task-129-chain17-spplus-residual/cluster-v6/sacct.txt`:
+  remote Slurm jobs `415994`-`416007` completed with `0:0` exit codes
 - `.omo/evidence/task-68-winding-number-surface/default-spplus-01-05-convex-coverage.txt`:
   benchmark-04 default/SP+ are `passed`; benchmark-03 SP+ keeps
   `node_count_mismatches=0`, `pairing_mismatches=0`, and matching
@@ -428,6 +431,16 @@ Latest gate artifacts:
   improve from `44` to `41`, `Lpp` delta improves from `0.699096` to
   `0.698125`, and `Z` delta improves from `0.12` to `0.10`, so downstream
   geometry, pair-detail, and summary mismatches remain open
+- `.omo/evidence/task-129-chain17-spplus-residual/benchmark-04-05-spplus.md`:
+  benchmark-04 SP+ remains `passed`; benchmark-05 SP+ remains `mismatch`, but
+  benchmark-05 chain 17 now keeps oracle-local pairs `(5.0,9,1)` and
+  `(11.67,44,2)`, chain 44 keeps reciprocal `(13.0,17,3)`, and chain 9 remains
+  at its existing oracle-local pair `(6.5,27,1)` without an extra reciprocal to
+  chain 17; final nodes move from `165` to `166`, node-count mismatches improve
+  from `21` to `18`, `Lpp` delta improves from `0.698125` to `0.612388`, and
+  `Z` delta improves from `0.10` to `0.08`; pair mismatches move from `41` to
+  `43`, so downstream geometry, remaining pair-detail coverage, and summary
+  mismatches remain open
 - `.omo/evidence/task-53-reducer-index/default-spplus-after-index.txt`:
   benchmarks 01-05 default/SP+ are `mismatch`; benchmarks 06-14 default/SP+
   are `known-invalid` under `node_count>1000`
