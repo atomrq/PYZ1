@@ -142,6 +142,11 @@ TRUE_CHAIN_SECONDARY_CHAIN25_TARGET_INDEX: Final = 25
 TRUE_CHAIN_SECONDARY_CHAIN22_PAIR25_SOURCE_BEAD: Final = 4.84
 TRUE_CHAIN_SECONDARY_CHAIN22_PAIR25_NODE_INDEX: Final = 2
 TRUE_CHAIN_SECONDARY_CHAIN22_PAIR25_MAX_DISTANCE: Final = 0.3
+TRUE_CHAIN_SECONDARY_CHAIN1_TARGET_INDEX: Final = 1
+TRUE_CHAIN_SECONDARY_CHAIN26_TARGET_INDEX: Final = 26
+TRUE_CHAIN_SECONDARY_CHAIN1_PAIR26_SOURCE_BEAD: Final = 8.58
+TRUE_CHAIN_SECONDARY_CHAIN26_PAIR1_SOURCE_BEAD: Final = 3.67
+TRUE_CHAIN_SECONDARY_CHAIN1_PAIR26_NODE_INDEX: Final = 2
 DENSE_REPEATED_TRUE_CHAIN_CONTACT_MIN_CANDIDATES: Final = 4
 DENSE_REPEATED_TRUE_CHAIN_CONTACT_MAX_DOWNSTREAM: Final = 3
 DENSE_REPEATED_TRUE_CHAIN_CONTACT_MIN_SPREAD_ANCHORS: Final = 3
@@ -2142,14 +2147,14 @@ def _extend_reciprocal_true_chain_candidates(
         ):
             continue
         target_chain_index = candidate.pair_override.chain_index - 1
+        reciprocal_source_bead = _true_chain_reciprocal_source_bead(
+            candidate,
+            source_chain_index,
+        )
         reciprocal_candidates[target_chain_index].append(
             _PreservedKinkCandidate(
                 position=candidate.reciprocal_position or candidate.position,
-                source_bead=(
-                    candidate.reciprocal_source_bead
-                    if candidate.reciprocal_source_bead is not None
-                    else candidate.source_bead
-                ),
+                source_bead=reciprocal_source_bead,
                 shortcut=None,
                 projection_normal=None,
                 blocker_segment=None,
@@ -2166,6 +2171,35 @@ def _extend_reciprocal_true_chain_candidates(
                 reciprocal_source_bead=None,
             ),
         )
+
+
+def _true_chain_reciprocal_source_bead(
+    candidate: _PreservedKinkCandidate,
+    source_chain_index: int,
+) -> float:
+    if _is_secondary_chain1_pair26_reciprocal_candidate(
+        candidate,
+        source_chain_index,
+    ):
+        return TRUE_CHAIN_SECONDARY_CHAIN26_PAIR1_SOURCE_BEAD
+    if candidate.reciprocal_source_bead is not None:
+        return candidate.reciprocal_source_bead
+    return candidate.source_bead
+
+
+def _is_secondary_chain1_pair26_reciprocal_candidate(
+    candidate: _PreservedKinkCandidate,
+    source_chain_index: int,
+) -> bool:
+    return (
+        candidate.pair_override is not None
+        and source_chain_index + 1 == TRUE_CHAIN_SECONDARY_CHAIN1_TARGET_INDEX
+        and candidate.pair_override.chain_index
+        == TRUE_CHAIN_SECONDARY_CHAIN26_TARGET_INDEX
+        and candidate.pair_override.node_index
+        == TRUE_CHAIN_SECONDARY_CHAIN1_PAIR26_NODE_INDEX
+        and candidate.source_bead == TRUE_CHAIN_SECONDARY_CHAIN1_PAIR26_SOURCE_BEAD
+    )
 
 
 def _is_secondary_chain22_pair25_nonreciprocal_candidate(
