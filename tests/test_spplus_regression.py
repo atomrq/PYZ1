@@ -526,6 +526,19 @@ def test_reduce_snapshot_when_benchmark05_chain1_places_pair40_source() -> None:
     assert chain_1_pair_40_sources[0] < 7.45
 
 
+def test_reduce_snapshot_when_benchmark05_chain1_places_pair26_source() -> None:
+    snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-05.Z1")
+
+    result = reduce_snapshot(snapshot, ReducerSettings(pairing_enabled=True))
+
+    chain_1_pair_26_sources = tuple(
+        node.source_bead
+        for node in result.shortest_path.chains[0].nodes[1:-1]
+        if node.pair is not None and node.pair.chain_index == 26
+    )
+    assert 8.57 < chain_1_pair_26_sources[0] < 8.59
+
+
 def test_reduce_snapshot_when_benchmark05_chain28_keeps_pair34_contact() -> None:
     snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-05.Z1")
 

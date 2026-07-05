@@ -41,6 +41,7 @@ TRUE_CHAIN_CONTACT_CLUSTER_SOURCE_RADIUS: Final = 1.0
 TRUE_CHAIN_CONTACT_CLUSTER_MIN_CANDIDATES: Final = 2
 TRUE_CHAIN_CONTACT_HALF_BEAD_SNAP_FRACTION: Final = 0.75
 TRUE_CHAIN_CONTACT_HALF_BEAD_SNAP_SOURCE_OFFSET: Final = 0.4
+TRUE_CHAIN_CONTACT_SECOND_SOURCE_SNAP_OFFSET: Final = 0.58
 TRUE_CHAIN_REPEATED_SINGLE_TARGET_MIN_CANDIDATES: Final = 3
 TRUE_CHAIN_REPEATED_SINGLE_TARGET_MAX_FIRST_SOURCE: Final = 2.0
 TRUE_CHAIN_REPEATED_SINGLE_TARGET_SOURCE_SNAP_OFFSET: Final = 1.5
@@ -1446,7 +1447,7 @@ def _select_true_chain_contact_cluster(
     selected = _deduplicate_true_chain_contact_cluster(cluster)
     if len(selected) == 0:
         return _select_repeated_single_target_true_chain_contact(candidates, cluster)
-    return _snap_first_true_chain_contact_source(selected)
+    return _snap_true_chain_contact_cluster_sources(selected)
 
 
 def _select_repeated_single_target_true_chain_contact(
@@ -1659,7 +1660,7 @@ def _deduplicate_true_chain_contact_cluster(
     return tuple(selected)
 
 
-def _snap_first_true_chain_contact_source(
+def _snap_true_chain_contact_cluster_sources(
     candidates: tuple[_TrueChainContactCandidate, ...],
 ) -> tuple[_TrueChainContactCandidate, ...]:
     if len(candidates) != TRUE_CHAIN_CONTACT_CLUSTER_MIN_CANDIDATES:
@@ -1682,7 +1683,13 @@ def _snap_first_true_chain_contact_source(
             first,
             source_bead=source_anchor + TRUE_CHAIN_CONTACT_HALF_BEAD_SNAP_SOURCE_OFFSET,
         ),
-        second,
+        replace(
+            second,
+            source_bead=(
+                floor(second.source_bead)
+                + TRUE_CHAIN_CONTACT_SECOND_SOURCE_SNAP_OFFSET
+            ),
+        ),
     )
 
 
