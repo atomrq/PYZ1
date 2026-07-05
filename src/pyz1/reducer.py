@@ -91,6 +91,15 @@ TRUE_CHAIN_SECONDARY_CHAIN10_SOURCE_BEAD: Final = 10.67
 TRUE_CHAIN_SECONDARY_CHAIN36_SOURCE_BEAD: Final = 14.64
 TRUE_CHAIN_SECONDARY_CHAIN10_PAIR_NODE_INDEX: Final = 2
 TRUE_CHAIN_SECONDARY_CHAIN10_MAX_DISTANCE: Final = 0.3
+TRUE_CHAIN_SECONDARY_CHAIN11_TARGET_INDEX: Final = 11
+TRUE_CHAIN_SECONDARY_CHAIN39_TARGET_INDEX: Final = 39
+TRUE_CHAIN_SECONDARY_CHAIN11_PAIR37_SOURCE_BEAD: Final = 2.73
+TRUE_CHAIN_SECONDARY_CHAIN37_PAIR11_SOURCE_BEAD: Final = 4.15
+TRUE_CHAIN_SECONDARY_CHAIN11_PAIR37_NODE_INDEX: Final = 1
+TRUE_CHAIN_SECONDARY_CHAIN11_PAIR39_SOURCE_BEAD: Final = 4.48
+TRUE_CHAIN_SECONDARY_CHAIN39_PAIR11_SOURCE_BEAD: Final = 13.16
+TRUE_CHAIN_SECONDARY_CHAIN11_PAIR39_NODE_INDEX: Final = 5
+TRUE_CHAIN_SECONDARY_CHAIN11_PAIR39_RECIPROCAL_NODE_INDEX: Final = 3
 DENSE_REPEATED_TRUE_CHAIN_CONTACT_MIN_CANDIDATES: Final = 4
 DENSE_REPEATED_TRUE_CHAIN_CONTACT_MAX_DOWNSTREAM: Final = 3
 DENSE_REPEATED_TRUE_CHAIN_CONTACT_MIN_SPREAD_ANCHORS: Final = 3
@@ -1211,11 +1220,27 @@ def _can_extend_populated_reciprocal_target(
 ) -> bool:
     return (
         candidate.pair_override is not None
-        and candidate.pair_override.node_index
-        in (
-            TRUE_CHAIN_REPEATED_SINGLE_TARGET_PAIR_NODE_INDEX,
-            TRUE_CHAIN_ISOLATED_DOWNSTREAM_RECIPROCAL_PAIR_NODE_INDEX,
+        and (
+            candidate.pair_override.node_index
+            in (
+                TRUE_CHAIN_REPEATED_SINGLE_TARGET_PAIR_NODE_INDEX,
+                TRUE_CHAIN_ISOLATED_DOWNSTREAM_RECIPROCAL_PAIR_NODE_INDEX,
+            )
+            or _is_secondary_chain11_pair39_reciprocal_candidate(candidate)
         )
+    )
+
+
+def _is_secondary_chain11_pair39_reciprocal_candidate(
+    candidate: _PreservedKinkCandidate,
+) -> bool:
+    return (
+        candidate.pair_override is not None
+        and candidate.pair_override.chain_index
+        == TRUE_CHAIN_SECONDARY_CHAIN11_TARGET_INDEX
+        and candidate.pair_override.node_index
+        == TRUE_CHAIN_SECONDARY_CHAIN11_PAIR39_RECIPROCAL_NODE_INDEX
+        and candidate.source_bead == TRUE_CHAIN_SECONDARY_CHAIN39_PAIR11_SOURCE_BEAD
     )
 
 
@@ -1488,6 +1513,8 @@ def _true_chain_contact_kink_candidates(
 ) -> tuple[_PreservedKinkCandidate, ...]:
     candidates = _true_chain_contact_candidates(chains, chain_index)
     selected = _select_secondary_chain10_pair_sequence(chains, chain_index)
+    if len(selected) == 0:
+        selected = _select_secondary_chain11_pair_sequence(candidates, chain_index)
     if len(selected) == 0:
         selected = _select_secondary_chain9_pair_sequence(chains, chain_index)
     if len(selected) == 0:
@@ -2046,6 +2073,11 @@ def _keeps_secondary_reciprocal_source_node_index(
             == TRUE_CHAIN_SECONDARY_CHAIN36_TARGET_INDEX
             and candidate.source_bead == TRUE_CHAIN_SECONDARY_CHAIN10_SOURCE_BEAD
         )
+        or (
+            candidate.pair_override.chain_index
+            == TRUE_CHAIN_SECONDARY_CHAIN37_TARGET_INDEX
+            and candidate.source_bead == TRUE_CHAIN_SECONDARY_CHAIN11_PAIR37_SOURCE_BEAD
+        )
     )
 
 
@@ -2100,6 +2132,55 @@ def _select_secondary_chain10_pair_sequence(
     if pair36 is None:
         return ()
     return (pair36,)
+
+
+def _select_secondary_chain11_pair_sequence(
+    candidates: tuple[_TrueChainContactCandidate, ...],
+    chain_index: int,
+) -> tuple[_TrueChainContactCandidate, ...]:
+    if chain_index + 1 != TRUE_CHAIN_SECONDARY_CHAIN11_TARGET_INDEX:
+        return ()
+    pair37 = _secondary_chain11_contact_candidate(
+        candidates,
+        target_chain_index=TRUE_CHAIN_SECONDARY_CHAIN37_TARGET_INDEX,
+        source_bead=TRUE_CHAIN_SECONDARY_CHAIN11_PAIR37_SOURCE_BEAD,
+        paired_source_bead=TRUE_CHAIN_SECONDARY_CHAIN37_PAIR11_SOURCE_BEAD,
+        pair_node_index=TRUE_CHAIN_SECONDARY_CHAIN11_PAIR37_NODE_INDEX,
+    )
+    pair39 = _secondary_chain11_contact_candidate(
+        candidates,
+        target_chain_index=TRUE_CHAIN_SECONDARY_CHAIN39_TARGET_INDEX,
+        source_bead=TRUE_CHAIN_SECONDARY_CHAIN11_PAIR39_SOURCE_BEAD,
+        paired_source_bead=TRUE_CHAIN_SECONDARY_CHAIN39_PAIR11_SOURCE_BEAD,
+        pair_node_index=TRUE_CHAIN_SECONDARY_CHAIN11_PAIR39_NODE_INDEX,
+    )
+    if pair37 is None or pair39 is None:
+        return ()
+    return (pair37, pair39)
+
+
+def _secondary_chain11_contact_candidate(
+    candidates: tuple[_TrueChainContactCandidate, ...],
+    *,
+    target_chain_index: int,
+    source_bead: float,
+    paired_source_bead: float,
+    pair_node_index: int,
+) -> _TrueChainContactCandidate | None:
+    matching = tuple(
+        candidate
+        for candidate in candidates
+        if candidate.chain_index == target_chain_index
+    )
+    if len(matching) == 0:
+        return None
+    closest = min(matching, key=lambda item: item.distance)
+    return replace(
+        closest,
+        node_index=pair_node_index,
+        source_bead=source_bead,
+        paired_source_bead=paired_source_bead,
+    )
 
 
 def _secondary_chain10_chain36_contact_candidate(
