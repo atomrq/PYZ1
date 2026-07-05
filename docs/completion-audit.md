@@ -26,21 +26,20 @@ evidence still leaves scientific and scalability boundaries open.
 
 Latest gate artifacts:
 
-- `.omo/evidence/task-130-chain18-spplus-residual/pytest.txt`:
-  remote GPU-cluster split: `71 passed`, `32 passed`, `16 passed`, and SP+
-  shards `9/9/9/9/9/9 passed`
-- `.omo/evidence/task-130-chain18-spplus-residual/ruff.txt`:
+- `.omo/evidence/task-131-chain22-spplus-residual/pytest.txt`:
+  remote GPU-cluster split: `40 passed`, `40 passed`, `39 passed`, and SP+
+  shards `10/9/9/9/9/9 passed`
+- `.omo/evidence/task-131-chain22-spplus-residual/ruff.txt`:
   `All checks passed!`
-- `.omo/evidence/task-130-chain18-spplus-residual/basedpyright.txt`:
+- `.omo/evidence/task-131-chain22-spplus-residual/basedpyright.txt`:
   `0 errors, 0 warnings, 0 notes`
-- `.omo/evidence/task-130-chain18-spplus-residual/package-smoke.txt`:
+- `.omo/evidence/task-131-chain22-spplus-residual/package-smoke.txt`:
   `1 passed`
-- `.omo/evidence/task-130-chain18-spplus-residual/diff-check.txt`:
+- `.omo/evidence/task-131-chain22-spplus-residual/diff-check.txt`:
   `git diff --check passed`
-- `.omo/evidence/task-130-chain18-spplus-residual/cluster-v1/sacct-all.txt`:
-  final remote Slurm gate jobs `416019`-`416021`, `416023`-`416028`, and
-  `416031`-`416034` completed with `0:0` exit codes; earlier task-130 RED and
-  intermediate GREEN/aggregate-fix jobs are retained in the same accounting file
+- `.omo/evidence/task-131-chain22-spplus-residual/cluster-v2/sacct-all.txt`:
+  final remote Slurm gate jobs `416059`-`416071` completed with `0:0` exit
+  codes after the RED assertion (`416038`) and focused GREEN trio (`416058`)
 - `.omo/evidence/task-68-winding-number-surface/default-spplus-01-05-convex-coverage.txt`:
   benchmark-04 default/SP+ are `passed`; benchmark-03 SP+ keeps
   `node_count_mismatches=0`, `pairing_mismatches=0`, and matching
@@ -451,6 +450,14 @@ Latest gate artifacts:
   mismatches improve from `43` to `42`, and `Z` delta improves from `0.08` to
   `0.04`; `Lpp` delta moves from `0.612388` to `0.631095`, so downstream
   geometry, remaining pair-detail coverage, and summary mismatches remain open
+- `.omo/evidence/task-131-chain22-spplus-residual/benchmark-04-05-spplus.md`:
+  benchmark-04 SP+ remains `passed`; benchmark-05 SP+ remains `mismatch`, but
+  benchmark-05 chain 22 now keeps oracle-local one-way pair `(4.84,25,2)` while
+  chain 25 remains `((11.67,3,2),(15.83,40,2))` without a chain22 reciprocal;
+  final nodes remain `168`, node-count mismatches remain `16`, pair mismatches
+  remain `42`, and `Z` delta remains `0.04`; `Lpp` delta moves from
+  `0.631095` to `0.644068`, so downstream geometry, remaining pair-detail
+  coverage, and summary mismatches remain open
 - `.omo/evidence/task-53-reducer-index/default-spplus-after-index.txt`:
   benchmarks 01-05 default/SP+ are `mismatch`; benchmarks 06-14 default/SP+
   are `known-invalid` under `node_count>1000`
