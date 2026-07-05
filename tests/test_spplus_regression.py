@@ -432,7 +432,7 @@ def test_reduce_snapshot_when_benchmark05_chain2_places_first_pair13_source() ->
         for node in result.shortest_path.chains[1].nodes[1:-1]
         if node.pair is not None and node.pair.chain_index == 13
     )
-    assert chain_2_pair_13_sources[0] < 8.1
+    assert 8.049 < chain_2_pair_13_sources[0] < 8.051
 
 
 def test_reduce_snapshot_when_benchmark05_chain2_places_second_pair13_source() -> None:
@@ -445,7 +445,7 @@ def test_reduce_snapshot_when_benchmark05_chain2_places_second_pair13_source() -
         for node in result.shortest_path.chains[1].nodes[1:-1]
         if node.pair is not None and node.pair.chain_index == 13
     )
-    assert chain_2_pair_13_sources[1] > 11.94
+    assert 11.949 < chain_2_pair_13_sources[1] < 11.951
 
 
 def test_reduce_snapshot_when_benchmark05_chain2_keeps_tail_contact() -> None:
