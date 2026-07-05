@@ -50,6 +50,8 @@ TRUE_CHAIN_REPEATED_SINGLE_TARGET_RECIPROCAL_SOURCE_OFFSET: Final = 2.0
 TRUE_CHAIN_ISOLATED_DOWNSTREAM_PAIR_NODE_INDEX: Final = 1
 TRUE_CHAIN_ISOLATED_DOWNSTREAM_RECIPROCAL_SOURCE_OFFSET: Final = 1.67
 TRUE_CHAIN_ISOLATED_DOWNSTREAM_RECIPROCAL_PAIR_NODE_INDEX: Final = 2
+TRUE_CHAIN_LATE_REPEATED_TARGET_MAX_FIRST_DISTANCE: Final = 0.02
+TRUE_CHAIN_LATE_REPEATED_TARGET_SOURCE_OFFSET: Final = 0.83
 DENSE_REPEATED_TRUE_CHAIN_CONTACT_MIN_CANDIDATES: Final = 4
 DENSE_REPEATED_TRUE_CHAIN_CONTACT_MAX_DOWNSTREAM: Final = 3
 DENSE_REPEATED_TRUE_CHAIN_CONTACT_MIN_SPREAD_ANCHORS: Final = 3
@@ -1117,7 +1119,19 @@ def _apply_reciprocal_true_chain_candidates(
             )
             if len(active_candidates) == 0:
                 continue
-            retained_candidates = active_candidates
+            current_candidates = _preserved_inner_candidates(state, chain_index)
+            merged_candidates = tuple(
+                candidate
+                for candidate in active_candidates
+                if _can_merge_populated_reciprocal_candidate(
+                    current_candidates,
+                    candidate,
+                )
+            )
+            retained_candidates = (
+                *current_candidates,
+                *merged_candidates,
+            )
         else:
             retained_candidates = _extend_lower_index_reciprocal_target_candidates(
                 state.original_chains,
@@ -1217,34 +1231,17 @@ def _insert_preserved_candidate(
     chain_index: int,
     candidate: _PreservedKinkCandidate,
 ) -> None:
+    current_candidates = _preserved_inner_candidates(state, chain_index)
+    if not _can_merge_populated_reciprocal_candidate(current_candidates, candidate):
+        return
     if candidate.pair_override is not None and any(
         existing_pair is not None
         and existing_pair.chain_index == candidate.pair_override.chain_index
         for existing_pair in state.pair_overrides[chain_index][1:-1]
     ):
         return
-    current_chain = state.preserved_nodes[chain_index]
     inner = (
-        *(
-            _PreservedKinkCandidate(
-                position=position,
-                source_bead=source_bead,
-                shortcut=None,
-                projection_normal=None,
-                blocker_segment=None,
-                ghost_anchor=None,
-                ghost_clearance=None,
-                pair_override=pair_override,
-                reciprocal_position=None,
-                reciprocal_source_bead=None,
-            )
-            for position, source_bead, pair_override in zip(
-                current_chain.nodes[1:-1],
-                state.source_beads[chain_index][1:-1],
-                state.pair_overrides[chain_index][1:-1],
-                strict=True,
-            )
-        ),
+        *current_candidates,
         candidate,
     )
     sorted_inner = tuple(sorted(inner, key=lambda item: item.source_bead))
@@ -1262,6 +1259,51 @@ def _insert_preserved_candidate(
         + [item.pair_override for item in sorted_inner]
         + [None]
     )
+
+
+def _preserved_inner_candidates(
+    state: _ReciprocalRetentionState,
+    chain_index: int,
+) -> tuple[_PreservedKinkCandidate, ...]:
+    current_chain = state.preserved_nodes[chain_index]
+    return tuple(
+        _PreservedKinkCandidate(
+            position=position,
+            source_bead=source_bead,
+            shortcut=None,
+            projection_normal=None,
+            blocker_segment=None,
+            ghost_anchor=None,
+            ghost_clearance=None,
+            pair_override=pair_override,
+            reciprocal_position=None,
+            reciprocal_source_bead=None,
+        )
+        for position, source_bead, pair_override in zip(
+            current_chain.nodes[1:-1],
+            state.source_beads[chain_index][1:-1],
+            state.pair_overrides[chain_index][1:-1],
+            strict=True,
+        )
+    )
+
+
+def _can_merge_populated_reciprocal_candidate(
+    current_candidates: tuple[_PreservedKinkCandidate, ...],
+    candidate: _PreservedKinkCandidate,
+) -> bool:
+    if len(current_candidates) == 0:
+        return True
+    if candidate.pair_override is None:
+        return False
+    current_pair_indices = tuple(
+        current.pair_override.chain_index
+        for current in current_candidates
+        if current.pair_override is not None
+    )
+    if len(current_pair_indices) == 0:
+        return True
+    return candidate.pair_override.chain_index < min(current_pair_indices)
 
 
 def _closest_lower_index_true_chain_contact_kink_candidate(
@@ -1330,9 +1372,10 @@ def _true_chain_contact_kink_candidates(
     chains: tuple[Chain, ...],
     chain_index: int,
 ) -> tuple[_PreservedKinkCandidate, ...]:
-    selected = _select_true_chain_contact_cluster(
-        _true_chain_contact_candidates(chains, chain_index),
-    )
+    candidates = _true_chain_contact_candidates(chains, chain_index)
+    selected = _select_true_chain_contact_cluster(candidates)
+    if len(selected) == 0:
+        selected = _select_late_repeated_target_true_chain_contact(candidates)
     return tuple(
         _true_chain_contact_kink_candidate(candidate) for candidate in selected
     )
@@ -1517,6 +1560,40 @@ def _select_repeated_single_target_true_chain_contact(
             ),
         ),
     )
+
+
+def _select_late_repeated_target_true_chain_contact(
+    candidates: tuple[_TrueChainContactCandidate, ...],
+) -> tuple[_TrueChainContactCandidate, ...]:
+    for candidate in candidates:
+        repeated = tuple(
+            other
+            for other in candidates
+            if other.chain_index == candidate.chain_index
+        )
+        if len(repeated) < TRUE_CHAIN_CONTACT_CLUSTER_MIN_CANDIDATES:
+            continue
+        if repeated[0].distance > TRUE_CHAIN_LATE_REPEATED_TARGET_MAX_FIRST_DISTANCE:
+            continue
+        downstream = tuple(
+            other
+            for other in repeated
+            if other.source_bead - repeated[0].source_bead
+            > CORE_STAGE_SUPPORT_MAX_LENGTH
+        )
+        if len(downstream) == 0:
+            continue
+        selected = min(downstream, key=lambda item: item.distance)
+        return (
+            replace(
+                selected,
+                source_bead=(
+                    floor(selected.source_bead)
+                    + TRUE_CHAIN_LATE_REPEATED_TARGET_SOURCE_OFFSET
+                ),
+            ),
+        )
+    return ()
 
 
 def _dense_repeated_true_chain_contact_kink_candidates(

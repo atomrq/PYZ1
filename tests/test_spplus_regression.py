@@ -317,7 +317,7 @@ def test_write_benchmark_regression_report_when_convex_candidates_cover_oracle(
     assert benchmark_05.oracle_true_chain_pair_sequence == (40, 26)
     assert benchmark_05.pyz1_true_chain_pair_node_sequence == (3, 2)
     assert benchmark_05.oracle_true_chain_pair_node_sequence == (3, 2)
-    assert benchmark_05.node_count_mismatches == 36
+    assert benchmark_05.node_count_mismatches == 32
     assert benchmark_05.pyz1_convex_winding_missing_oracle_sequence == (40, 26)
     assert "pyz1 convex winding candidates" in text
     assert "pyz1 true-chain contact candidate sequence" in text
@@ -544,6 +544,23 @@ def test_reduce_snapshot_when_benchmark05_chain25_uses_pair3_reciprocal() -> Non
         if node.pair is not None and node.pair.chain_index == 3
     )
     assert chain_25_pair_3 == ((11.67, 2),)
+
+
+def test_reduce_snapshot_when_benchmark05_chain25_places_pair40_source() -> None:
+    snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-05.Z1")
+
+    result = reduce_snapshot(snapshot, ReducerSettings(pairing_enabled=True))
+
+    chain_25_pairs = tuple(
+        (
+            node.source_bead,
+            node.pair.chain_index,
+            node.pair.node_index,
+        )
+        for node in result.shortest_path.chains[24].nodes[1:-1]
+        if node.pair is not None
+    )
+    assert chain_25_pairs == ((11.67, 3, 2), (15.83, 40, 2))
 
 
 def test_reduce_snapshot_when_benchmark05_chain1_places_pair40_source() -> None:
