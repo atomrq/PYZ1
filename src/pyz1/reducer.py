@@ -47,6 +47,7 @@ TRUE_CHAIN_REPEATED_SINGLE_TARGET_MAX_FIRST_SOURCE: Final = 2.0
 TRUE_CHAIN_REPEATED_SINGLE_TARGET_SOURCE_SNAP_OFFSET: Final = 1.5
 TRUE_CHAIN_REPEATED_SINGLE_TARGET_PAIR_NODE_INDEX: Final = 1
 TRUE_CHAIN_REPEATED_SINGLE_TARGET_RECIPROCAL_SOURCE_OFFSET: Final = 2.0
+TRUE_CHAIN_ISOLATED_DOWNSTREAM_PAIR_NODE_INDEX: Final = 1
 DENSE_REPEATED_TRUE_CHAIN_CONTACT_MIN_CANDIDATES: Final = 4
 DENSE_REPEATED_TRUE_CHAIN_CONTACT_MAX_DOWNSTREAM: Final = 3
 DENSE_REPEATED_TRUE_CHAIN_CONTACT_MIN_SPREAD_ANCHORS: Final = 3
@@ -1448,7 +1449,35 @@ def _select_true_chain_contact_cluster(
     selected = _deduplicate_true_chain_contact_cluster(cluster)
     if len(selected) == 0:
         return _select_repeated_single_target_true_chain_contact(candidates, cluster)
+    isolated_downstream = _select_isolated_downstream_true_chain_contact(
+        candidates,
+        selected,
+    )
+    if isolated_downstream is not None:
+        return (isolated_downstream,)
     return _snap_true_chain_contact_cluster_sources(selected)
+
+
+def _select_isolated_downstream_true_chain_contact(
+    candidates: tuple[_TrueChainContactCandidate, ...],
+    selected: tuple[_TrueChainContactCandidate, ...],
+) -> _TrueChainContactCandidate | None:
+    if selected[0].source_bead > CORE_STAGE_SUPPORT_MAX_LENGTH:
+        return None
+    downstream = tuple(
+        candidate
+        for candidate in candidates
+        if candidate.source_bead - selected[-1].source_bead
+        > CORE_STAGE_SUPPORT_MAX_LENGTH
+    )
+    if len(downstream) != 1:
+        return None
+    candidate = downstream[0]
+    return replace(
+        candidate,
+        node_index=TRUE_CHAIN_ISOLATED_DOWNSTREAM_PAIR_NODE_INDEX,
+        source_bead=float(floor(candidate.source_bead)),
+    )
 
 
 def _select_repeated_single_target_true_chain_contact(
