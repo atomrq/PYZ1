@@ -675,7 +675,7 @@ def test_reduce_snapshot_when_benchmark05_chain9_matches_oracle_pair_sequence() 
         for node in result.shortest_path.chains[26].nodes[1:-1]
         if node.pair is not None
     )
-    assert (2.43, 9, 2) in chain_27_pairs
+    assert chain_27_pairs == ((2.43, 9, 2), (6.71, 19, 1))
 
 
 def test_reduce_snapshot_when_benchmark05_chain10_matches_oracle_pair() -> None:

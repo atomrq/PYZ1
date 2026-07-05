@@ -976,6 +976,21 @@ summary mismatches remain open. The final task-132 gate ran on the GPU cluster
 with split Slurm jobs; evidence is under
 `.omo/evidence/task-132-chain26-spplus-residual/cluster-v1/`.
 
+Task-133 aligns the benchmark-05 chain27 second one-way true-chain contact to
+the oracle-local chain19 placement while preserving the existing chain9
+reciprocal and avoiding an extra chain19 reciprocal. Evidence in
+`.omo/evidence/task-133-chain27-spplus-residual/benchmark-04-05-spplus.md`
+shows benchmark-04 SP+ remains `passed`; benchmark-05 SP+ remains `mismatch`,
+but chain27 now keeps `(2.43,9,2)` and `(6.71,19,1)`, chain19 remains at
+`(3.5,12,2)`, and the previous `c27n3[12->19]: 7.46935!=6.71` source
+residual is removed from the residual prefix. Final nodes stay at `168`,
+node-count mismatches stay at `16`, pair mismatches stay at `42`, and `Z`
+delta stays at `0.04`; `Lpp` delta moves from `0.644068` to `0.649629`, so
+downstream geometry, remaining pair-detail coverage, and summary mismatches
+remain open. The final task-133 gate ran on the GPU cluster with split Slurm
+jobs; evidence is under
+`.omo/evidence/task-133-chain27-spplus-residual/`.
+
 ## Open Boundaries
 
 The following are intentionally not claimed complete:
@@ -1021,7 +1036,9 @@ The following are intentionally not claimed complete:
   sequence while preserving chain4 into chain18, and task-131 aligns the
   chain22 one-way source placement to chain25 without adding a chain25
   reciprocal, and task-132 aligns the chain26 reciprocal source for the
-  existing chain1 pair26 contact; these cumulatively
+  existing chain1 pair26 contact, and task-133 aligns the chain27 second
+  one-way true-chain contact to chain19 without adding a chain19 reciprocal;
+  these cumulatively
   improve benchmark-05 local source residuals and parts of the pair topology
   while leaving downstream geometry, remaining reciprocal coverage, node-count,
   pair-detail, and summary mismatches open.
