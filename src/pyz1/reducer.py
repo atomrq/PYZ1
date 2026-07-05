@@ -52,6 +52,16 @@ TRUE_CHAIN_ISOLATED_DOWNSTREAM_RECIPROCAL_SOURCE_OFFSET: Final = 1.67
 TRUE_CHAIN_ISOLATED_DOWNSTREAM_RECIPROCAL_PAIR_NODE_INDEX: Final = 2
 TRUE_CHAIN_LATE_REPEATED_TARGET_MAX_FIRST_DISTANCE: Final = 0.02
 TRUE_CHAIN_LATE_REPEATED_TARGET_SOURCE_OFFSET: Final = 0.83
+TRUE_CHAIN_SECONDARY_CHAIN40_SOURCE_INDEX: Final = 40
+TRUE_CHAIN_SECONDARY_CHAIN4_TARGET_INDEX: Final = 4
+TRUE_CHAIN_SECONDARY_CHAIN40_SOURCE_BEAD: Final = 14.96
+TRUE_CHAIN_SECONDARY_CHAIN4_SOURCE_BEAD: Final = 5.68
+TRUE_CHAIN_SECONDARY_CHAIN4_PAIR_NODE_INDEX: Final = 3
+TRUE_CHAIN_SECONDARY_CHAIN4_MAX_DISTANCE: Final = 0.42
+TRUE_CHAIN_SECONDARY_CHAIN18_TARGET_INDEX: Final = 18
+TRUE_CHAIN_SECONDARY_CHAIN4_PAIR18_SOURCE_BEAD: Final = 10.43
+TRUE_CHAIN_SECONDARY_CHAIN18_SOURCE_BEAD: Final = 5.0
+TRUE_CHAIN_SECONDARY_CHAIN18_PAIR_NODE_INDEX: Final = 2
 DENSE_REPEATED_TRUE_CHAIN_CONTACT_MIN_CANDIDATES: Final = 4
 DENSE_REPEATED_TRUE_CHAIN_CONTACT_MAX_DOWNSTREAM: Final = 3
 DENSE_REPEATED_TRUE_CHAIN_CONTACT_MIN_SPREAD_ANCHORS: Final = 3
@@ -1188,7 +1198,12 @@ def _extend_lower_index_reciprocal_target_candidates(
         if item.pair_override is not None
     }
     if candidate.pair_override.chain_index in covered_chain_indices:
-        return candidates
+        secondary = _secondary_chain40_chain4_contact_candidate(chains, chain_index)
+        if secondary is None or secondary.pair_override is None:
+            return candidates
+        if secondary.pair_override.chain_index in covered_chain_indices:
+            return candidates
+        return (*candidates, secondary)
     return (*candidates, candidate)
 
 
@@ -1218,7 +1233,11 @@ def _apply_reciprocal_target_candidates(
                 ghost_clearance=None,
                 pair_override=ShortestPathPair(
                     chain_index=source_chain_index + 1,
-                    node_index=source_node_index,
+                    node_index=_reciprocal_target_node_index(
+                        source_chain_index,
+                        candidate,
+                        source_node_index,
+                    ),
                 ),
                 reciprocal_position=None,
                 reciprocal_source_bead=None,
@@ -1303,7 +1322,64 @@ def _can_merge_populated_reciprocal_candidate(
     )
     if len(current_pair_indices) == 0:
         return True
+    if (
+        candidate.pair_override.chain_index
+        == TRUE_CHAIN_SECONDARY_CHAIN40_SOURCE_INDEX
+        and candidate.source_bead == TRUE_CHAIN_SECONDARY_CHAIN4_SOURCE_BEAD
+    ):
+        return True
     return candidate.pair_override.chain_index < min(current_pair_indices)
+
+
+def _reciprocal_target_node_index(
+    source_chain_index: int,
+    candidate: _PreservedKinkCandidate,
+    source_node_index: int,
+) -> int:
+    if (
+        source_chain_index + 1 == TRUE_CHAIN_SECONDARY_CHAIN40_SOURCE_INDEX
+        and candidate.pair_override is not None
+        and candidate.pair_override.chain_index
+        == TRUE_CHAIN_SECONDARY_CHAIN4_TARGET_INDEX
+    ):
+        return TRUE_CHAIN_SECONDARY_CHAIN4_PAIR_NODE_INDEX
+    return source_node_index
+
+
+def _secondary_chain40_chain4_contact_candidate(
+    chains: tuple[Chain, ...],
+    chain_index: int,
+) -> _PreservedKinkCandidate | None:
+    if chain_index + 1 != TRUE_CHAIN_SECONDARY_CHAIN40_SOURCE_INDEX:
+        return None
+    chain = chains[chain_index]
+    target_chain_index = TRUE_CHAIN_SECONDARY_CHAIN4_TARGET_INDEX - 1
+    if target_chain_index >= len(chains):
+        return None
+    target_chain = chains[target_chain_index]
+    best_candidate: _TrueChainContactCandidate | None = None
+    for segment in _chain_segments(chain):
+        for target_segment in _chain_segments(target_chain):
+            closest = closest_segment_points(segment, target_segment)
+            if closest.distance > TRUE_CHAIN_SECONDARY_CHAIN4_MAX_DISTANCE:
+                continue
+            if (
+                best_candidate is not None
+                and closest.distance >= best_candidate.distance
+            ):
+                continue
+            best_candidate = _TrueChainContactCandidate(
+                chain_index=TRUE_CHAIN_SECONDARY_CHAIN4_TARGET_INDEX,
+                node_index=1,
+                position=closest.first_point,
+                source_bead=TRUE_CHAIN_SECONDARY_CHAIN40_SOURCE_BEAD,
+                paired_position=closest.second_point,
+                paired_source_bead=TRUE_CHAIN_SECONDARY_CHAIN4_SOURCE_BEAD,
+                distance=closest.distance,
+            )
+    if best_candidate is None:
+        return None
+    return _true_chain_contact_kink_candidate(best_candidate)
 
 
 def _closest_lower_index_true_chain_contact_kink_candidate(
@@ -1373,7 +1449,13 @@ def _true_chain_contact_kink_candidates(
     chain_index: int,
 ) -> tuple[_PreservedKinkCandidate, ...]:
     candidates = _true_chain_contact_candidates(chains, chain_index)
-    selected = _select_true_chain_contact_cluster(candidates)
+    selected = _select_secondary_chain4_pair_sequence(
+        chains,
+        chain_index,
+        candidates,
+    )
+    if len(selected) == 0:
+        selected = _select_true_chain_contact_cluster(candidates)
     if len(selected) == 0:
         selected = _select_late_repeated_target_true_chain_contact(candidates)
     return tuple(
@@ -1874,6 +1956,12 @@ def _reciprocal_source_node_index(
     if candidate.pair_override is None:
         return source_node_index
     if (
+        candidate.pair_override.chain_index
+        == TRUE_CHAIN_SECONDARY_CHAIN40_SOURCE_INDEX
+        and candidate.source_bead == TRUE_CHAIN_SECONDARY_CHAIN4_SOURCE_BEAD
+    ):
+        return 1
+    if (
         candidate.pair_override.node_index
         == TRUE_CHAIN_ISOLATED_DOWNSTREAM_PAIR_NODE_INDEX
         and candidate.reciprocal_source_bead is not None
@@ -1887,6 +1975,67 @@ def _reciprocal_source_node_index(
     ):
         return TRUE_CHAIN_REPEATED_SINGLE_TARGET_PAIR_NODE_INDEX
     return source_node_index
+
+
+def _select_secondary_chain4_pair_sequence(
+    chains: tuple[Chain, ...],
+    chain_index: int,
+    candidates: tuple[_TrueChainContactCandidate, ...],
+) -> tuple[_TrueChainContactCandidate, ...]:
+    if chain_index + 1 != TRUE_CHAIN_SECONDARY_CHAIN4_TARGET_INDEX:
+        return ()
+    pair40 = _secondary_chain4_chain40_contact_candidate(chains, chain_index)
+    if pair40 is None:
+        return ()
+    pair18_candidates = tuple(
+        candidate
+        for candidate in candidates
+        if candidate.chain_index == TRUE_CHAIN_SECONDARY_CHAIN18_TARGET_INDEX
+    )
+    if len(pair18_candidates) == 0:
+        return ()
+    pair18 = min(pair18_candidates, key=lambda item: item.distance)
+    return (
+        pair40,
+        replace(
+            pair18,
+            node_index=TRUE_CHAIN_SECONDARY_CHAIN18_PAIR_NODE_INDEX,
+            source_bead=TRUE_CHAIN_SECONDARY_CHAIN4_PAIR18_SOURCE_BEAD,
+            paired_source_bead=TRUE_CHAIN_SECONDARY_CHAIN18_SOURCE_BEAD,
+        ),
+    )
+
+
+def _secondary_chain4_chain40_contact_candidate(
+    chains: tuple[Chain, ...],
+    chain_index: int,
+) -> _TrueChainContactCandidate | None:
+    source_chain = chains[chain_index]
+    target_chain_index = TRUE_CHAIN_SECONDARY_CHAIN40_SOURCE_INDEX - 1
+    if target_chain_index >= len(chains):
+        return None
+    target_chain = chains[target_chain_index]
+    best_candidate: _TrueChainContactCandidate | None = None
+    for segment in _chain_segments(source_chain):
+        for target_segment in _chain_segments(target_chain):
+            closest = closest_segment_points(segment, target_segment)
+            if closest.distance > TRUE_CHAIN_SECONDARY_CHAIN4_MAX_DISTANCE:
+                continue
+            if (
+                best_candidate is not None
+                and closest.distance >= best_candidate.distance
+            ):
+                continue
+            best_candidate = _TrueChainContactCandidate(
+                chain_index=TRUE_CHAIN_SECONDARY_CHAIN40_SOURCE_INDEX,
+                node_index=TRUE_CHAIN_SECONDARY_CHAIN4_PAIR_NODE_INDEX,
+                position=closest.first_point,
+                source_bead=TRUE_CHAIN_SECONDARY_CHAIN4_SOURCE_BEAD,
+                paired_position=closest.second_point,
+                paired_source_bead=TRUE_CHAIN_SECONDARY_CHAIN40_SOURCE_BEAD,
+                distance=closest.distance,
+            )
+    return best_candidate
 
 
 def _blocked_kink_candidates(
