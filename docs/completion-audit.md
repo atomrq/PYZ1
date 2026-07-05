@@ -26,13 +26,13 @@ evidence still leaves scientific and scalability boundaries open.
 
 Latest gate artifacts:
 
-- `.omo/evidence/task-119-chain4-spplus-residual/pytest.txt`:
-  `163 passed`
-- `.omo/evidence/task-119-chain4-spplus-residual/ruff.txt`:
+- `.omo/evidence/task-120-chain5-spplus-residual/pytest.txt`:
+  `164 passed`
+- `.omo/evidence/task-120-chain5-spplus-residual/ruff.txt`:
   `All checks passed!`
-- `.omo/evidence/task-119-chain4-spplus-residual/basedpyright.txt`:
+- `.omo/evidence/task-120-chain5-spplus-residual/basedpyright.txt`:
   `0 errors, 0 warnings, 0 notes`
-- `.omo/evidence/task-119-chain4-spplus-residual/package-smoke.txt`:
+- `.omo/evidence/task-120-chain5-spplus-residual/package-smoke.txt`:
   `1 passed`
 - `.omo/evidence/task-68-winding-number-surface/default-spplus-01-05-convex-coverage.txt`:
   benchmark-04 default/SP+ are `passed`; benchmark-03 SP+ keeps
@@ -343,6 +343,16 @@ Latest gate artifacts:
   `0.219134`, `Z` delta regresses from `0.20` to `0.24`, and pair mismatches
   regress from `55` to `60`, so downstream geometry, pair-detail, and summary
   mismatches remain open
+- `.omo/evidence/task-120-chain5-spplus-residual/benchmark-04-05-spplus.md`:
+  benchmark-04 SP+ remains `passed`; benchmark-05 SP+ remains `mismatch`, but
+  benchmark-05 chain 5 now matches the oracle-local SP+ pair sequence
+  `(6.67,16,1)` and chain 16 keeps the reciprocal `(3.0,5,2)`, removing the
+  chain5 residuals from the front of source residual details; final nodes move
+  from `158` to `157`, projection traces move from `35` to `34`, node-count
+  mismatches improve from `32` to `31`, `Lpp` delta changes from `0.219134` to
+  `0.219083`, `Z` delta regresses from `0.24` to `0.26`, and pair mismatches
+  remain `60`, so downstream geometry, pair-detail, and summary mismatches
+  remain open
 - `.omo/evidence/task-53-reducer-index/default-spplus-after-index.txt`:
   benchmarks 01-05 default/SP+ are `mismatch`; benchmarks 06-14 default/SP+
   are `known-invalid` under `node_count>1000`
