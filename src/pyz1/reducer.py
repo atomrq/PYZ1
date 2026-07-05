@@ -152,6 +152,7 @@ TRUE_CHAIN_SECONDARY_CHAIN35_PAIR24_SOURCE_BEAD: Final = 15.0
 TRUE_CHAIN_SECONDARY_CHAIN24_PAIR35_NODE_INDEX: Final = 2
 TRUE_CHAIN_SECONDARY_CHAIN24_PAIR35_RECIPROCAL_NODE_INDEX: Final = 1
 TRUE_CHAIN_SECONDARY_CHAIN24_PAIR35_MAX_DISTANCE: Final = 1.0
+TRUE_CHAIN_SECONDARY_CHAIN20_TARGET_INDEX: Final = 20
 TRUE_CHAIN_SECONDARY_CHAIN29_TARGET_INDEX: Final = 29
 TRUE_CHAIN_SECONDARY_CHAIN49_TARGET_INDEX: Final = 49
 TRUE_CHAIN_SECONDARY_CHAIN29_PAIR49_SOURCE_BEAD: Final = 6.33
@@ -1212,21 +1213,23 @@ def _preserve_close_contacts(
             + [candidate.pair_override for candidate in projected_candidates]
             + [None]
         )
-    _apply_reciprocal_true_chain_candidates(
-        _ReciprocalRetentionState(
-            preserved_nodes=preserved_nodes,
-            source_beads=source_beads,
-            pair_overrides=pair_overrides,
-            candidates=reciprocal_candidates,
-            original_chains=original_chains,
-            reduced_chains=reduced_chains,
-        ),
+    retention_state = _ReciprocalRetentionState(
+        preserved_nodes=preserved_nodes,
+        source_beads=source_beads,
+        pair_overrides=pair_overrides,
+        candidates=reciprocal_candidates,
+        original_chains=original_chains,
+        reduced_chains=reduced_chains,
     )
+    _apply_reciprocal_true_chain_candidates(retention_state)
+    _prune_secondary_chain20_pair49_contacts(retention_state)
     return _PreservedChains(
-        chains=tuple(preserved_nodes),
-        source_beads=tuple(tuple(chain_sources) for chain_sources in source_beads),
+        chains=tuple(retention_state.preserved_nodes),
+        source_beads=tuple(
+            tuple(chain_sources) for chain_sources in retention_state.source_beads
+        ),
         pair_overrides=tuple(
-            tuple(chain_overrides) for chain_overrides in pair_overrides
+            tuple(chain_overrides) for chain_overrides in retention_state.pair_overrides
         ),
         projection_traces=tuple(projection_traces),
     )
@@ -1304,6 +1307,27 @@ def _can_extend_populated_reciprocal_target(
             or _is_secondary_chain15_pair36_reciprocal_candidate(candidate)
         )
     )
+
+
+def _prune_secondary_chain20_pair49_contacts(
+    state: _ReciprocalRetentionState,
+) -> None:
+    chain_index = TRUE_CHAIN_SECONDARY_CHAIN20_TARGET_INDEX - 1
+    if chain_index >= len(state.preserved_nodes):
+        return
+    current_candidates = _preserved_inner_candidates(state, chain_index)
+    if len(current_candidates) == 0:
+        return
+    state.preserved_nodes[chain_index] = _insert_preserved_nodes(
+        state.reduced_chains[chain_index],
+        (),
+    )
+    state.source_beads[chain_index] = [
+        state.source_beads[chain_index][0],
+        state.source_beads[chain_index][-1],
+    ]
+    endpoint_pair_overrides: list[ShortestPathPair | None] = [None, None]
+    state.pair_overrides[chain_index] = endpoint_pair_overrides
 
 
 def _is_secondary_chain4_pair18_reciprocal_candidate(
