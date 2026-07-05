@@ -26,15 +26,15 @@ evidence still leaves scientific and scalability boundaries open.
 
 Latest gate artifacts:
 
-- `.omo/evidence/task-126-chain12-spplus-residual/pytest.txt`:
-  `170 passed`
-- `.omo/evidence/task-126-chain12-spplus-residual/ruff.txt`:
+- `.omo/evidence/task-127-chain13-spplus-residual/pytest.txt`:
+  `171 passed`
+- `.omo/evidence/task-127-chain13-spplus-residual/ruff.txt`:
   `All checks passed!`
-- `.omo/evidence/task-126-chain12-spplus-residual/basedpyright.txt`:
+- `.omo/evidence/task-127-chain13-spplus-residual/basedpyright.txt`:
   `0 errors, 0 warnings, 0 notes`
-- `.omo/evidence/task-126-chain12-spplus-residual/package-smoke.txt`:
+- `.omo/evidence/task-127-chain13-spplus-residual/package-smoke.txt`:
   `1 passed`
-- `.omo/evidence/task-126-chain12-spplus-residual/diff-check.txt`:
+- `.omo/evidence/task-127-chain13-spplus-residual/diff-check.txt`:
   `git diff --check passed`
 - `.omo/evidence/task-68-winding-number-surface/default-spplus-01-05-convex-coverage.txt`:
   benchmark-04 default/SP+ are `passed`; benchmark-03 SP+ keeps
@@ -411,6 +411,14 @@ Latest gate artifacts:
   improve from `51` to `47`, and `Lpp` delta improves from `0.710841` to
   `0.699096`; `Z` delta regresses from `0.08` to `0.10`, so downstream
   geometry, pair-detail, and summary mismatches remain open
+- `.omo/evidence/task-127-chain13-spplus-residual/benchmark-04-05-spplus.md`:
+  benchmark-04 SP+ remains `passed`; benchmark-05 SP+ remains `mismatch`, but
+  benchmark-05 chain 13 now keeps only the oracle-local pair `(4.0,2,3)`,
+  clearing chain13 residuals from the front of the source residual details;
+  final nodes move from `165` to `164`, node-count mismatches improve from
+  `23` to `22`, and pair mismatches improve from `47` to `44`; `Lpp` delta
+  remains `0.699096`, while `Z` delta regresses from `0.10` to `0.12`, so
+  downstream geometry, pair-detail, and summary mismatches remain open
 - `.omo/evidence/task-53-reducer-index/default-spplus-after-index.txt`:
   benchmarks 01-05 default/SP+ are `mismatch`; benchmarks 06-14 default/SP+
   are `known-invalid` under `node_count>1000`
