@@ -26,22 +26,23 @@ evidence still leaves scientific and scalability boundaries open.
 
 Latest gate artifacts:
 
-- `.omo/evidence/task-138-chain31-spplus-residual/pytest.txt`:
+- `.omo/evidence/task-139-chain32-spplus-residual/pytest.txt`:
   remote GPU-cluster split: non-SP shards `40/40/40 passed` and SP+
-  shards `9/9/9/9/9/8/8 passed`
-- `.omo/evidence/task-138-chain31-spplus-residual/ruff.txt`:
+  shards `9/9/9/9/9/9/8 passed`
+- `.omo/evidence/task-139-chain32-spplus-residual/ruff.txt`:
   `All checks passed!`
-- `.omo/evidence/task-138-chain31-spplus-residual/basedpyright.txt`:
+- `.omo/evidence/task-139-chain32-spplus-residual/basedpyright.txt`:
   `0 errors, 0 warnings, 0 notes`
-- `.omo/evidence/task-138-chain31-spplus-residual/package-smoke.txt`:
+- `.omo/evidence/task-139-chain32-spplus-residual/package-smoke.txt`:
   `1 passed`
-- `.omo/evidence/task-138-chain31-spplus-residual/diff-check.txt`:
+- `.omo/evidence/task-139-chain32-spplus-residual/diff-check.txt`:
   `git diff --check passed`
-- `.omo/evidence/task-138-chain31-spplus-residual/full-gate-sacct.txt`:
-  final remote Slurm gate jobs `416273`, `416274`, `416283_1`,
-  `416283_2`, `416284_0`-`416284_6`, `416295_0`, and `416296`
-  completed with `0:0` exit codes after the valid RED assertion (`416266`)
-  and focused GREEN (`416267`)
+- `.omo/evidence/task-139-chain32-spplus-residual/full-gate-sacct.txt`:
+  final remote Slurm gate jobs `416302_0`-`416302_2`,
+  `416303_0`-`416303_6`, `416305`, `416306`, and `416315`
+  completed with `0:0` exit codes after the valid RED assertion (`416298`),
+  focused GREEN (`416299`), and superseded duplicate-constant static attempt
+  (`416304`)
 - `.omo/evidence/task-68-winding-number-surface/default-spplus-01-05-convex-coverage.txt`:
   benchmark-04 default/SP+ are `passed`; benchmark-03 SP+ keeps
   `node_count_mismatches=0`, `pairing_mismatches=0`, and matching
@@ -520,6 +521,17 @@ Latest gate artifacts:
   `0.429298` to `0.501442`, and summary mismatches remain `9`, so
   chain32/34/37/39/42/46/48/49 geometry, final node count, pair details, and
   summary parity remain open
+- `.omo/evidence/task-139-chain32-spplus-residual/benchmark-04-05-spplus.md`:
+  benchmark-04 SP+ remains `passed`; benchmark-05 SP+ remains `mismatch`, but
+  benchmark-05 chain32 now matches the oracle pair sequence
+  `(2.8,11,3),(12.5,30,2),(16.25,34,4)`, removing the previous chain32
+  residual prefix entries while leaving the chain32->30 and chain32->34
+  contacts one-way; node-count mismatches improve from `8` to `7`, pair
+  mismatches improve from `30` to `27`, and `Z` delta improves from `0.08` to
+  `0.06`; final nodes move from `166` to `167`, `Lpp` delta regresses from
+  `0.501442` to `0.543559`, and summary mismatches remain `9`, so
+  chain34/37/39/40/42/46/48/49 geometry, final node count, pair details, and
+  summary parity remain open
 - `.omo/evidence/task-53-reducer-index/default-spplus-after-index.txt`:
   benchmarks 01-05 default/SP+ are `mismatch`; benchmarks 06-14 default/SP+
   are `known-invalid` under `node_count>1000`
@@ -528,7 +540,7 @@ Latest gate artifacts:
 
 | Boundary | Current evidence | Completion evidence required |
 | --- | --- | --- |
-| Full default/SP+ numerical parity | Benchmark-04 default/SP+ now report `passed` using formatted summary parity plus SP geometry/pairing checks and `source_mismatches=0`; benchmark-03 SP+ now matches first-chain obstacle sequence and reports zero node/pair mismatches, but task-66 records four source-bead residual details and a remaining max residual of `1.4679581658620817` plus summary/geometry mismatch; benchmark-01/02/05 remain `mismatch`; task-68 shows benchmark-01/02 oracle dumbbell obstacles are covered by a broader convex-hull candidate surface but with many extra candidates, task-69 shows the current source-gap/y-min convex selection still misses 11 benchmark-01 and 8 benchmark-02 oracle obstacles, task-70 records large oracle-obstacle source residuals even for covered oracle obstacles, task-71 rules out current blocked trace source carrying, task-72 shows oracle source assignment often uses non-nearest first-chain segments, task-73 shows source/order is a default-reducer output rather than SP+ pair annotation, task-74 confirms the Z1+ oracle core/final scan counters are now visible from `run.stdout`, task-75 turns source/order divergence into direct pyz1-vs-default-oracle sequence mismatch counts of 13/10/4/2 for benchmarks 01/02/03/05, task-76 records those divergences per source index including oracle-only trailing sources, task-86 makes benchmark-05's true-chain interaction gap direct with pyz1 pair `4` versus oracle `40,26`, task-87 shows oracle `40,26` are present in a true-chain contact candidate surface `6,40,26,12`, task-88 shows oracle default source nearest-contact selection recovers `40,26`, task-89 makes pyz1 retain true-chain pair sequence `40,26` for benchmark-05, task-90 exposes the benchmark-05 true-chain pair node-index gap as pyz1 `11,1` versus oracle `3,2`, task-91 aligns that node-index sequence to `3,2` while reducing pair mismatches from 70 to 68, tasks 92-138 progressively improve benchmark-05 reciprocal and local true-chain pair coverage through chain49, chain20, chain30, and chain31; task-138 aligns chain31 to oracle pairs `(5.66,46,2),(10.33,40,3)` and removes the previous chain31 residual prefix entries, while benchmark-05 still has chain32/34/37/39/42/46/48/49 geometry, node-count, pair-detail, and summary mismatches open; the public Z1+ tree lacks `module-Z1.f90`; benchmark-06+ remain guarded | Reported `passed` status or documented scientifically acceptable tolerance for all intended default/SP+ cases |
+| Full default/SP+ numerical parity | Benchmark-04 default/SP+ now report `passed` using formatted summary parity plus SP geometry/pairing checks and `source_mismatches=0`; benchmark-03 SP+ now matches first-chain obstacle sequence and reports zero node/pair mismatches, but task-66 records four source-bead residual details and a remaining max residual of `1.4679581658620817` plus summary/geometry mismatch; benchmark-01/02/05 remain `mismatch`; task-68 shows benchmark-01/02 oracle dumbbell obstacles are covered by a broader convex-hull candidate surface but with many extra candidates, task-69 shows the current source-gap/y-min convex selection still misses 11 benchmark-01 and 8 benchmark-02 oracle obstacles, task-70 records large oracle-obstacle source residuals even for covered oracle obstacles, task-71 rules out current blocked trace source carrying, task-72 shows oracle source assignment often uses non-nearest first-chain segments, task-73 shows source/order is a default-reducer output rather than SP+ pair annotation, task-74 confirms the Z1+ oracle core/final scan counters are now visible from `run.stdout`, task-75 turns source/order divergence into direct pyz1-vs-default-oracle sequence mismatch counts of 13/10/4/2 for benchmarks 01/02/03/05, task-76 records those divergences per source index including oracle-only trailing sources, task-86 makes benchmark-05's true-chain interaction gap direct with pyz1 pair `4` versus oracle `40,26`, task-87 shows oracle `40,26` are present in a true-chain contact candidate surface `6,40,26,12`, task-88 shows oracle default source nearest-contact selection recovers `40,26`, task-89 makes pyz1 retain true-chain pair sequence `40,26` for benchmark-05, task-90 exposes the benchmark-05 true-chain pair node-index gap as pyz1 `11,1` versus oracle `3,2`, task-91 aligns that node-index sequence to `3,2` while reducing pair mismatches from 70 to 68, tasks 92-139 progressively improve benchmark-05 reciprocal and local true-chain pair coverage through chain49, chain20, chain30, chain31, and chain32; task-139 aligns chain32 to oracle pairs `(2.8,11,3),(12.5,30,2),(16.25,34,4)` and removes the previous chain32 residual prefix entries, while benchmark-05 still has chain34/37/39/40/42/46/48/49 geometry, node-count, pair-detail, and summary mismatches open; the public Z1+ tree lacks `module-Z1.f90`; benchmark-06+ remain guarded | Reported `passed` status or documented scientifically acceptable tolerance for all intended default/SP+ cases |
 | Scalable all-14 default/SP+/selfZ regression | Task-83 drives all 14 default/SP+/selfZ benchmark directories through `pyz1-benchmark-regression`, yielding 42 report rows; task-84 exposes `--max-node-count` and `--trace-diagnostics-max-node-count` so the skip and trace guards are user-tunable and auditable; benchmark-06+ still classify as `known-invalid` under the default `node_count>1000` guard after the earlier 120-second timeout evidence | All 14 benchmarks run with measured deltas or a deliberate documented tiered-regression contract accepted as final scope |
 | Full native PPA/PPA+ runtime parity | PPA+ benchmark-04 `Lpp` delta improved but remains `mismatch`; task-56 quick slice covers 01/04/05 under `max_node_count=1000`; task-57 shows 05 PPA+ is upstream-invalid because near-zero inter-chain WCA contact produces a first-step `mean_lpp` jump from `19.000003838046396` to `4089134097.2156291`, matching native Fortran `********` overflow in summary and coordinate output; task-77 moves oracle coordinate validity into the native PPA regression report and marks benchmark-05 PPA+ `known-invalid` from `PPA+.dat` line 310 `invalid float` before native execution; task-78 adds a standalone coordinate fixture report so parseable/missing/invalid oracle paths are auditable without native PPA runtime; task-79 exposes that report through `python -m pyz1.ppa_oracle_coordinates_cli` and the installed `pyz1-ppa-oracle-coordinates` script; task-80 expands the default CLI report to all discovered oracle benchmark directories and both PPA modes; task-82 exposes installed and module native PPA/PPA+ regression report surfaces for selected benchmarks while preserving missing/invalid oracle fixtures as `known-invalid` | Strict parity, accepted tolerance, or documented upstream-invalid fixture handling for every intended PPA/PPA+ benchmark |
 | Native `selfZ` scientific parity | Task-85 implements `pyz1 -selfZ` package execution and writes Z1+ reducer outputs; task-83 covers selfZ oracle directories through the regression report surface and benchmark-04 selfZ currently reports `passed`, while benchmark-01/02/03/05 selfZ remain `mismatch` and 06+ are guarded | Strict selfZ parity, accepted tolerance, or a final documented non-goal decision for selfZ scientific equivalence |
@@ -562,9 +574,10 @@ Latest gate artifacts:
    task-95 adds dense repeated true-chain contact coverage, task-96 adds
    downstream paired true-chain contact coverage, task-97 improves one
    repeated-contact source placement, task-98 adds chain 2 tail pair coverage,
-   and task-99 adds second pair-13 coverage; the next
-   reducer gap is reciprocal source/position placement, remaining paired-chain
-   coverage, final
+   task-99 adds second pair-13 coverage, and task-139 has progressed local
+   pair-sequence coverage through benchmark-05 chain32; the next reducer gap
+   starts at chain34 reciprocal source/position placement, remaining
+   paired-chain coverage, final
    geometry/node-count, pair details, and summary alignment. Use
    task-62/task-68 winding
    diagnostics, task-63/64 sequence report fields, and oracle traces; do not
