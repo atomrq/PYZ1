@@ -2,11 +2,17 @@ from __future__ import annotations
 
 import subprocess
 import sys
+from os import environ
 from pathlib import Path
 
 from pyz1.regression_cli import discover_benchmark_ids
 
-SOURCE_Z1 = Path("/Users/jiaxm/Contents/CodexProjects/source_code/Z1+")
+SOURCE_Z1 = Path(
+    environ.get(
+        "PYZ1_SOURCE_Z1",
+        "/Users/jiaxm/Contents/CodexProjects/source_code/Z1+",
+    ),
+)
 ORACLE_ROOT = Path("tests/fixtures/z1plus_oracle/corpus-default-spplus-selfz-20260703")
 
 

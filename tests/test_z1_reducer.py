@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from math import isclose, sqrt
+from os import environ
 from pathlib import Path
 
 from pyz1.models import Chain, Snapshot, Vector3
@@ -11,7 +12,12 @@ from pyz1.z1_io import read_z1_file
 
 FLOAT_TOLERANCE = 1.0e-12
 KINK_POSITION_TOLERANCE = 2.0e-2
-SOURCE_Z1 = Path("/Users/jiaxm/Contents/CodexProjects/source_code/Z1+")
+SOURCE_Z1 = Path(
+    environ.get(
+        "PYZ1_SOURCE_Z1",
+        "/Users/jiaxm/Contents/CodexProjects/source_code/Z1+",
+    ),
+)
 
 
 def test_reduce_snapshot_when_single_bent_chain_has_no_blockers_straightens() -> None:

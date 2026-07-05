@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from itertools import pairwise
 from math import dist, isclose
+from os import environ
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -21,7 +22,12 @@ from pyz1.z1_io import read_z1_file
 if TYPE_CHECKING:
     from pyz1.output_models import Z1SummaryRecord
 
-SOURCE_Z1 = Path("/Users/jiaxm/Contents/CodexProjects/source_code/Z1+")
+SOURCE_Z1 = Path(
+    environ.get(
+        "PYZ1_SOURCE_Z1",
+        "/Users/jiaxm/Contents/CodexProjects/source_code/Z1+",
+    ),
+)
 PPA_FIXTURE_ROOT = Path("tests/fixtures/z1plus_oracle/corpus-ppa-ppaplus-20260703")
 PPA_SUMMARY_ORACLE_CASES = (
     ("01", "ppa", "PPA.dat", "PPA-summary.dat"),

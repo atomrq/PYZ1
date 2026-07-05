@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from os import environ
 from pathlib import Path
 from typing import Final
 
@@ -7,7 +8,12 @@ import pytest
 
 from pyz1.z1_io import parse_z1_text, read_z1_file, write_z1_text
 
-SOURCE_Z1 = Path("/Users/jiaxm/Contents/CodexProjects/source_code/Z1+")
+SOURCE_Z1 = Path(
+    environ.get(
+        "PYZ1_SOURCE_Z1",
+        "/Users/jiaxm/Contents/CodexProjects/source_code/Z1+",
+    ),
+)
 NEWLINE: Final = "\n"
 
 

@@ -1,13 +1,19 @@
 from __future__ import annotations
 
 from math import isclose
+from os import environ
 from pathlib import Path
 
 from pyz1.estimators import compute_input_statistics
 from pyz1.output_io import read_shortest_path_file, read_summary_file
 from pyz1.z1_io import read_z1_file
 
-SOURCE_Z1 = Path("/Users/jiaxm/Contents/CodexProjects/source_code/Z1+")
+SOURCE_Z1 = Path(
+    environ.get(
+        "PYZ1_SOURCE_Z1",
+        "/Users/jiaxm/Contents/CodexProjects/source_code/Z1+",
+    ),
+)
 ORACLE_ROOT = Path("tests/fixtures/z1plus_oracle/benchmark-04")
 FLOAT_TOLERANCE = 1.0e-3
 

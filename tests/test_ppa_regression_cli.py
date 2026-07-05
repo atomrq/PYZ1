@@ -2,11 +2,17 @@ from __future__ import annotations
 
 import subprocess
 import sys
+from os import environ
 from pathlib import Path
 
 from pyz1.ppa_regression_cli import discover_benchmark_ids
 
-SOURCE_Z1 = Path("/Users/jiaxm/Contents/CodexProjects/source_code/Z1+")
+SOURCE_Z1 = Path(
+    environ.get(
+        "PYZ1_SOURCE_Z1",
+        "/Users/jiaxm/Contents/CodexProjects/source_code/Z1+",
+    ),
+)
 PPA_ORACLE_ROOT = Path("tests/fixtures/z1plus_oracle/corpus-ppa-ppaplus-20260703")
 
 

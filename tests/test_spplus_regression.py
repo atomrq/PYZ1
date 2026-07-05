@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from os import environ
 from pathlib import Path
 from shutil import copyfile
 
@@ -16,7 +17,12 @@ from pyz1.regression import (
 from pyz1.summary import build_summary_outputs
 from pyz1.z1_io import read_z1_file
 
-SOURCE_Z1 = Path("/Users/jiaxm/Contents/CodexProjects/source_code/Z1+")
+SOURCE_Z1 = Path(
+    environ.get(
+        "PYZ1_SOURCE_Z1",
+        "/Users/jiaxm/Contents/CodexProjects/source_code/Z1+",
+    ),
+)
 ORACLE_ROOT = Path("tests/fixtures/z1plus_oracle/corpus-default-spplus-selfz-20260703")
 LOG_STATS = Path("tests/fixtures/z1plus_oracle/benchmark-04/spplus/log-stats.Z1")
 
@@ -317,7 +323,7 @@ def test_write_benchmark_regression_report_when_convex_candidates_cover_oracle(
     assert benchmark_05.oracle_true_chain_pair_sequence == (40, 26)
     assert benchmark_05.pyz1_true_chain_pair_node_sequence == (3, 2)
     assert benchmark_05.oracle_true_chain_pair_node_sequence == (3, 2)
-    assert benchmark_05.node_count_mismatches == 12
+    assert benchmark_05.node_count_mismatches == 11
     assert benchmark_05.pyz1_convex_winding_missing_oracle_sequence == (40, 26)
     assert "pyz1 convex winding candidates" in text
     assert "pyz1 true-chain contact candidate sequence" in text
@@ -1009,6 +1015,23 @@ def test_reduce_snapshot_when_benchmark05_chain20_drops_extra_pair49() -> None:
         if node.pair is not None
     )
     assert chain_20_pairs == ()
+
+
+def test_reduce_snapshot_when_benchmark05_chain30_matches_oracle_pairs() -> None:
+    snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-05.Z1")
+
+    result = reduce_snapshot(snapshot, ReducerSettings(pairing_enabled=True))
+
+    chain_30_pairs = tuple(
+        (
+            node.source_bead,
+            node.pair.chain_index,
+            node.pair.node_index,
+        )
+        for node in result.shortest_path.chains[29].nodes[1:-1]
+        if node.pair is not None
+    )
+    assert chain_30_pairs == ((3.94, 48, 4), (6.94, 34, 3))
 
 
 def test_reduce_snapshot_when_benchmark05_chain28_keeps_pair34_contact() -> None:

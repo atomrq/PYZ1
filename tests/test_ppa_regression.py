@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from math import nan
+from os import environ
 from pathlib import Path
 
 from pyz1.ppa import PpaMode, PpaPhase, PpaSettings
@@ -13,7 +14,12 @@ from pyz1.ppa_regression import (
     write_ppa_regression_report,
 )
 
-SOURCE_Z1 = Path("/Users/jiaxm/Contents/CodexProjects/source_code/Z1+")
+SOURCE_Z1 = Path(
+    environ.get(
+        "PYZ1_SOURCE_Z1",
+        "/Users/jiaxm/Contents/CodexProjects/source_code/Z1+",
+    ),
+)
 PPA_ORACLE_ROOT = Path("tests/fixtures/z1plus_oracle/corpus-ppa-ppaplus-20260703")
 
 
