@@ -1,5 +1,7 @@
 # pyz1
 
+[English](README.md) | [中文](README.zh-CN.md)
+
 `pyz1` is a local Python implementation path for reproducing the public Z1+
 workflow. It is a clean-room Python package for parsing Z1+/LAMMPS-style polymer
 inputs, writing Z1+ compatible outputs, computing summary/`Ne` values, running
