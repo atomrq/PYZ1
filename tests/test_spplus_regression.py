@@ -497,7 +497,7 @@ def test_reduce_snapshot_when_benchmark05_chain2_places_pair34_source() -> None:
         for node in result.shortest_path.chains[1].nodes[1:-1]
         if node.pair is not None and node.pair.chain_index == 34
     )
-    assert chain_2_pair_34_sources[0] > 4.2
+    assert 4.37 < chain_2_pair_34_sources[0] < 4.39
 
 
 def test_reduce_snapshot_when_benchmark05_chain2_places_pair34_node() -> None:

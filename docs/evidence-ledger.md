@@ -11,15 +11,15 @@ For a requirement-by-requirement completion verdict, see
 
 Latest local gate evidence:
 
-- `.omo/evidence/task-113-chain1-pair26-source-placement/pytest.txt`:
+- `.omo/evidence/task-114-chain2-pair34-source-placement/pytest.txt`:
   `159 passed`
 - `.omo/evidence/task-55-ppa-coverage/ppa-focused.txt`: `21 passed`
 - `.omo/evidence/task-57-ppa-nan-root/ppa-focused.txt`: `22 passed`
-- `.omo/evidence/task-113-chain1-pair26-source-placement/ruff.txt`:
+- `.omo/evidence/task-114-chain2-pair34-source-placement/ruff.txt`:
   `All checks passed!`
-- `.omo/evidence/task-113-chain1-pair26-source-placement/basedpyright.txt`:
+- `.omo/evidence/task-114-chain2-pair34-source-placement/basedpyright.txt`:
   `0 errors, 0 warnings, 0 notes`
-- `.omo/evidence/task-113-chain1-pair26-source-placement/package-smoke.txt`:
+- `.omo/evidence/task-114-chain2-pair34-source-placement/package-smoke.txt`:
   `1 passed`
 
 The package smoke runs `python -m pyz1` for default, SP+, selfZ, PPA, and PPA+
@@ -744,6 +744,16 @@ from `1` to `0`. Pair mismatches, `Lpp` delta, `Z` delta, final nodes, and
 node-count mismatches remain `61`, `0.176675`, `0.24`, `158`, and `38`, so
 remaining geometry/summary alignment is still open.
 
+Task-114 aligns the benchmark-05 chain 2 pair-34 source placement for the
+existing dense repeated true-chain contact leading node. Evidence in
+`.omo/evidence/task-114-chain2-pair34-source-placement/benchmark-04-05-spplus.md`
+shows benchmark-04 SP+ remains `passed`; benchmark-05 SP+ still reports
+`mismatch`, but chain 2 pair-34 source moves from `4.5` to `4.38`, matching
+the oracle-local source and removing that `0.12` residual from the front of the
+source residual details. Pair mismatches, `Lpp` delta, `Z` delta, final nodes,
+and node-count mismatches remain `61`, `0.176675`, `0.24`, `158`, and `38`, so
+remaining geometry/summary alignment is still open.
+
 ## Open Boundaries
 
 The following are intentionally not claimed complete:
@@ -771,10 +781,10 @@ The following are intentionally not claimed complete:
   target node, and task-109 improves the chain2 first pair-13 source residual;
   task-110 improves the chain2 second pair-13 source residual, and task-111
   aligns the chain2 pair-6 tail source, and task-112 aligns the chain1 pair-40
-  source, and task-113 aligns the chain1 pair-26 source; these improve
-  benchmark-05 node-count, pair-count, `Z`, and local source residuals while
-  leaving geometry, remaining reciprocal coverage, node-count, pair-detail, and
-  summary mismatches open.
+  source, task-113 aligns the chain1 pair-26 source, and task-114 aligns the
+  chain2 pair-34 source; these improve benchmark-05 node-count, pair-count,
+  `Z`, and local source residuals while leaving geometry, remaining reciprocal
+  coverage, node-count, pair-detail, and summary mismatches open.
 - scalable all-14 benchmark reducer regression without relying on a
   node-count performance guard; task-84 makes the guard user-tunable but does
   not prove full unguarded 06+ execution
