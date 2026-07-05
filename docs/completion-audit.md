@@ -26,15 +26,15 @@ evidence still leaves scientific and scalability boundaries open.
 
 Latest gate artifacts:
 
-- `.omo/evidence/task-127-chain13-spplus-residual/pytest.txt`:
-  `171 passed`
-- `.omo/evidence/task-127-chain13-spplus-residual/ruff.txt`:
+- `.omo/evidence/task-128-chain15-spplus-residual/pytest.txt`:
+  `172 passed`
+- `.omo/evidence/task-128-chain15-spplus-residual/ruff.txt`:
   `All checks passed!`
-- `.omo/evidence/task-127-chain13-spplus-residual/basedpyright.txt`:
+- `.omo/evidence/task-128-chain15-spplus-residual/basedpyright.txt`:
   `0 errors, 0 warnings, 0 notes`
-- `.omo/evidence/task-127-chain13-spplus-residual/package-smoke.txt`:
+- `.omo/evidence/task-128-chain15-spplus-residual/package-smoke.txt`:
   `1 passed`
-- `.omo/evidence/task-127-chain13-spplus-residual/diff-check.txt`:
+- `.omo/evidence/task-128-chain15-spplus-residual/diff-check.txt`:
   `git diff --check passed`
 - `.omo/evidence/task-68-winding-number-surface/default-spplus-01-05-convex-coverage.txt`:
   benchmark-04 default/SP+ are `passed`; benchmark-03 SP+ keeps
@@ -419,6 +419,15 @@ Latest gate artifacts:
   `23` to `22`, and pair mismatches improve from `47` to `44`; `Lpp` delta
   remains `0.699096`, while `Z` delta regresses from `0.10` to `0.12`, so
   downstream geometry, pair-detail, and summary mismatches remain open
+- `.omo/evidence/task-128-chain15-spplus-residual/benchmark-04-05-spplus.md`:
+  benchmark-04 SP+ remains `passed`; benchmark-05 SP+ remains `mismatch`, but
+  benchmark-05 chain 15 now keeps the oracle-local pair `(13.72,36,1)`, and
+  chain 36 keeps reciprocal `(6.62,15,2)`, clearing chain15 residuals from
+  the front of the source residual details; final nodes move from `164` to
+  `165`, node-count mismatches improve from `22` to `21`, pair mismatches
+  improve from `44` to `41`, `Lpp` delta improves from `0.699096` to
+  `0.698125`, and `Z` delta improves from `0.12` to `0.10`, so downstream
+  geometry, pair-detail, and summary mismatches remain open
 - `.omo/evidence/task-53-reducer-index/default-spplus-after-index.txt`:
   benchmarks 01-05 default/SP+ are `mismatch`; benchmarks 06-14 default/SP+
   are `known-invalid` under `node_count>1000`
