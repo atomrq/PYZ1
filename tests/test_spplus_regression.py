@@ -579,6 +579,19 @@ def test_reduce_snapshot_when_benchmark05_chain25_places_pair40_source() -> None
     assert chain_25_pairs == ((11.67, 3, 2), (15.83, 40, 2))
 
 
+def test_reduce_snapshot_when_benchmark05_chain25_contour_matches_oracle() -> None:
+    snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-05.Z1")
+    oracle = read_shortest_path_file(
+        ORACLE_ROOT / "benchmark-05" / "spplus" / "Z1+SP.dat",
+    )
+
+    result = reduce_snapshot(snapshot, ReducerSettings(pairing_enabled=True))
+
+    actual_contour = _shortest_path_chain_contour(result.shortest_path.chains[24])
+    expected_contour = _shortest_path_chain_contour(oracle.chains[24])
+    assert abs(actual_contour - expected_contour) < 0.001
+
+
 def test_reduce_snapshot_when_benchmark05_chain22_places_pair25_source() -> None:
     snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-05.Z1")
 
