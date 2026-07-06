@@ -1,0 +1,103 @@
+FFF                                                                      [100%]
+=================================== FAILURES ===================================
+______ test_reduce_snapshot_when_benchmark05_chain34_matches_oracle_pairs ______
+
+    def test_reduce_snapshot_when_benchmark05_chain34_matches_oracle_pairs() -> None:
+>       snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-05.Z1")
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_spplus_regression.py:1082:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src/pyz1/z1_io.py:18: in read_z1_file
+    return parse_z1_text(path.read_text(encoding="utf-8"))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../micromamba/envs/pygamd/lib/python3.11/pathlib.py:1058: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = PosixPath('/public/home/jxm/codex_runs/z1-task154-chain34-contour-20260706/source_z1_min/.benchmark-05.Z1')
+mode = 'r', buffering = -1, encoding = 'utf-8', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/public/home/jxm/codex_runs/z1-task154-chain34-contour-20260706/source_z1_min/.benchmark-05.Z1'
+
+../../micromamba/envs/pygamd/lib/python3.11/pathlib.py:1044: FileNotFoundError
+_____ test_reduce_snapshot_when_benchmark05_chain34_contour_matches_oracle _____
+
+    def test_reduce_snapshot_when_benchmark05_chain34_contour_matches_oracle() -> None:
+>       snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-05.Z1")
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_spplus_regression.py:1104:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src/pyz1/z1_io.py:18: in read_z1_file
+    return parse_z1_text(path.read_text(encoding="utf-8"))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../micromamba/envs/pygamd/lib/python3.11/pathlib.py:1058: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = PosixPath('/public/home/jxm/codex_runs/z1-task154-chain34-contour-20260706/source_z1_min/.benchmark-05.Z1')
+mode = 'r', buffering = -1, encoding = 'utf-8', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/public/home/jxm/codex_runs/z1-task154-chain34-contour-20260706/source_z1_min/.benchmark-05.Z1'
+
+../../micromamba/envs/pygamd/lib/python3.11/pathlib.py:1044: FileNotFoundError
+_____ test_reduce_snapshot_when_benchmark05_chain48_contour_matches_oracle _____
+
+    def test_reduce_snapshot_when_benchmark05_chain48_contour_matches_oracle() -> None:
+>       snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-05.Z1")
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_spplus_regression.py:1237:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src/pyz1/z1_io.py:18: in read_z1_file
+    return parse_z1_text(path.read_text(encoding="utf-8"))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../micromamba/envs/pygamd/lib/python3.11/pathlib.py:1058: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = PosixPath('/public/home/jxm/codex_runs/z1-task154-chain34-contour-20260706/source_z1_min/.benchmark-05.Z1')
+mode = 'r', buffering = -1, encoding = 'utf-8', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/public/home/jxm/codex_runs/z1-task154-chain34-contour-20260706/source_z1_min/.benchmark-05.Z1'
+
+../../micromamba/envs/pygamd/lib/python3.11/pathlib.py:1044: FileNotFoundError
+=========================== short test summary info ============================
+FAILED tests/test_spplus_regression.py::test_reduce_snapshot_when_benchmark05_chain34_matches_oracle_pairs
+FAILED tests/test_spplus_regression.py::test_reduce_snapshot_when_benchmark05_chain34_contour_matches_oracle
+FAILED tests/test_spplus_regression.py::test_reduce_snapshot_when_benchmark05_chain48_contour_matches_oracle
+3 failed in 0.24s
