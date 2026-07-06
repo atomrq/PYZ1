@@ -1,0 +1,50 @@
+task-150 benchmark-05 SP+ chain49 reciprocal pair delta
+
+Remote root:
+  /public/home/jxm/codex_runs/z1-task150-benchmark05-chain49-pair-20260706
+
+Input setup:
+  Internal GPU route 192.168.62.200 ping failed.
+  Jobs used FRP route ssh -p 6301 jxm@47.104.203.55.
+  Minimal source input mirror was copied to remote source_z1_min and exposed
+  through PYZ1_SOURCE_Z1.
+
+RED jobs:
+  416517 failed for setup only: PYZ1_SOURCE_Z1 was missing, so the test tried
+  the local absolute /Users/jiaxm/... source path on the remote worker.
+  416518 is the corrected RED. It failed for the intended assertion:
+    actual chain49 pairs: ()
+    oracle chain49 pairs: ((14.67,48,2),)
+
+GREEN/final jobs:
+  focused green: 416519, COMPLETED 0:0, 1 passed in 31.07s
+  static rerun: 416523, COMPLETED 0:0
+  regression: 416521, COMPLETED 0:0
+  package: 416522, COMPLETED 0:0
+
+Superseded static:
+  416520 failed because basedpyright was not bound to the venv Python
+  interpreter and could not resolve pytest-related imports. 416523 supersedes
+  it with basedpyright --pythonpath <venv>/bin/python.
+
+Final benchmark-04/05 SP+ report: benchmark-04-05-spplus-final.md
+  benchmark-04: passed, pair mismatches 0, node count mismatches 0
+  benchmark-05: mismatch remains, pair mismatches 0, node count mismatches 0,
+    pyz1 final nodes 170, oracle final nodes 170
+  benchmark-05 source residual details: none
+  benchmark-05 summary field mismatches: 6
+  benchmark-05 Lpp delta: 0.754638
+  benchmark-05 Z delta: 0
+
+Movement from task-149:
+  pair mismatches: 1 -> 0
+  node count mismatches: 1 -> 0
+  final nodes: 169 -> 170
+  source residual details: c49n2[n/a->48] -> none
+  Z delta: 0.02 -> 0
+  summary field mismatches: 9 -> 6
+
+Remaining boundary:
+  Benchmark-05 SP+ still reports mismatch because geometry and summary parity
+  are not complete. The next slice should start from final geometry/Lpp and
+  summary mismatch diagnostics, not from paired-chain coverage.

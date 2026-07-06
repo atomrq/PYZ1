@@ -1,0 +1,28 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+______ test_reduce_snapshot_when_benchmark05_chain49_matches_oracle_pair _______
+
+    def test_reduce_snapshot_when_benchmark05_chain49_matches_oracle_pair() -> None:
+        snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-05.Z1")
+
+        result = reduce_snapshot(snapshot, ReducerSettings(pairing_enabled=True))
+
+        chain_49_pairs = tuple(
+            (
+                node.source_bead,
+                node.pair.chain_index,
+                node.pair.node_index,
+            )
+            for node in result.shortest_path.chains[48].nodes[1:-1]
+            if node.pair is not None
+        )
+>       assert chain_49_pairs == ((14.67, 48, 2),)
+E       assert () == ((14.67, 48, 2),)
+E
+E         Right contains one more item: (14.67, 48, 2)
+E         Use -v to get more diff
+
+tests/test_spplus_regression.py:1214: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_spplus_regression.py::test_reduce_snapshot_when_benchmark05_chain49_matches_oracle_pair
+1 failed in 30.82s

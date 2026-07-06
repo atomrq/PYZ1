@@ -69,8 +69,9 @@ residual being closed and must not weaken existing mismatch diagnostics.
 3. **Benchmark-05 SP+ reducer parity continues**
    - Continue the current benchmark-05 SP+ direction, because SP/SP+ details
      should match Z1+ oracle as closely as possible for the same system.
-   - Start from remaining chain49 source/position placement,
-     paired-chain coverage, reciprocal placement, and final node-count gaps.
+   - Paired-chain coverage and final node count are now locally closed for the
+     task-150 benchmark-05 SP+ slice; continue from final geometry, Lpp, and
+     summary mismatch diagnostics.
    - Before each reducer change, re-check the public source/script contract and
      label the change as `source_contract` or `oracle_residual_inference`.
    - Benchmark-04 SP+ must remain passed.
@@ -141,10 +142,9 @@ semantics, negative-`xy` triclinic LAMMPS dump bounds, and Z1+ wrapper path
 quoting. The next development slice should return to benchmark-05 SP+ reducer
 parity while preserving benchmark-04 SP+ passed.
 
-Start with the remaining benchmark-05 reciprocal source/position placement and
-paired-chain coverage gaps after task-149 aligned the chain48 local pair
-sequence. Remaining active chain is chain49. Before each reducer change,
-re-check the visible
-Z1+/Z1plus-code source surface and classify the rationale as `source_contract`
-or `oracle_residual_inference`. Keep benchmark-04 SP+ passed and do not weaken
-existing mismatch diagnostics.
+Start with the remaining benchmark-05 final geometry, Lpp, and summary mismatch
+diagnostics after task-150 aligned the chain49 reciprocal pair and closed the
+current pair/node-count/source-residual gaps. Before each reducer change,
+re-check the visible Z1+/Z1plus-code source surface and classify the rationale
+as `source_contract` or `oracle_residual_inference`. Keep benchmark-04 SP+
+passed and do not weaken existing mismatch diagnostics.
