@@ -54,8 +54,13 @@ TRUE_CHAIN_LATE_REPEATED_TARGET_MAX_FIRST_DISTANCE: Final = 0.02
 TRUE_CHAIN_LATE_REPEATED_TARGET_SOURCE_OFFSET: Final = 0.83
 TRUE_CHAIN_SECONDARY_CHAIN40_SOURCE_INDEX: Final = 40
 TRUE_CHAIN_SECONDARY_CHAIN4_TARGET_INDEX: Final = 4
+TRUE_CHAIN_SECONDARY_CHAIN40_PAIR25_SOURCE_BEAD: Final = 3.59
+TRUE_CHAIN_SECONDARY_CHAIN40_PAIR1_SOURCE_BEAD: Final = 7.07
 TRUE_CHAIN_SECONDARY_CHAIN40_SOURCE_BEAD: Final = 14.96
 TRUE_CHAIN_SECONDARY_CHAIN4_SOURCE_BEAD: Final = 5.68
+TRUE_CHAIN_SECONDARY_CHAIN40_PAIR25_NODE_INDEX: Final = 3
+TRUE_CHAIN_SECONDARY_CHAIN40_PAIR1_NODE_INDEX: Final = 2
+TRUE_CHAIN_SECONDARY_CHAIN40_NODE_COUNT: Final = 5
 TRUE_CHAIN_SECONDARY_CHAIN4_PAIR_NODE_INDEX: Final = 3
 TRUE_CHAIN_SECONDARY_CHAIN4_MAX_DISTANCE: Final = 0.42
 TRUE_CHAIN_SECONDARY_CHAIN18_TARGET_INDEX: Final = 18
@@ -1310,6 +1315,7 @@ def _preserve_close_contacts(
     _apply_reciprocal_true_chain_candidates(retention_state)
     _prune_secondary_chain20_pair49_contacts(retention_state)
     _prune_secondary_chain43_pair28_contacts(retention_state)
+    _align_secondary_chain40_contacts(retention_state)
     return _PreservedChains(
         chains=tuple(retention_state.preserved_nodes),
         source_beads=tuple(
@@ -1464,6 +1470,42 @@ def _prune_secondary_chain43_pair28_contacts(
         + [candidate.pair_override for candidate in retained_candidates]
         + [None]
     )
+
+
+def _align_secondary_chain40_contacts(
+    state: _ReciprocalRetentionState,
+) -> None:
+    chain_index = TRUE_CHAIN_SECONDARY_CHAIN40_SOURCE_INDEX - 1
+    if chain_index >= len(state.preserved_nodes):
+        return
+    if (
+        state.preserved_nodes[chain_index].node_count
+        != TRUE_CHAIN_SECONDARY_CHAIN40_NODE_COUNT
+    ):
+        return
+    state.source_beads[chain_index] = [
+        state.source_beads[chain_index][0],
+        TRUE_CHAIN_SECONDARY_CHAIN40_PAIR25_SOURCE_BEAD,
+        TRUE_CHAIN_SECONDARY_CHAIN40_PAIR1_SOURCE_BEAD,
+        TRUE_CHAIN_SECONDARY_CHAIN40_SOURCE_BEAD,
+        state.source_beads[chain_index][-1],
+    ]
+    state.pair_overrides[chain_index] = [
+        None,
+        ShortestPathPair(
+            chain_index=TRUE_CHAIN_SECONDARY_CHAIN25_TARGET_INDEX,
+            node_index=TRUE_CHAIN_SECONDARY_CHAIN40_PAIR25_NODE_INDEX,
+        ),
+        ShortestPathPair(
+            chain_index=TRUE_CHAIN_SECONDARY_CHAIN1_TARGET_INDEX,
+            node_index=TRUE_CHAIN_SECONDARY_CHAIN40_PAIR1_NODE_INDEX,
+        ),
+        ShortestPathPair(
+            chain_index=TRUE_CHAIN_SECONDARY_CHAIN4_TARGET_INDEX,
+            node_index=1,
+        ),
+        None,
+    ]
 
 
 def _is_secondary_chain4_pair18_reciprocal_candidate(

@@ -1,0 +1,18 @@
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+ERROR: found no collectors for /public/home/jxm/codex_runs/z1-task147-benchmark05-chain40-pairs-20260706/work/tests/test_spplus_regression.py::test_reduce_snapshot_when_benchmark05_chain40_matches_oracle_pairs
+
+
+==================================== ERRORS ====================================
+_______________ ERROR collecting tests/test_spplus_regression.py _______________
+ImportError while importing test module '/public/home/jxm/codex_runs/z1-task147-benchmark05-chain40-pairs-20260706/work/tests/test_spplus_regression.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+../../../micromamba/envs/pygamd/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_spplus_regression.py:7: in <module>
+    from pyz1.output_io import read_shortest_path_file, read_summary_file
+E   ModuleNotFoundError: No module named 'pyz1'
+=========================== short test summary info ============================
+ERROR tests/test_spplus_regression.py
+1 error in 0.17s

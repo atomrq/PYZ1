@@ -1,0 +1,14 @@
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+PLR2004 Magic value used in comparison, consider replacing `5` with a constant variable
+    --> src/pyz1/reducer.py:1480:57
+     |
+1478 |     if chain_index >= len(state.preserved_nodes):
+1479 |         return
+1480 |     if state.preserved_nodes[chain_index].node_count != 5:
+     |                                                         ^
+1481 |         return
+1482 |     state.source_beads[chain_index] = [
+     |
+
+Found 1 error.
+0 errors, 0 warnings, 0 notes
