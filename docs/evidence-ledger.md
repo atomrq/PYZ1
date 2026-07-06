@@ -17,6 +17,18 @@ source-trace/I/O contract first, benchmark-05 SP+ parity next, then benchmark
 
 Latest remote GPU-cluster gate evidence:
 
+- `.omo/evidence/task-151-chain-contour-diagnostics/source-trace.md`:
+  classifies the chain-contour residual report surface as `diagnostic_only`
+  after checking visible Z1+/Z1plus-code source and confirming the hidden
+  reducer core remains unavailable
+- `.omo/evidence/task-151-chain-contour-diagnostics/benchmark-04-05-spplus-final.md`:
+  final regression job `416532` keeps benchmark-04 SP+ `passed` and reports
+  benchmark-05 SP+ as a true `mismatch` with closed pair/node/source/`Z` gaps
+  and max chain-contour delta `9.45416` on chain39
+- `.omo/evidence/task-151-chain-contour-diagnostics/sacct.txt`:
+  records RED job `416524`, focused GREEN jobs `416525` and `416530`, static
+  rerun job `416529`, package smoke job `416528`, and final regression job
+  `416532`
 - `.omo/evidence/task-144-z1plus-template-quoting/source-trace.md`:
   records the source-backed Z1+ wrapper path-quoting contract from
   `mkmat/Z1plus-code/replacements/Z1+template.pl` commit
@@ -1295,6 +1307,19 @@ from `169` to `170`, source residual details clear to `none`, `Z` delta
 improves from `0.02` to `0`, and summary mismatches improve from `9` to `6`.
 Benchmark-05 remains open on final geometry, Lpp, and summary parity.
 
+Task-151 adds benchmark-regression chain-contour residual diagnostics as a
+`diagnostic_only` report surface. RED job `416524` failed for the intended
+missing `RegressionRecord.chain_contour_residuals` attribute, focused GREEN
+jobs `416525` and `416530` passed, static rerun job `416529` passed `ruff check
+src tests` and `basedpyright --pythonpath`, package smoke job `416528` passed,
+and final regression job `416532` writes
+`.omo/evidence/task-151-chain-contour-diagnostics/benchmark-04-05-spplus-final.md`.
+Benchmark-04 SP+ remains `passed`; benchmark-05 SP+ remains `mismatch`, with
+pair mismatches `0`, node-count mismatches `0`, source residual details
+`none`, `Z` delta `0`, `Lpp` delta `0.754638`, summary mismatches `6`, and a
+new max chain-contour delta of `9.45416` on chain39. The next reducer slice
+should start from chain39 final geometry and contour placement.
+
 ## Open Boundaries
 
 The following are intentionally not claimed complete:
@@ -1352,7 +1377,8 @@ The following are intentionally not claimed complete:
   one-way pair34 sequence, task-146 prunes chain43's oracle-absent pair28
   node, task-147 aligns the chain40 pair sequence, task-148 aligns the
   chain46 pair sequence, task-149 aligns the chain48 pair sequence, and
-  task-150 aligns the chain49 reciprocal pair;
+  task-150 aligns the chain49 reciprocal pair, and task-151 localizes the
+  largest remaining chain-contour residual to chain39;
   these cumulatively
   improve benchmark-05 local source residuals and parts of the pair topology
   while leaving downstream geometry, Lpp, and summary mismatches open.

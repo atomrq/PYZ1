@@ -1,0 +1,13 @@
+All checks passed!
+/public/home/jxm/codex_runs/z1-task151-chain-contour-diagnostics-20260706/src/pyz1/regression.py
+  /public/home/jxm/codex_runs/z1-task151-chain-contour-diagnostics-20260706/src/pyz1/regression.py:1663:12 - error: No overloads for "max" match the provided arguments (reportCallIssue)
+  /public/home/jxm/codex_runs/z1-task151-chain-contour-diagnostics-20260706/src/pyz1/regression.py:1663:12 - error: Type of "chain_index" is unknown (reportUnknownMemberType)
+  /public/home/jxm/codex_runs/z1-task151-chain-contour-diagnostics-20260706/src/pyz1/regression.py:1663:12 - error: Return type is unknown (reportUnknownVariableType)
+  /public/home/jxm/codex_runs/z1-task151-chain-contour-diagnostics-20260706/src/pyz1/regression.py:1663:38 - error: Argument of type "(residual: ChainContourResidual) -> (float | None)" cannot be assigned to parameter "key" of type "(_T@max) -> SupportsRichComparison" in function "max"
+    Type "(residual: ChainContourResidual) -> (float | None)" is not assignable to type "(ChainContourResidual) -> SupportsRichComparison"
+      Function return type "float | None" is incompatible with type "SupportsRichComparison"
+        Type "float | None" is not assignable to type "SupportsRichComparison"
+          Type "None" is not assignable to type "SupportsRichComparison"
+            "None" is incompatible with protocol "SupportsDunderLT[Any]"
+            "None" is incompatible with protocol "SupportsDunderGT[Any]" (reportArgumentType)
+4 errors, 0 warnings, 0 notes

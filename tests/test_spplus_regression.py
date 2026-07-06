@@ -228,8 +228,13 @@ def test_write_benchmark_regression_report_when_default_guard_runs_1000_node_cas
     )
 
     assert records[0].status == RegressionStatus.MISMATCH
-    assert records[0].node_count_mismatches is not None
-    assert records[0].node_count_mismatches > 0
+    assert records[0].node_count_mismatches == 0
+    assert records[0].chain_contour_residuals is not None
+    assert len(records[0].chain_contour_residuals) > 0
+    assert records[0].max_chain_contour_delta is not None
+    assert records[0].max_chain_contour_delta > 0.0
+    text = report_path.read_text(encoding="utf-8")
+    assert "chain contour residual details" in text
     assert records[1].status == RegressionStatus.KNOWN_INVALID
     assert records[1].note == "skipped: node_count>1000"
 

@@ -1,0 +1,35 @@
+Task 151 benchmark-05 SP+ chain-contour diagnostic summary.
+
+Remote run root:
+/public/home/jxm/codex_runs/z1-task151-chain-contour-diagnostics-20260706
+
+RED/GREEN:
+- RED job 416524 failed for the intended missing diagnostic attribute:
+  `AttributeError: 'RegressionRecord' object has no attribute
+  'chain_contour_residuals'`.
+- GREEN job 416525 passed the focused regression assertion.
+- Focused rerun job 416530 passed: `1 passed in 31.42s`.
+
+Static and package smoke:
+- Static job 416526 failed because the first implementation used an optional
+  `delta` value as a `max()` key.
+- Static rerun job 416529 passed `ruff check src tests` and
+  `basedpyright --pythonpath`.
+- Package smoke job 416528 passed: `1 passed in 10.47s`.
+
+Final regression:
+- Final job 416532 completed with `ExitCode=0:0`.
+- Benchmark-04 SP+ remains `passed`.
+- Benchmark-05 SP+ remains `mismatch`.
+- Benchmark-05 pair mismatches remain closed at `0`.
+- Benchmark-05 node-count mismatches remain closed at `0`.
+- Benchmark-05 source residual details remain `none`.
+- Benchmark-05 `Z` delta remains `0`.
+- Benchmark-05 `Lpp` delta remains `0.754638`.
+- Benchmark-05 summary field mismatches remain `6`.
+- New max chain-contour delta is `9.45416` on chain `39`.
+
+Next reducer slice:
+Start from benchmark-05 chain39 final geometry and contour placement. The next
+implementation slice should preserve benchmark-04 SP+ passed, keep pair/node
+diagnostics closed, and avoid weakening existing mismatch details.

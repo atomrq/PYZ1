@@ -108,6 +108,14 @@ class SummaryFieldMismatch:
 
 
 @dataclass(frozen=True, slots=True)
+class ChainContourResidual:
+    chain_index: int
+    actual: float | None
+    expected: float | None
+    delta: float | None
+
+
+@dataclass(frozen=True, slots=True)
 class SourceBeadResidual:
     chain_index: int
     node_index: int
@@ -239,6 +247,9 @@ class RegressionRecord:
     oracle_true_chain_pair_sequence: tuple[int, ...] | None = None
     pyz1_true_chain_pair_node_sequence: tuple[int, ...] | None = None
     oracle_true_chain_pair_node_sequence: tuple[int, ...] | None = None
+    max_chain_contour_delta: float | None = None
+    max_chain_contour_delta_chain: int | None = None
+    chain_contour_residuals: tuple[ChainContourResidual, ...] | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -464,6 +475,10 @@ def _compare_benchmark_mode(
     summary_field_mismatches = len(summary_field_mismatch_details)
     pairing_mismatches = _pairing_mismatch_count(mode, result.shortest_path, sp_path)
     oracle_shortest_path = parse_shortest_path_text(sp_path.read_text(encoding="utf-8"))
+    chain_contour_residuals = _chain_contour_residuals(
+        result.shortest_path,
+        oracle_shortest_path,
+    )
     oracle_default_source_sequence = _oracle_default_source_sequence(
         request,
         benchmark_id,
@@ -724,6 +739,11 @@ def _compare_benchmark_mode(
             oracle_shortest_path,
             snapshot,
         ),
+        max_chain_contour_delta=_max_chain_contour_delta(chain_contour_residuals),
+        max_chain_contour_delta_chain=(
+            _max_chain_contour_delta_chain(chain_contour_residuals)
+        ),
+        chain_contour_residuals=chain_contour_residuals,
     )
 
 
@@ -1574,9 +1594,86 @@ def _source_sequence_residuals(
     )
 
 
+def _chain_contour_residuals(
+    actual: ShortestPathSnapshot,
+    expected: ShortestPathSnapshot,
+) -> tuple[ChainContourResidual, ...]:
+    actual_contours = _shortest_path_chain_contours(actual)
+    expected_contours = _shortest_path_chain_contours(expected)
+    return tuple(
+        ChainContourResidual(
+            chain_index=index,
+            actual=actual_contour,
+            expected=expected_contour,
+            delta=(
+                abs(actual_contour - expected_contour)
+                if actual_contour is not None and expected_contour is not None
+                else None
+            ),
+        )
+        for index, (actual_contour, expected_contour) in enumerate(
+            zip_longest(actual_contours, expected_contours),
+            start=1,
+        )
+        if actual_contour is None
+        or expected_contour is None
+        or abs(actual_contour - expected_contour) > SHORTEST_PATH_POSITION_TOLERANCE
+    )
+
+
+def _shortest_path_chain_contours(
+    snapshot: ShortestPathSnapshot,
+) -> tuple[float, ...]:
+    return tuple(_shortest_path_chain_contour(chain) for chain in snapshot.chains)
+
+
+def _shortest_path_chain_contour(chain: ShortestPathChain) -> float:
+    return sum(
+        _node_distance(first, second)
+        for first, second in zip(chain.nodes[:-1], chain.nodes[1:], strict=True)
+    )
+
+
+def _node_distance(first: ShortestPathNode, second: ShortestPathNode) -> float:
+    dx = first.position.x - second.position.x
+    dy = first.position.y - second.position.y
+    dz = first.position.z - second.position.z
+    return sqrt(dx * dx + dy * dy + dz * dz)
+
+
+def _max_chain_contour_delta(
+    residuals: tuple[ChainContourResidual, ...],
+) -> float:
+    finite_deltas = tuple(
+        residual.delta for residual in residuals if residual.delta is not None
+    )
+    if len(finite_deltas) == 0:
+        return 0.0
+    return max(finite_deltas)
+
+
+def _max_chain_contour_delta_chain(
+    residuals: tuple[ChainContourResidual, ...],
+) -> int | None:
+    finite_residuals = tuple(
+        residual for residual in residuals if residual.delta is not None
+    )
+    if len(finite_residuals) == 0:
+        return None
+    return max(finite_residuals, key=_chain_contour_residual_delta).chain_index
+
+
+def _chain_contour_residual_delta(residual: ChainContourResidual) -> float:
+    if residual.delta is None:
+        return -1.0
+    return residual.delta
+
+
 def _format_report(records: tuple[RegressionRecord, ...]) -> str:
     header = (
         "| benchmark | mode | status | Lpp delta | Z delta | "
+        "max chain contour delta | max chain contour delta chain | "
+        "chain contour residual details | "
         "summary field mismatches | pair mismatches | "
         "node count mismatches | max node position delta | "
         "max node delta chain | max node delta node | "
@@ -1661,6 +1758,9 @@ def _format_record(record: RegressionRecord) -> str:
         f"| benchmark-{record.benchmark_id} | {record.mode.value} | "
         f"{record.status.value} | {_format_optional_float(record.lpp_delta)} | "
         f"{_format_optional_float(record.z_delta)} | "
+        f"{_format_optional_float(record.max_chain_contour_delta)} | "
+        f"{_format_optional_int(record.max_chain_contour_delta_chain)} | "
+        f"{_format_chain_contour_residuals(record.chain_contour_residuals)} | "
         f"{_format_optional_int(record.summary_field_mismatches)} | "
         f"{_format_optional_int(record.pairing_mismatches)} | "
         f"{_format_optional_int(record.node_count_mismatches)} | "
@@ -1797,6 +1897,30 @@ def _format_source_sequence_residuals(
 def _format_source_sequence_residual(residual: SourceSequenceResidual) -> str:
     return (
         f"{residual.source_index}: "
+        f"{_format_optional_float(residual.actual)}"
+        f"!={_format_optional_float(residual.expected)}"
+        f"(d={_format_optional_float(residual.delta)})"
+    )
+
+
+def _format_chain_contour_residuals(
+    residuals: tuple[ChainContourResidual, ...] | None,
+) -> str:
+    if residuals is None:
+        return "n/a"
+    if len(residuals) == 0:
+        return "none"
+    visible = residuals[:MAX_SOURCE_RESIDUAL_REPORT_DETAILS]
+    formatted = "; ".join(_format_chain_contour_residual(item) for item in visible)
+    omitted_count = len(residuals) - len(visible)
+    if omitted_count == 0:
+        return formatted
+    return f"{formatted}; ... {omitted_count} more"
+
+
+def _format_chain_contour_residual(residual: ChainContourResidual) -> str:
+    return (
+        f"c{residual.chain_index}: "
         f"{_format_optional_float(residual.actual)}"
         f"!={_format_optional_float(residual.expected)}"
         f"(d={_format_optional_float(residual.delta)})"
