@@ -1,0 +1,42 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+____ test_generate_oracle_fixtures_when_staging_legacy_wrapper_quotes_paths ____
+
+tmp_path = PosixPath('/tmp/pytest-of-jxm/pytest-245/test_generate_oracle_fixtures_0')
+
+    def test_generate_oracle_fixtures_when_staging_legacy_wrapper_quotes_paths(
+        tmp_path: Path,
+    ) -> None:
+        install_dir = tmp_path / "install source"
+        benchmarks_dir = tmp_path / "benchmarks"
+        out_dir = tmp_path / "oracle output"
+        _write_legacy_wrapper_install(install_dir)
+        _write_benchmark(benchmarks_dir / ".benchmark-01.Z1")
+        request = OracleGenerationRequest(
+            benchmarks_dir=benchmarks_dir,
+            out_dir=out_dir,
+            z1_install_dir=install_dir,
+            mode_names=("default",),
+            allow_non_linux=True,
+            platform_name="Darwin",
+            timeout_seconds=None,
+        )
+
+        manifest = generate_oracle_fixtures(request)
+
+        staged_wrapper_text = (out_dir / "_z1plus_install" / "Z1+").read_text(
+            encoding="utf-8",
+        )
+        assert len(manifest.runs) == 1
+        assert PUBLIC_INSTALL_PATH not in staged_wrapper_text
+        assert str(out_dir / "_z1plus_install") in staged_wrapper_text
+>       assert (
+            '$perl "$installation_directory/Z1+import-lammps.pl" -data="$configfile"'
+            in staged_wrapper_text
+        )
+E       assert '$perl "$installation_directory/Z1+import-lammps.pl" -data="$configfile"' in '#!/bin/sh\nset -eu\n# $installation_directory = "/tmp/pytest-of-jxm/pytest-245/test_generate_oracle_fixtures_0/oracle...mary.dat\nprintf \'1\\n10 10 10\\n2\\n0 0 0 1.00 0\\n2 0 0 3.00 1\\n\' > Z1+SP.dat\nprintf \'1.0\\n\' > .Z1+cpu+secs\n'
+
+tests/test_oracle_install.py:41: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_oracle_install.py::test_generate_oracle_fixtures_when_staging_legacy_wrapper_quotes_paths
+1 failed in 0.17s

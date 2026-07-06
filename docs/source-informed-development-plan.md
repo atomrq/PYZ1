@@ -136,8 +136,13 @@ For every non-trivial future slice:
 
 ## Immediate Next Slice
 
-The next development slice should be a source-trace/I/O-contract slice before
-the next reducer parity change. It should create evidence that records the
-`Z1plus-code` checkout, checks the relevant official scripts, and adds or
-updates focused parser/writer/SP+ contract assertions if the current tests do
-not already cover the script-defined behavior.
+The source-trace/I/O-contract pass has current evidence for SP+ column
+semantics, negative-`xy` triclinic LAMMPS dump bounds, and Z1+ wrapper path
+quoting. The next development slice should return to benchmark-05 SP+ reducer
+parity while preserving benchmark-04 SP+ passed.
+
+Start with the remaining benchmark-05 reciprocal source/position placement and
+paired-chain coverage gaps. Before each reducer change, re-check the visible
+Z1+/Z1plus-code source surface and classify the rationale as `source_contract`
+or `oracle_residual_inference`. Keep benchmark-04 SP+ passed and do not weaken
+existing mismatch diagnostics.

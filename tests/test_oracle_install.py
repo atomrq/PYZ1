@@ -1,0 +1,95 @@
+from __future__ import annotations
+
+import stat
+from typing import TYPE_CHECKING
+
+from pyz1.oracle import PUBLIC_INSTALL_PATH, generate_oracle_fixtures
+from pyz1.oracle_models import OracleGenerationRequest
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+NEWLINE = "\n"
+
+
+def test_generate_oracle_fixtures_when_staging_legacy_wrapper_quotes_paths(
+    tmp_path: Path,
+) -> None:
+    install_dir = tmp_path / "install source"
+    benchmarks_dir = tmp_path / "benchmarks"
+    out_dir = tmp_path / "oracle output"
+    _write_legacy_wrapper_install(install_dir)
+    _write_benchmark(benchmarks_dir / ".benchmark-01.Z1")
+    request = OracleGenerationRequest(
+        benchmarks_dir=benchmarks_dir,
+        out_dir=out_dir,
+        z1_install_dir=install_dir,
+        mode_names=("default",),
+        allow_non_linux=True,
+        platform_name="Darwin",
+        timeout_seconds=None,
+    )
+
+    manifest = generate_oracle_fixtures(request)
+
+    staged_wrapper_text = (out_dir / "_z1plus_install" / "Z1+").read_text(
+        encoding="utf-8",
+    )
+    assert len(manifest.runs) == 1
+    assert PUBLIC_INSTALL_PATH not in staged_wrapper_text
+    assert str(out_dir / "_z1plus_install") in staged_wrapper_text
+    assert (
+        '$perl "$installation_directory/Z1+import-lammps.pl" -data="$configfile"'
+        in staged_wrapper_text
+    )
+    assert 'cp "$working_directory/$configfile" config.Z1' in staged_wrapper_text
+    assert '`"$code"`' in staged_wrapper_text
+    assert (
+        '$perl "$installation_directory/Z1+rearrange.pl" $SMDP'
+        in staged_wrapper_text
+    )
+
+
+def _write_benchmark(path: Path) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    lines = (
+        "1",
+        "10 10 10",
+        "3",
+        "0 0 0",
+        "1 0 0",
+        "2 0 0",
+    )
+    _ = path.write_text(NEWLINE.join(lines) + NEWLINE, encoding="utf-8")
+
+
+def _write_legacy_wrapper_install(install_dir: Path) -> None:
+    install_dir.mkdir(parents=True, exist_ok=True)
+    wrapper = install_dir / "Z1+"
+    _ = wrapper.write_text(_legacy_wrapper_text(), encoding="utf-8")
+    _ = wrapper.chmod(wrapper.stat().st_mode | stat.S_IXUSR)
+    executable = install_dir / "Z1+.ex"
+    _ = executable.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
+    _ = executable.chmod(executable.stat().st_mode | stat.S_IXUSR)
+    _ = (install_dir / "Z1+rearrange.pl").write_text(
+        "#!/usr/bin/perl\n",
+        encoding="utf-8",
+    )
+
+
+def _legacy_wrapper_text() -> str:
+    lines = (
+        "#!/bin/sh",
+        "set -eu",
+        f'# $installation_directory = "{PUBLIC_INSTALL_PATH}";',
+        "# $perl $installation_directory/Z1+import-lammps.pl -data=$configfile",
+        "# $perl $installation_directory/Z1+import-lammps.pl -dump=$configfile",
+        "# $perl $installation_directory/Z1+import-lammps.pl -xml=$configfile",
+        "# cp $working_directory/$configfile config.Z1",
+        "# `$code`",
+        "# $perl $installation_directory/Z1+rearrange.pl $SMDP",
+        "printf '1 1 3 2 2 0 0 0 2 0 0 0 0 1 0.001\\n' > Z1+summary.dat",
+        "printf '1\\n10 10 10\\n2\\n0 0 0 1.00 0\\n2 0 0 3.00 1\\n' > Z1+SP.dat",
+        "printf '1.0\\n' > .Z1+cpu+secs",
+    )
+    return NEWLINE.join(lines) + NEWLINE

@@ -35,6 +35,21 @@ evidence still leaves scientific and scalability boundaries open.
 
 Latest gate artifacts:
 
+- `.omo/evidence/task-144-z1plus-template-quoting/source-trace.md`:
+  records the `mkmat/Z1plus-code` wrapper path-quoting contract from
+  `replacements/Z1+template.pl`, checkout
+  `c7219cd394b1295272ebfc098f2835c5c871e6ec`, and classifies the oracle
+  staging wrapper patch as `source_contract`
+- `.omo/evidence/task-144-z1plus-template-quoting/pytest.txt`:
+  remote GPU-cluster RED/GREEN evidence for staging legacy Z1+ wrappers with
+  spaces in install/output paths; RED job `416460` failed as expected on the
+  old unquoted `Z1+import-lammps.pl` command, and final GREEN job `416468`
+  passed
+- `.omo/evidence/task-144-z1plus-template-quoting/ruff.txt` and
+  `.omo/evidence/task-144-z1plus-template-quoting/basedpyright.txt`:
+  static job `416467` passed `ruff check src tests` and `basedpyright`
+- `.omo/evidence/task-144-z1plus-template-quoting/package-smoke.txt`:
+  package smoke job `416469` passed
 - `.omo/evidence/task-143-z1plus-code-io-contract/source-trace.md`:
   records `mkmat/Z1plus-code` checkout
   `c7219cd394b1295272ebfc098f2835c5c871e6ec` and classifies the negative-`xy`

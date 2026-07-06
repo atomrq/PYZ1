@@ -8,9 +8,16 @@ from hashlib import sha256
 from pathlib import Path
 from typing import Final
 
-from typing_extensions import override
-
 from pyz1.errors import Z1OutputParseError
+from pyz1.oracle_errors import OracleInputError, OraclePlatformError
+from pyz1.oracle_install import (
+    EXECUTABLE_NAME,
+    WRAPPER_NAME,
+    stage_oracle_install,
+)
+from pyz1.oracle_install import (
+    PUBLIC_INSTALL_PATH as INSTALL_SOURCE_PATH,
+)
 from pyz1.oracle_models import (
     OracleGenerationRequest,
     OracleManifest,
@@ -20,11 +27,15 @@ from pyz1.oracle_models import (
 from pyz1.oracle_outcome import normalize_oracle_exit_code
 from pyz1.output_io import read_summary_file
 
-WRAPPER_NAME: Final = "Z1+"
-EXECUTABLE_NAME: Final = "Z1+.ex"
-REARRANGE_NAME: Final = "Z1+rearrange.pl"
 MANIFEST_NAME: Final = "manifest.json"
-PUBLIC_INSTALL_PATH: Final = "/Users/jiaxm/Contents/CodexProjects/source_code/Z1+"
+PUBLIC_INSTALL_PATH: Final = INSTALL_SOURCE_PATH
+
+__all__: Final = (
+    "PUBLIC_INSTALL_PATH",
+    "OracleInputError",
+    "OraclePlatformError",
+    "generate_oracle_fixtures",
+)
 
 ORACLE_MODES: Final = (
     OracleMode(
@@ -59,27 +70,6 @@ ORACLE_MODES: Final = (
     ),
 )
 
-@dataclass(frozen=True, slots=True)
-class OraclePlatformError(RuntimeError):
-    platform_name: str
-
-    @override
-    def __str__(self) -> str:
-        return (
-            "oracle requires Linux or an explicit executor, "
-            f"got {self.platform_name}"
-        )
-
-
-@dataclass(frozen=True, slots=True)
-class OracleInputError(RuntimeError):
-    path: Path
-    reason: str
-
-    @override
-    def __str__(self) -> str:
-        return f"{self.path}: {self.reason}"
-
 
 @dataclass(frozen=True, slots=True)
 class CommandOutcome:
@@ -96,7 +86,7 @@ def generate_oracle_fixtures(request: OracleGenerationRequest) -> OracleManifest
     z1_install_dir = request.z1_install_dir.resolve()
     benchmarks = _discover_benchmarks(benchmarks_dir)
     modes = _select_modes(request.mode_names)
-    staged_install = _stage_install(z1_install_dir, out_dir)
+    staged_install = stage_oracle_install(z1_install_dir, out_dir)
     runs = tuple(
         _run_benchmark_mode(
             benchmark=benchmark,
@@ -143,25 +133,6 @@ def _mode_by_name(name: str) -> OracleMode:
         if mode.name == name:
             return mode
     raise OracleInputError(path=Path(name), reason="unknown oracle mode")
-
-
-def _stage_install(source_dir: Path, out_dir: Path) -> Path:
-    _require_file(source_dir / WRAPPER_NAME)
-    _require_file(source_dir / EXECUTABLE_NAME)
-    _require_file(source_dir / REARRANGE_NAME)
-    staged_install = out_dir / "_z1plus_install"
-    staged_install.mkdir(parents=True, exist_ok=True)
-    for filename in (WRAPPER_NAME, EXECUTABLE_NAME, REARRANGE_NAME):
-        _ = shutil.copy2(source_dir / filename, staged_install / filename)
-    wrapper = staged_install / WRAPPER_NAME
-    _ = wrapper.write_text(
-        wrapper.read_text(encoding="utf-8").replace(
-            PUBLIC_INSTALL_PATH,
-            str(staged_install),
-        ),
-        encoding="utf-8",
-    )
-    return staged_install
 
 
 def _run_benchmark_mode(
@@ -246,11 +217,6 @@ def _summary_row_count(path: Path) -> int:
         return len(read_summary_file(path))
     except Z1OutputParseError:
         return 0
-
-
-def _require_file(path: Path) -> None:
-    if not path.is_file():
-        raise OracleInputError(path=path, reason="required file missing")
 
 
 def _hash_existing_outputs(paths: dict[str, Path]) -> dict[str, str]:
