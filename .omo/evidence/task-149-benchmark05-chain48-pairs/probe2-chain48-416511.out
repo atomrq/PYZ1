@@ -1,0 +1,5 @@
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+actual chain48 ((2.58, 18, 2), (12.53, 30, 2), (16.27437430893085, 43, 2)) node_count 5
+oracle chain48 ((2.58, 18, 2), (5.69, 49, 2), (12.53, 30, 1), (16.26, 34, 3)) node_count 6
+actual chain49 () node_count 2
+oracle chain49 ((14.67, 48, 2),) node_count 3

@@ -1,0 +1,5 @@
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+Traceback (most recent call last):
+  File "/public/home/jxm/codex_runs/z1-task149-benchmark05-chain48-pairs-20260706/work/.omo-probe-chain48.py", line 2, in <module>
+    from pyz1.io import read_z1_file
+ModuleNotFoundError: No module named 'pyz1.io'

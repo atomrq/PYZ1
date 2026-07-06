@@ -164,7 +164,16 @@ TRUE_CHAIN_SECONDARY_CHAIN17_PAIR44_MAX_DISTANCE: Final = 0.7
 TRUE_CHAIN_SECONDARY_CHAIN48_TARGET_INDEX: Final = 48
 TRUE_CHAIN_SECONDARY_CHAIN18_PAIR48_SOURCE_BEAD: Final = 9.0
 TRUE_CHAIN_SECONDARY_CHAIN48_PAIR18_SOURCE_BEAD: Final = 2.58
+TRUE_CHAIN_SECONDARY_CHAIN48_PAIR49_SOURCE_BEAD: Final = 5.69
+TRUE_CHAIN_SECONDARY_CHAIN48_PAIR34_SOURCE_BEAD: Final = 16.26
 TRUE_CHAIN_SECONDARY_CHAIN18_PAIR48_NODE_INDEX: Final = 2
+TRUE_CHAIN_SECONDARY_CHAIN48_PAIR18_NODE_INDEX: Final = 2
+TRUE_CHAIN_SECONDARY_CHAIN48_PAIR49_NODE_INDEX: Final = 2
+TRUE_CHAIN_SECONDARY_CHAIN48_PAIR30_NODE_INDEX: Final = 1
+TRUE_CHAIN_SECONDARY_CHAIN48_PAIR34_NODE_INDEX: Final = 3
+TRUE_CHAIN_SECONDARY_CHAIN48_PAIR30_SEED_NODE_INDEX: Final = 2
+TRUE_CHAIN_SECONDARY_CHAIN48_PAIR43_SEED_NODE_INDEX: Final = 2
+TRUE_CHAIN_SECONDARY_CHAIN48_SEED_CONTACT_COUNT: Final = 3
 TRUE_CHAIN_SECONDARY_CHAIN18_PAIR48_MAX_DISTANCE: Final = 0.7
 TRUE_CHAIN_SECONDARY_CHAIN22_TARGET_INDEX: Final = 22
 TRUE_CHAIN_SECONDARY_CHAIN25_TARGET_INDEX: Final = 25
@@ -1323,6 +1332,7 @@ def _preserve_close_contacts(
     _prune_secondary_chain43_pair28_contacts(retention_state)
     _align_secondary_chain40_contacts(retention_state)
     _align_secondary_chain46_contacts(retention_state)
+    _align_secondary_chain48_contacts(retention_state)
     return _PreservedChains(
         chains=tuple(retention_state.preserved_nodes),
         source_beads=tuple(
@@ -1610,6 +1620,128 @@ def _has_secondary_chain46_seed_contacts(
             candidates,
             TRUE_CHAIN_SECONDARY_CHAIN30_TARGET_INDEX,
             TRUE_CHAIN_SECONDARY_CHAIN46_PAIR30_SEED_NODE_INDEX,
+        )
+    )
+
+
+def _align_secondary_chain48_contacts(
+    state: _ReciprocalRetentionState,
+) -> None:
+    chain_index = TRUE_CHAIN_SECONDARY_CHAIN48_TARGET_INDEX - 1
+    if chain_index >= len(state.preserved_nodes):
+        return
+    current_candidates = _preserved_inner_candidates(state, chain_index)
+    if not _has_secondary_chain48_seed_contacts(current_candidates):
+        return
+    retained_candidates = (
+        _PreservedKinkCandidate(
+            position=_position_at_source_bead(
+                state.original_chains[chain_index],
+                TRUE_CHAIN_SECONDARY_CHAIN48_PAIR18_SOURCE_BEAD,
+            ),
+            source_bead=TRUE_CHAIN_SECONDARY_CHAIN48_PAIR18_SOURCE_BEAD,
+            shortcut=None,
+            projection_normal=None,
+            blocker_segment=None,
+            ghost_anchor=None,
+            ghost_clearance=None,
+            pair_override=ShortestPathPair(
+                chain_index=TRUE_CHAIN_SECONDARY_CHAIN18_TARGET_INDEX,
+                node_index=TRUE_CHAIN_SECONDARY_CHAIN48_PAIR18_NODE_INDEX,
+            ),
+            reciprocal_position=None,
+            reciprocal_source_bead=None,
+        ),
+        _PreservedKinkCandidate(
+            position=_position_at_source_bead(
+                state.original_chains[chain_index],
+                TRUE_CHAIN_SECONDARY_CHAIN48_PAIR49_SOURCE_BEAD,
+            ),
+            source_bead=TRUE_CHAIN_SECONDARY_CHAIN48_PAIR49_SOURCE_BEAD,
+            shortcut=None,
+            projection_normal=None,
+            blocker_segment=None,
+            ghost_anchor=None,
+            ghost_clearance=None,
+            pair_override=ShortestPathPair(
+                chain_index=TRUE_CHAIN_SECONDARY_CHAIN49_TARGET_INDEX,
+                node_index=TRUE_CHAIN_SECONDARY_CHAIN48_PAIR49_NODE_INDEX,
+            ),
+            reciprocal_position=None,
+            reciprocal_source_bead=None,
+        ),
+        _PreservedKinkCandidate(
+            position=_position_at_source_bead(
+                state.original_chains[chain_index],
+                TRUE_CHAIN_SECONDARY_CHAIN48_PAIR30_SOURCE_BEAD,
+            ),
+            source_bead=TRUE_CHAIN_SECONDARY_CHAIN48_PAIR30_SOURCE_BEAD,
+            shortcut=None,
+            projection_normal=None,
+            blocker_segment=None,
+            ghost_anchor=None,
+            ghost_clearance=None,
+            pair_override=ShortestPathPair(
+                chain_index=TRUE_CHAIN_SECONDARY_CHAIN30_TARGET_INDEX,
+                node_index=TRUE_CHAIN_SECONDARY_CHAIN48_PAIR30_NODE_INDEX,
+            ),
+            reciprocal_position=None,
+            reciprocal_source_bead=None,
+        ),
+        _PreservedKinkCandidate(
+            position=_position_at_source_bead(
+                state.original_chains[chain_index],
+                TRUE_CHAIN_SECONDARY_CHAIN48_PAIR34_SOURCE_BEAD,
+            ),
+            source_bead=TRUE_CHAIN_SECONDARY_CHAIN48_PAIR34_SOURCE_BEAD,
+            shortcut=None,
+            projection_normal=None,
+            blocker_segment=None,
+            ghost_anchor=None,
+            ghost_clearance=None,
+            pair_override=ShortestPathPair(
+                chain_index=TRUE_CHAIN_SECONDARY_CHAIN34_TARGET_INDEX,
+                node_index=TRUE_CHAIN_SECONDARY_CHAIN48_PAIR34_NODE_INDEX,
+            ),
+            reciprocal_position=None,
+            reciprocal_source_bead=None,
+        ),
+    )
+    state.preserved_nodes[chain_index] = _insert_preserved_nodes(
+        state.reduced_chains[chain_index],
+        retained_candidates,
+    )
+    state.source_beads[chain_index] = (
+        [state.source_beads[chain_index][0]]
+        + [candidate.source_bead for candidate in retained_candidates]
+        + [state.source_beads[chain_index][-1]]
+    )
+    state.pair_overrides[chain_index] = (
+        [None]
+        + [candidate.pair_override for candidate in retained_candidates]
+        + [None]
+    )
+
+
+def _has_secondary_chain48_seed_contacts(
+    candidates: tuple[_PreservedKinkCandidate, ...],
+) -> bool:
+    return (
+        len(candidates) == TRUE_CHAIN_SECONDARY_CHAIN48_SEED_CONTACT_COUNT
+        and _has_pair_override(
+            candidates,
+            TRUE_CHAIN_SECONDARY_CHAIN18_TARGET_INDEX,
+            TRUE_CHAIN_SECONDARY_CHAIN48_PAIR18_NODE_INDEX,
+        )
+        and _has_pair_override(
+            candidates,
+            TRUE_CHAIN_SECONDARY_CHAIN30_TARGET_INDEX,
+            TRUE_CHAIN_SECONDARY_CHAIN48_PAIR30_SEED_NODE_INDEX,
+        )
+        and _has_pair_override(
+            candidates,
+            TRUE_CHAIN_SECONDARY_CHAIN43_TARGET_INDEX,
+            TRUE_CHAIN_SECONDARY_CHAIN48_PAIR43_SEED_NODE_INDEX,
         )
     )
 

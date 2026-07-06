@@ -1,0 +1,25 @@
+task-149 benchmark-05 SP+ chain48 pair delta
+
+Probe jobs:
+  416510 failed from setup-only typo: imported pyz1.io instead of pyz1.z1_io.
+  416511 completed 0:0 and printed current actual/oracle chain48/49 pairs.
+
+RED job: 416512
+  actual chain48 pairs: ((2.58,18,2), (12.53,30,2), (16.27437430893085,43,2))
+  oracle chain48 pairs: ((2.58,18,2), (5.69,49,2), (12.53,30,1), (16.26,34,3))
+
+GREEN/final jobs:
+  focused green: 416513, COMPLETED 0:0, 1 passed in 30.97s
+  static: 416514, COMPLETED 0:0
+  regression: 416515, COMPLETED 0:0
+  package: 416516, COMPLETED 0:0
+
+Final benchmark-04/05 SP+ report: benchmark-04-05-spplus-final.md
+  benchmark-04: passed, pair mismatches 0, node count mismatches 0
+  benchmark-05: mismatch remains, pair mismatches 1, node count mismatches 1, pyz1 final nodes 169, oracle final nodes 170
+  remaining source residual details: c49n2[n/a->48]: 20!=14.67(d=5.33)
+
+Task movement:
+  chain48 pair sequence now matches oracle in focused assertion.
+  benchmark-05 pair mismatches moved from task-148 post-chain46 state (4) to 1.
+  remaining active coverage moves to chain49 reciprocal source/position placement.
