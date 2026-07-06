@@ -1,0 +1,26 @@
+actual chain39 contour=4.403016908143882 nodes=6
+  node=1 source=1 pos=(1.186600,0.917370,-0.242800) pair=None
+  node=2 source=3.71 pos=(1.733761,0.532431,-0.221663) pair=(43, 1)
+  node=3 source=6.65 pos=(1.687822,0.235781,-0.999334) pair=(4, 3)
+  node=4 source=9.82 pos=(1.673239,0.190470,-1.130965) pair=(18, 2)
+  node=5 source=13.16 pos=(-0.103755,1.513189,-1.746117) pair=(11, 3)
+  node=6 source=20 pos=(-0.351300,1.859900,-1.922400) pair=None
+  segments=0.669335,0.833597,0.139973,2.299066,0.461045
+oracle chain39 contour=4.403016908143882 nodes=6
+  node=1 source=1 pos=(1.186600,0.917370,-0.242800) pair=None
+  node=2 source=3.71 pos=(1.733761,0.532431,-0.221663) pair=(43, 1)
+  node=3 source=6.65 pos=(1.687822,0.235781,-0.999334) pair=(4, 3)
+  node=4 source=9.82 pos=(1.673239,0.190470,-1.130965) pair=(18, 2)
+  node=5 source=13.16 pos=(-0.103755,1.513189,-1.746117) pair=(11, 3)
+  node=6 source=20 pos=(-0.351300,1.859900,-1.922400) pair=None
+  segments=0.669335,0.833597,0.139973,2.299066,0.461045
+actual chain43 contour=11.931670979654012 nodes=3
+  node=1 source=1 pos=(1.977700,-1.452900,0.083448) pair=None
+  node=2 source=4.17 pos=(3.142000,0.092507,-0.284930) pair=(39, 1)
+  node=3 source=20 pos=(-4.243800,6.321400,2.142500) pair=None
+  segments=1.969665,9.962006
+oracle chain43 contour=10.673584460117015 nodes=3
+  node=1 source=1 pos=(1.977700,-1.452900,0.083448) pair=None
+  node=2 source=4.17 pos=(1.730048,0.536360,-0.222815) pair=(39, 1)
+  node=3 source=20 pos=(-4.243800,6.321400,2.142500) pair=None
+  segments=2.027877,8.645708

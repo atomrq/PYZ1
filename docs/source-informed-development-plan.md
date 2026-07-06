@@ -142,15 +142,15 @@ semantics, negative-`xy` triclinic LAMMPS dump bounds, and Z1+ wrapper path
 quoting. The next development slice should return to benchmark-05 SP+ reducer
 parity while preserving benchmark-04 SP+ passed.
 
-Task-158 closes the benchmark-05 SP+ chain9 contour residual as
-`oracle_residual_inference` after task-157 moved the largest remaining
-chain-contour residual from chain25 to chain9. Final regression keeps
+Task-159 closes the benchmark-05 SP+ chain43 contour residual as
+`oracle_residual_inference` after task-158 moved the largest remaining
+chain-contour residual from chain9 to chain43. Final regression keeps
 benchmark-04 SP+ `passed` and keeps benchmark-05 pair mismatches,
 node-count mismatches, source residual details, and `Z` delta closed at
-`0`/`none`; benchmark-05 remains a true `mismatch` with `Lpp` delta `0.289635`,
+`0`/`none`; benchmark-05 remains a true `mismatch` with `Lpp` delta `0.264473`,
 six summary mismatches, and the largest remaining chain-contour residual now
-on chain43 (`max chain contour delta = 1.25809`). Start the next reducer slice
-from chain43 final geometry and contour placement. Before each reducer change,
+on chain22 (`max chain contour delta = 1.0894`). Start the next reducer slice
+from chain22 final geometry and contour placement. Before each reducer change,
 re-check the visible Z1+/Z1plus-code source surface and classify the rationale
 as `source_contract` or `oracle_residual_inference`. Keep benchmark-04 SP+
 passed and do not weaken existing mismatch diagnostics.

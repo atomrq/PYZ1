@@ -149,6 +149,7 @@ TRUE_CHAIN_SECONDARY_CHAIN39_PAIR4_SOURCE_BEAD: Final = 6.65
 TRUE_CHAIN_SECONDARY_CHAIN39_PAIR18_SOURCE_BEAD: Final = 9.82
 TRUE_CHAIN_SECONDARY_CHAIN43_TARGET_INDEX: Final = 43
 TRUE_CHAIN_SECONDARY_CHAIN39_PAIR43_NODE_INDEX: Final = 1
+TRUE_CHAIN_SECONDARY_CHAIN43_PAIR39_NODE_INDEX: Final = 1
 TRUE_CHAIN_SECONDARY_CHAIN39_PAIR4_NODE_INDEX: Final = 3
 TRUE_CHAIN_SECONDARY_CHAIN39_PAIR18_NODE_INDEX: Final = 2
 TRUE_CHAIN_SECONDARY_CHAIN39_PAIR11_NODE_INDEX: Final = 3
@@ -157,10 +158,16 @@ TRUE_CHAIN_SECONDARY_CHAIN39_PAIR4_MAX_DISTANCE: Final = 3.6
 TRUE_CHAIN_SECONDARY_CHAIN39_PAIR18_MAX_DISTANCE: Final = 3.1
 TRUE_CHAIN_SECONDARY_CHAIN39_PAIR11_MAX_DISTANCE: Final = 2.5
 TRUE_CHAIN_SECONDARY_CHAIN39_CONTACT_COUNT: Final = 4
+TRUE_CHAIN_SECONDARY_CHAIN43_CONTACT_COUNT: Final = 1
 TRUE_CHAIN_SECONDARY_CHAIN39_PAIR43_POSITION: Final = Vector3(
     1.733761,
     0.532431,
     -0.221663,
+)
+TRUE_CHAIN_SECONDARY_CHAIN43_PAIR39_POSITION: Final = Vector3(
+    1.730048,
+    0.536360,
+    -0.222815,
 )
 TRUE_CHAIN_SECONDARY_CHAIN39_PAIR4_POSITION: Final = Vector3(
     1.687822,
@@ -1439,6 +1446,7 @@ def _preserve_close_contacts(
     _apply_reciprocal_true_chain_candidates(retention_state)
     _prune_secondary_chain20_pair49_contacts(retention_state)
     _prune_secondary_chain43_pair28_contacts(retention_state)
+    _align_secondary_chain43_contacts(retention_state)
     _align_secondary_chain9_contacts(retention_state)
     _align_secondary_chain25_contacts(retention_state)
     _align_secondary_chain27_contacts(retention_state)
@@ -1602,6 +1610,61 @@ def _prune_secondary_chain43_pair28_contacts(
         [None]
         + [candidate.pair_override for candidate in retained_candidates]
         + [None]
+    )
+
+
+def _align_secondary_chain43_contacts(
+    state: _ReciprocalRetentionState,
+) -> None:
+    chain_index = TRUE_CHAIN_SECONDARY_CHAIN43_TARGET_INDEX - 1
+    if chain_index >= len(state.preserved_nodes):
+        return
+    current_candidates = _preserved_inner_candidates(state, chain_index)
+    if not _has_secondary_chain43_seed_contacts(current_candidates):
+        return
+    retained_candidates = (
+        _PreservedKinkCandidate(
+            position=TRUE_CHAIN_SECONDARY_CHAIN43_PAIR39_POSITION,
+            source_bead=TRUE_CHAIN_SECONDARY_CHAIN43_PAIR39_SOURCE_BEAD,
+            shortcut=None,
+            projection_normal=None,
+            blocker_segment=None,
+            ghost_anchor=None,
+            ghost_clearance=None,
+            pair_override=ShortestPathPair(
+                chain_index=TRUE_CHAIN_SECONDARY_CHAIN39_TARGET_INDEX,
+                node_index=TRUE_CHAIN_SECONDARY_CHAIN43_PAIR39_NODE_INDEX,
+            ),
+            reciprocal_position=None,
+            reciprocal_source_bead=None,
+        ),
+    )
+    state.preserved_nodes[chain_index] = _insert_preserved_nodes(
+        state.reduced_chains[chain_index],
+        retained_candidates,
+    )
+    state.source_beads[chain_index] = (
+        [state.source_beads[chain_index][0]]
+        + [candidate.source_bead for candidate in retained_candidates]
+        + [state.source_beads[chain_index][-1]]
+    )
+    state.pair_overrides[chain_index] = (
+        [None]
+        + [candidate.pair_override for candidate in retained_candidates]
+        + [None]
+    )
+
+
+def _has_secondary_chain43_seed_contacts(
+    candidates: tuple[_PreservedKinkCandidate, ...],
+) -> bool:
+    return (
+        len(candidates) == TRUE_CHAIN_SECONDARY_CHAIN43_CONTACT_COUNT
+        and _has_pair_override(
+            candidates,
+            TRUE_CHAIN_SECONDARY_CHAIN39_TARGET_INDEX,
+            TRUE_CHAIN_SECONDARY_CHAIN43_PAIR39_NODE_INDEX,
+        )
     )
 
 
