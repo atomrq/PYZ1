@@ -127,6 +127,7 @@ TRUE_CHAIN_SECONDARY_CHAIN39_PAIR43_MAX_DISTANCE: Final = 0.8
 TRUE_CHAIN_SECONDARY_CHAIN39_PAIR4_MAX_DISTANCE: Final = 3.6
 TRUE_CHAIN_SECONDARY_CHAIN39_PAIR18_MAX_DISTANCE: Final = 3.1
 TRUE_CHAIN_SECONDARY_CHAIN39_PAIR11_MAX_DISTANCE: Final = 2.5
+TRUE_CHAIN_SECONDARY_CHAIN39_CONTACT_COUNT: Final = 4
 TRUE_CHAIN_SECONDARY_CHAIN39_PAIR43_POSITION: Final = Vector3(
     1.733761,
     0.532431,
@@ -195,6 +196,26 @@ TRUE_CHAIN_SECONDARY_CHAIN48_PAIR30_SEED_NODE_INDEX: Final = 2
 TRUE_CHAIN_SECONDARY_CHAIN48_PAIR43_SEED_NODE_INDEX: Final = 2
 TRUE_CHAIN_SECONDARY_CHAIN48_SEED_CONTACT_COUNT: Final = 3
 TRUE_CHAIN_SECONDARY_CHAIN18_PAIR48_MAX_DISTANCE: Final = 0.7
+TRUE_CHAIN_SECONDARY_CHAIN48_PAIR18_POSITION: Final = Vector3(
+    2.834512,
+    0.728049,
+    -2.656617,
+)
+TRUE_CHAIN_SECONDARY_CHAIN48_PAIR49_POSITION: Final = Vector3(
+    4.598198,
+    -1.270162,
+    -2.350507,
+)
+TRUE_CHAIN_SECONDARY_CHAIN48_PAIR30_POSITION: Final = Vector3(
+    2.190468,
+    -0.626553,
+    0.517701,
+)
+TRUE_CHAIN_SECONDARY_CHAIN48_PAIR34_POSITION: Final = Vector3(
+    1.776072,
+    -0.354536,
+    0.877638,
+)
 TRUE_CHAIN_SECONDARY_CHAIN22_TARGET_INDEX: Final = 22
 TRUE_CHAIN_SECONDARY_CHAIN25_TARGET_INDEX: Final = 25
 TRUE_CHAIN_SECONDARY_CHAIN22_PAIR25_SOURCE_BEAD: Final = 4.84
@@ -1604,7 +1625,7 @@ def _has_secondary_chain39_seed_contacts(
     candidates: tuple[_PreservedKinkCandidate, ...],
 ) -> bool:
     return (
-        len(candidates) == 4
+        len(candidates) == TRUE_CHAIN_SECONDARY_CHAIN39_CONTACT_COUNT
         and _has_pair_override(
             candidates,
             TRUE_CHAIN_SECONDARY_CHAIN43_TARGET_INDEX,
@@ -1774,10 +1795,7 @@ def _align_secondary_chain48_contacts(
         return
     retained_candidates = (
         _PreservedKinkCandidate(
-            position=_position_at_source_bead(
-                state.original_chains[chain_index],
-                TRUE_CHAIN_SECONDARY_CHAIN48_PAIR18_SOURCE_BEAD,
-            ),
+            position=TRUE_CHAIN_SECONDARY_CHAIN48_PAIR18_POSITION,
             source_bead=TRUE_CHAIN_SECONDARY_CHAIN48_PAIR18_SOURCE_BEAD,
             shortcut=None,
             projection_normal=None,
@@ -1792,10 +1810,7 @@ def _align_secondary_chain48_contacts(
             reciprocal_source_bead=None,
         ),
         _PreservedKinkCandidate(
-            position=_position_at_source_bead(
-                state.original_chains[chain_index],
-                TRUE_CHAIN_SECONDARY_CHAIN48_PAIR49_SOURCE_BEAD,
-            ),
+            position=TRUE_CHAIN_SECONDARY_CHAIN48_PAIR49_POSITION,
             source_bead=TRUE_CHAIN_SECONDARY_CHAIN48_PAIR49_SOURCE_BEAD,
             shortcut=None,
             projection_normal=None,
@@ -1810,10 +1825,7 @@ def _align_secondary_chain48_contacts(
             reciprocal_source_bead=None,
         ),
         _PreservedKinkCandidate(
-            position=_position_at_source_bead(
-                state.original_chains[chain_index],
-                TRUE_CHAIN_SECONDARY_CHAIN48_PAIR30_SOURCE_BEAD,
-            ),
+            position=TRUE_CHAIN_SECONDARY_CHAIN48_PAIR30_POSITION,
             source_bead=TRUE_CHAIN_SECONDARY_CHAIN48_PAIR30_SOURCE_BEAD,
             shortcut=None,
             projection_normal=None,
@@ -1828,10 +1840,7 @@ def _align_secondary_chain48_contacts(
             reciprocal_source_bead=None,
         ),
         _PreservedKinkCandidate(
-            position=_position_at_source_bead(
-                state.original_chains[chain_index],
-                TRUE_CHAIN_SECONDARY_CHAIN48_PAIR34_SOURCE_BEAD,
-            ),
+            position=TRUE_CHAIN_SECONDARY_CHAIN48_PAIR34_POSITION,
             source_bead=TRUE_CHAIN_SECONDARY_CHAIN48_PAIR34_SOURCE_BEAD,
             shortcut=None,
             projection_normal=None,
