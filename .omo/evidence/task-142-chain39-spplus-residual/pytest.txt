@@ -1,0 +1,22 @@
+Remote pytest full gate: PASSED
+Run root: /public/home/jxm/codex_runs/z1-task142-chain39-spplus-20260706-100010
+Route: internal ssh -p 3486 jxm@192.168.62.200
+Jobs: non-SP+ array 416379, SP+ array 416380 with shard0 rerun 416394
+
+total 185
+nonsp 120
+spplus 65
+
+non-SP+ shards:
+nonsp-0.txt: 40 passed in 8.39s
+nonsp-1.txt: 40 passed in 3.00s
+nonsp-2.txt: 40 passed in 12.20s
+
+SP+ shards:
+spplus-0.txt: 10 passed in 224.95s (0:03:44) (rerun 416394_0)
+spplus-1.txt: 10 passed in 221.56s (0:03:41)
+spplus-2.txt: 9 passed in 220.14s (0:03:40)
+spplus-3.txt: 9 passed in 218.60s (0:03:38)
+spplus-4.txt: 9 passed in 250.21s (0:04:10)
+spplus-5.txt: 9 passed in 223.74s (0:03:43)
+spplus-6.txt: 9 passed in 220.24s (0:03:40)

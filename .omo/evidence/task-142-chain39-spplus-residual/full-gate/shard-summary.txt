@@ -1,0 +1,3 @@
+total 185
+nonsp 120
+spplus 65

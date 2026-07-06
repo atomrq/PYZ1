@@ -11,25 +11,24 @@ For a requirement-by-requirement completion verdict, see
 
 Latest remote GPU-cluster gate evidence:
 
-- `.omo/evidence/task-141-chain37-spplus-residual/pytest.txt`:
+- `.omo/evidence/task-142-chain39-spplus-residual/pytest.txt`:
   remote GPU-cluster split: non-SP shards `40/40/40 passed` and SP+
-  shards `10/9/9/9/9/9/9 passed`
+  shards `10/10/9/9/9/9/9 passed`
 - `.omo/evidence/task-55-ppa-coverage/ppa-focused.txt`: `21 passed`
 - `.omo/evidence/task-57-ppa-nan-root/ppa-focused.txt`: `22 passed`
-- `.omo/evidence/task-141-chain37-spplus-residual/ruff.txt`:
+- `.omo/evidence/task-142-chain39-spplus-residual/ruff.txt`:
   `All checks passed!`
-- `.omo/evidence/task-141-chain37-spplus-residual/basedpyright.txt`:
+- `.omo/evidence/task-142-chain39-spplus-residual/basedpyright.txt`:
   `0 errors, 0 warnings, 0 notes`
-- `.omo/evidence/task-141-chain37-spplus-residual/package-smoke.txt`:
+- `.omo/evidence/task-142-chain39-spplus-residual/package-smoke.txt`:
   `1 passed`
-- `.omo/evidence/task-141-chain37-spplus-residual/diff-check.txt`:
-  `git diff --check passed`
-- `.omo/evidence/task-141-chain37-spplus-residual/full-gate-sacct.txt`:
-  final remote Slurm gate jobs `416358_0`-`416358_2`,
-  `416359_1`-`416359_6`, `416371_0`, `416360`, `416361`, `416362`,
-  and `416372` completed with `0:0` exit codes after the valid RED assertion
-  (`416354`), focused GREEN (`416356`), and superseded SP+ shard0 attempt
-  (`416359_0`) captured in `full-gate-sacct-with-superseded.txt`
+- `.omo/evidence/task-142-chain39-spplus-residual/full-gate/sacct.txt` and
+  `.omo/evidence/task-142-chain39-spplus-residual/full-gate/rerun-sacct.txt`:
+  final remote Slurm gate jobs `416379_0`-`416379_2`,
+  `416380_1`-`416380_6`, `416394_0`, `416393`, `416382`, and `416383`
+  completed with `0:0` exit codes after the valid RED assertion (`416376`),
+  focused GREEN (`416378`), and superseded static/SP+ shard0 attempts
+  (`416381`, `416380_0`) captured in the same full-gate evidence directory
 
 The package smoke runs `python -m pyz1` for default, SP+, selfZ, PPA, and PPA+
 modes and checks the expected mode-specific output files.
@@ -44,7 +43,7 @@ modes and checks the expected mode-specific output files.
 | Oracle fixture tooling and parity reporting | Oracle manifest tests, CLI help smoke, benchmark regression report tests, and logged oracle run metadata | `tests/test_oracle.py`, `tests/test_z1plus_parity.py`, `tests/test_spplus_regression.py` |
 | Native PPA/PPA+ slices | PPA mode tests, CLI mode tests, package-level smoke, WCA cell-list candidate generation, native PPA summary regression reporting, Z1+ PPA+ phase-stop regression, 12 parseable oracle coordinate-path summary parity cases, explicit Fortran-overflow known-invalid fixture handling, reusable oracle coordinate fixture status reports, a package script that discovers all oracle benchmark directories for coordinate fixture reporting, and an installed native PPA/PPA+ regression report surface | `tests/test_ppa.py`, `tests/test_ppa_regression.py`, `tests/test_ppa_oracle_coordinates.py`, `tests/test_ppa_oracle_coordinates_cli.py`, `tests/test_ppa_regression_cli.py`, `tests/test_cli_scaffold.py`, `tests/test_package_integration_smoke.py`, `.omo/evidence/task-46-ppa-summary-oracle-coverage/`, `.omo/evidence/task-47-ppa-neighbor-list/`, `.omo/evidence/task-48-ppa-native-regression/`, `.omo/evidence/task-49-ppa-lpp-debug/`, `.omo/evidence/task-78-ppa-oracle-coordinate-report/`, `.omo/evidence/task-79-ppa-oracle-coordinate-cli/`, `.omo/evidence/task-80-ppa-oracle-coordinate-discovery/`, `.omo/evidence/task-82-ppa-regression-cli/` |
 | Clean-room reducer | Geometry primitives, reducer diagnostics, benchmark-04 reducer structure, SP+ pairing, broad-phase/index blocker filtering, benchmark regression diagnostics for 01-05 under the default guard, a package script that discovers all default/SP+/selfZ oracle benchmark directories for regression reporting, and user-tunable node-count/trace-diagnostics guards | `tests/test_geometry.py`, `tests/test_z1_reducer.py`, `tests/test_spplus_regression.py`, `tests/test_regression_cli.py`, `.omo/evidence/task-53-reducer-index/`, `.omo/evidence/task-81-default-spplus-regression-cli/`, `.omo/evidence/task-83-selfz-regression-surface/`, `.omo/evidence/task-84-regression-cli-guards/` |
-| SP+ regression | Pairing comparison, max-node-delta localization, pair-segment geometry diagnostics, oracle summary source isolation, residual ghost-clearance tuning, CLI-driven full-corpus default/SP+/selfZ status reporting, trace-diagnostics guard control, direct pyz1-vs-oracle true-chain pair sequence reporting, true-chain contact candidate diagnostics, oracle-source nearest contact selection diagnostics, guarded true-chain contact-cluster retention, true-chain pair node-index diagnostics, reciprocal true-chain contact retention, lower-index reciprocal target coverage, reciprocal target pair coverage, dense repeated true-chain contact coverage, downstream paired true-chain contact coverage, repeated-contact source-placement coverage, chain2 tail paired-contact coverage, second pair-13 coverage, chain3 pair25 coverage, chain25 pair3 reciprocal coverage, chain25 pair40 source coverage, chain4 pair sequence coverage, chain5/chain16 reciprocal pair sequence coverage, chain6/chain37/chain2 pair sequence coverage, chain9/chain27 pair sequence coverage, chain10/chain36 reciprocal pair sequence coverage, chain11/chain37/chain39 reciprocal pair sequence coverage, chain11/chain32 reciprocal pair sequence coverage, chain12/chain19 reciprocal pair sequence coverage, chain13 pair sequence coverage, chain15/chain36 reciprocal pair sequence coverage, chain17/chain44 pair sequence coverage without a chain9 extra reciprocal, chain18/chain48 reciprocal pair sequence coverage, chain22/chain25 one-way source placement without adding a chain25 reciprocal, chain26/chain1 reciprocal source placement, chain27/chain19 one-way source placement, chain24/chain35 reciprocal pair sequence coverage, chain29/chain49 one-way pair coverage without adding a chain49 reciprocal, chain20 extra pair49 pruning, chain30 pair sequence coverage, chain31 pair sequence coverage, chain32 pair sequence coverage, chain34 pair sequence coverage, and chain37 pair sequence coverage | `tests/test_spplus_regression.py`, `tests/test_regression_cli.py`, `.omo/evidence/task-38-final-node-delta-location/`, `.omo/evidence/task-39-max-node-pair-geometry/`, `.omo/evidence/task-41-spplus-projection-direction/`, `.omo/evidence/task-50-spplus-residual/`, `.omo/evidence/task-81-default-spplus-regression-cli/`, `.omo/evidence/task-83-selfz-regression-surface/`, `.omo/evidence/task-84-regression-cli-guards/`, `.omo/evidence/task-86-true-chain-pair-diagnostics/`, `.omo/evidence/task-87-true-chain-contact-candidates/`, `.omo/evidence/task-88-oracle-source-contact-selection/`, `.omo/evidence/task-89-true-chain-cluster-retention/`, `.omo/evidence/task-90-true-chain-pair-node-diagnostics/`, `.omo/evidence/task-91-true-chain-pair-node-ordinal/`, `.omo/evidence/task-92-true-chain-reciprocal-retention/`, `.omo/evidence/task-93-lower-index-reciprocal-coverage/`, `.omo/evidence/task-94-reciprocal-target-pair-coverage/`, `.omo/evidence/task-95-dense-repeated-contact-coverage/`, `.omo/evidence/task-96-chain2-downstream-paired-contact/`, `.omo/evidence/task-97-chain2-repeated-contact-source-placement/`, `.omo/evidence/task-98-chain2-tail-paired-contact/`, `.omo/evidence/task-99-chain2-second-pair13-coverage/`, `.omo/evidence/task-116-chain3-pair25-contact/`, `.omo/evidence/task-117-chain25-pair3-reciprocal/`, `.omo/evidence/task-118-chain25-pair40-source/`, `.omo/evidence/task-119-chain4-spplus-residual/`, `.omo/evidence/task-120-chain5-spplus-residual/`, `.omo/evidence/task-121-chain6-spplus-residual/`, `.omo/evidence/task-122-chain9-spplus-residual/`, `.omo/evidence/task-123-chain10-spplus-residual/`, `.omo/evidence/task-124-chain11-spplus-residual/`, `.omo/evidence/task-125-chain11-pair32-spplus-residual/`, `.omo/evidence/task-126-chain12-spplus-residual/`, `.omo/evidence/task-127-chain13-spplus-residual/`, `.omo/evidence/task-128-chain15-spplus-residual/`, `.omo/evidence/task-129-chain17-spplus-residual/`, `.omo/evidence/task-130-chain18-spplus-residual/`, `.omo/evidence/task-131-chain22-spplus-residual/`, `.omo/evidence/task-132-chain26-spplus-residual/`, `.omo/evidence/task-133-chain27-spplus-residual/`, `.omo/evidence/task-134-chain24-spplus-residual/`, `.omo/evidence/task-135-chain20-chain29-spplus-residual/`, `.omo/evidence/task-136-chain20-spplus-residual/`, `.omo/evidence/task-137-chain30-spplus-residual/`, `.omo/evidence/task-138-chain31-spplus-residual/`, `.omo/evidence/task-139-chain32-spplus-residual/`, `.omo/evidence/task-140-chain34-spplus-residual/`, `.omo/evidence/task-141-chain37-spplus-residual/` |
+| SP+ regression | Pairing comparison, max-node-delta localization, pair-segment geometry diagnostics, oracle summary source isolation, residual ghost-clearance tuning, CLI-driven full-corpus default/SP+/selfZ status reporting, trace-diagnostics guard control, direct pyz1-vs-oracle true-chain pair sequence reporting, true-chain contact candidate diagnostics, oracle-source nearest contact selection diagnostics, guarded true-chain contact-cluster retention, true-chain pair node-index diagnostics, reciprocal true-chain contact retention, lower-index reciprocal target coverage, reciprocal target pair coverage, dense repeated true-chain contact coverage, downstream paired true-chain contact coverage, repeated-contact source-placement coverage, chain2 tail paired-contact coverage, second pair-13 coverage, chain3 pair25 coverage, chain25 pair3 reciprocal coverage, chain25 pair40 source coverage, chain4 pair sequence coverage, chain5/chain16 reciprocal pair sequence coverage, chain6/chain37/chain2 pair sequence coverage, chain9/chain27 pair sequence coverage, chain10/chain36 reciprocal pair sequence coverage, chain11/chain37/chain39 reciprocal pair sequence coverage, chain11/chain32 reciprocal pair sequence coverage, chain12/chain19 reciprocal pair sequence coverage, chain13 pair sequence coverage, chain15/chain36 reciprocal pair sequence coverage, chain17/chain44 pair sequence coverage without a chain9 extra reciprocal, chain18/chain48 reciprocal pair sequence coverage, chain22/chain25 one-way source placement without adding a chain25 reciprocal, chain26/chain1 reciprocal source placement, chain27/chain19 one-way source placement, chain24/chain35 reciprocal pair sequence coverage, chain29/chain49 one-way pair coverage without adding a chain49 reciprocal, chain20 extra pair49 pruning, chain30 pair sequence coverage, chain31 pair sequence coverage, chain32 pair sequence coverage, chain34 pair sequence coverage, chain37 pair sequence coverage, and chain39 pair sequence coverage | `tests/test_spplus_regression.py`, `tests/test_regression_cli.py`, `.omo/evidence/task-38-final-node-delta-location/`, `.omo/evidence/task-39-max-node-pair-geometry/`, `.omo/evidence/task-41-spplus-projection-direction/`, `.omo/evidence/task-50-spplus-residual/`, `.omo/evidence/task-81-default-spplus-regression-cli/`, `.omo/evidence/task-83-selfz-regression-surface/`, `.omo/evidence/task-84-regression-cli-guards/`, `.omo/evidence/task-86-true-chain-pair-diagnostics/`, `.omo/evidence/task-87-true-chain-contact-candidates/`, `.omo/evidence/task-88-oracle-source-contact-selection/`, `.omo/evidence/task-89-true-chain-cluster-retention/`, `.omo/evidence/task-90-true-chain-pair-node-diagnostics/`, `.omo/evidence/task-91-true-chain-pair-node-ordinal/`, `.omo/evidence/task-92-true-chain-reciprocal-retention/`, `.omo/evidence/task-93-lower-index-reciprocal-coverage/`, `.omo/evidence/task-94-reciprocal-target-pair-coverage/`, `.omo/evidence/task-95-dense-repeated-contact-coverage/`, `.omo/evidence/task-96-chain2-downstream-paired-contact/`, `.omo/evidence/task-97-chain2-repeated-contact-source-placement/`, `.omo/evidence/task-98-chain2-tail-paired-contact/`, `.omo/evidence/task-99-chain2-second-pair13-coverage/`, `.omo/evidence/task-116-chain3-pair25-contact/`, `.omo/evidence/task-117-chain25-pair3-reciprocal/`, `.omo/evidence/task-118-chain25-pair40-source/`, `.omo/evidence/task-119-chain4-spplus-residual/`, `.omo/evidence/task-120-chain5-spplus-residual/`, `.omo/evidence/task-121-chain6-spplus-residual/`, `.omo/evidence/task-122-chain9-spplus-residual/`, `.omo/evidence/task-123-chain10-spplus-residual/`, `.omo/evidence/task-124-chain11-spplus-residual/`, `.omo/evidence/task-125-chain11-pair32-spplus-residual/`, `.omo/evidence/task-126-chain12-spplus-residual/`, `.omo/evidence/task-127-chain13-spplus-residual/`, `.omo/evidence/task-128-chain15-spplus-residual/`, `.omo/evidence/task-129-chain17-spplus-residual/`, `.omo/evidence/task-130-chain18-spplus-residual/`, `.omo/evidence/task-131-chain22-spplus-residual/`, `.omo/evidence/task-132-chain26-spplus-residual/`, `.omo/evidence/task-133-chain27-spplus-residual/`, `.omo/evidence/task-134-chain24-spplus-residual/`, `.omo/evidence/task-135-chain20-chain29-spplus-residual/`, `.omo/evidence/task-136-chain20-spplus-residual/`, `.omo/evidence/task-137-chain30-spplus-residual/`, `.omo/evidence/task-138-chain31-spplus-residual/`, `.omo/evidence/task-139-chain32-spplus-residual/`, `.omo/evidence/task-140-chain34-spplus-residual/`, `.omo/evidence/task-141-chain37-spplus-residual/`, `.omo/evidence/task-142-chain39-spplus-residual/` |
 | Package integration smoke | Real module entrypoint smoke for default, SP+, selfZ, PPA, and PPA+ | `tests/test_package_integration_smoke.py`, `.omo/evidence/task-57-ppa-nan-root/package-smoke.txt`, `.omo/evidence/task-85-selfz-execution/` |
 | `selfZ` execution and boundary | `-selfZ` writes Z1+ reducer output files through both installed and module package surfaces; selfZ oracle directories are covered by the benchmark regression report surface, while scientific parity remains open | `tests/test_cli_scaffold.py`, `tests/test_package_integration_smoke.py`, `tests/test_regression_cli.py`, `.omo/evidence/task-83-selfz-regression-surface/`, `.omo/evidence/task-85-selfz-execution/` |
 
@@ -1112,6 +1111,26 @@ parity remain open. The final task-141 gate ran on the GPU cluster through the
 internal route `ssh -p 3486 jxm@192.168.62.200` with split Slurm jobs;
 evidence is under `.omo/evidence/task-141-chain37-spplus-residual/`.
 
+Task-142 adds benchmark-05 SP+ chain39 coverage. The focused RED in
+`.omo/evidence/task-142-chain39-spplus-residual/red.txt` captured the previous
+pyz1 chain39 pair sequence
+`(12.685219585867166,49,4),(13.0,48,2),(13.16,11,3)` versus oracle
+`(3.71,43,1),(6.65,4,3),(9.82,18,2),(13.16,11,3)`. The GREEN evidence in
+`.omo/evidence/task-142-chain39-spplus-residual/green.txt` passes that focused
+assertion. The full GPU-cluster gate evidence in
+`.omo/evidence/task-142-chain39-spplus-residual/{pytest.txt,ruff.txt,basedpyright.txt,package-smoke.txt,benchmark-04-05-spplus.md}`
+shows benchmark-04 SP+ remains `passed`; benchmark-05 SP+ remains `mismatch`,
+but chain39 now matches the oracle pair sequence and the previous chain39
+residual prefix entries are removed. Pair mismatches improve from `18` to
+`11`, final nodes move from `169` to `167`, and `Lpp` delta improves from
+`0.680981` to `0.625463`; node-count mismatches remain `5`, summary mismatches
+remain `9`, and `Z` delta regresses from `0.02` to `0.06`, so
+chain40/42/43/46/48/49 geometry, final node count, pair details, and summary
+parity remain open. The full task-142 gate ran on the GPU cluster through the
+internal route `ssh -p 3486 jxm@192.168.62.200` with split Slurm jobs:
+non-SP+ array `416379`, SP+ array `416380` with shard0 rerun `416394`, static
+rerun `416393`, package smoke `416382`, and benchmark report `416383`.
+
 ## Open Boundaries
 
 The following are intentionally not claimed complete:
@@ -1164,7 +1183,8 @@ The following are intentionally not claimed complete:
   reciprocal, task-136 prunes chain20's extra pair49 contacts, task-137
   aligns the chain30 pair sequence, task-138 aligns the chain31 pair
   sequence, task-139 aligns the chain32 pair sequence, task-140 aligns the
-  chain34 pair sequence, and task-141 aligns the chain37 pair sequence;
+  chain34 pair sequence, task-141 aligns the chain37 pair sequence, and
+  task-142 aligns the chain39 pair sequence;
   these cumulatively
   improve benchmark-05 local source residuals and parts of the pair topology
   while leaving downstream geometry, remaining reciprocal coverage, node-count,

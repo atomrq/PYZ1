@@ -1,0 +1,7 @@
+JobID|JobName|State|ExitCode|Elapsed|AllocCPUS
+416393|z1-t142-static|COMPLETED|0:0|00:00:05|4
+416393.batch|batch|COMPLETED|0:0|00:00:05|4
+416393.extern|extern|COMPLETED|0:0|00:00:05|4
+416394_0|z1-t142-spplus|COMPLETED|0:0|00:03:46|4
+416394_0.batch|batch|COMPLETED|0:0|00:03:46|4
+416394_0.extern|extern|COMPLETED|0:0|00:03:46|4
