@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+from math import sqrt
 from os import environ
 from pathlib import Path
 from shutil import copyfile
+from typing import TYPE_CHECKING
 
 from pyz1.output_io import read_shortest_path_file, read_summary_file
 from pyz1.reducer import ReducerSettings, reduce_snapshot
@@ -16,6 +18,9 @@ from pyz1.regression import (
 )
 from pyz1.summary import build_summary_outputs
 from pyz1.z1_io import read_z1_file
+
+if TYPE_CHECKING:
+    from pyz1.output_models import ShortestPathChain, ShortestPathNode
 
 SOURCE_Z1 = Path(
     environ.get(
@@ -1138,6 +1143,19 @@ def test_reduce_snapshot_when_benchmark05_chain39_matches_oracle_pairs() -> None
     )
 
 
+def test_reduce_snapshot_when_benchmark05_chain39_contour_matches_oracle() -> None:
+    snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-05.Z1")
+    oracle = read_shortest_path_file(
+        ORACLE_ROOT / "benchmark-05" / "spplus" / "Z1+SP.dat",
+    )
+
+    result = reduce_snapshot(snapshot, ReducerSettings(pairing_enabled=True))
+
+    actual_contour = _shortest_path_chain_contour(result.shortest_path.chains[38])
+    expected_contour = _shortest_path_chain_contour(oracle.chains[38])
+    assert abs(actual_contour - expected_contour) < 0.001
+
+
 def test_reduce_snapshot_when_benchmark05_chain40_matches_oracle_pairs() -> None:
     snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-05.Z1")
 
@@ -1708,6 +1726,23 @@ def _spplus_snapshot_text() -> str:
     return (ORACLE_ROOT / "benchmark-04" / "spplus" / "Z1+SP.dat").read_text(
         encoding="utf-8",
     )
+
+
+def _shortest_path_chain_contour(chain: ShortestPathChain) -> float:
+    return sum(
+        _shortest_path_node_distance(first, second)
+        for first, second in zip(chain.nodes[:-1], chain.nodes[1:], strict=True)
+    )
+
+
+def _shortest_path_node_distance(
+    first: ShortestPathNode,
+    second: ShortestPathNode,
+) -> float:
+    dx = first.position.x - second.position.x
+    dy = first.position.y - second.position.y
+    dz = first.position.z - second.position.z
+    return sqrt(dx * dx + dy * dy + dz * dz)
 
 
 def assert_benchmark_04_max_delta_location(record: RegressionRecord) -> None:

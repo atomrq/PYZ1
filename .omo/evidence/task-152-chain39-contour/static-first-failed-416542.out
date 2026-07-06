@@ -1,0 +1,24 @@
+TC001 Move application import `pyz1.output_models.ShortestPathChain` into a type-checking block
+  --> tests/test_spplus_regression.py:9:32
+   |
+ 8 | from pyz1.output_io import read_shortest_path_file, read_summary_file
+ 9 | from pyz1.output_models import ShortestPathChain, ShortestPathNode
+   |                                ^^^^^^^^^^^^^^^^^
+10 | from pyz1.reducer import ReducerSettings, reduce_snapshot
+11 | from pyz1.regression import (
+   |
+help: Move into type-checking block
+
+TC001 Move application import `pyz1.output_models.ShortestPathNode` into a type-checking block
+  --> tests/test_spplus_regression.py:9:51
+   |
+ 8 | from pyz1.output_io import read_shortest_path_file, read_summary_file
+ 9 | from pyz1.output_models import ShortestPathChain, ShortestPathNode
+   |                                                   ^^^^^^^^^^^^^^^^
+10 | from pyz1.reducer import ReducerSettings, reduce_snapshot
+11 | from pyz1.regression import (
+   |
+help: Move into type-checking block
+
+Found 2 errors.
+No fixes available (2 hidden fixes can be enabled with the `--unsafe-fixes` option).
