@@ -1,0 +1,7 @@
+Remote pytest gate: PASSED
+Focused RED job 416442: expected failure; negative xy triclinic bounds produced box x length 12.0 instead of source-contract 8.0.
+Focused GREEN jobs 416443 and final-path 416450: passed; final nodeid lives in tests/test_lammps_dump_import.py.
+Final non-SP shard job 416451: nonsp-0 41 passed, nonsp-1 40 passed, nonsp-2 40 passed.
+Final package smoke job 416453: 1 passed in 10.66s.
+Final static job 416452: ruff check src tests and basedpyright passed.
+Superseded static job 416445 failed because ruff scanned generated .omo evidence scripts copied to the remote run root.

@@ -40,7 +40,7 @@ def _parse_sheared_box(
         name="xhi",
         index=1,
     )
-    xlo = xlo_bound + min(0.0, xy)
+    xlo = xlo_bound - min(0.0, xy)
     xhi = xhi_bound - max(0.0, xy)
     return (
         LammpsBox(

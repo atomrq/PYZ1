@@ -5,6 +5,15 @@ It is a completion gate, not a parity claim.
 
 Last audited: 2026-07-06.
 
+## Development Plan
+
+Future clean-room reproduction work must follow
+`docs/source-informed-development-plan.md`. That plan makes the local
+`mkmat/Z1plus-code` checkout an explicit source trace, requires future slices to
+label changes as source-backed contract work or oracle-residual clean-room
+inference, and keeps benchmark-05 SP+ reducer parity on the active path while
+adding a source-trace/I/O-contract slice before the next reducer change.
+
 ## Current Verdict
 
 The project is not complete yet. The implemented package has broad parser,
@@ -26,8 +35,26 @@ evidence still leaves scientific and scalability boundaries open.
 
 Latest gate artifacts:
 
+- `.omo/evidence/task-143-z1plus-code-io-contract/source-trace.md`:
+  records `mkmat/Z1plus-code` checkout
+  `c7219cd394b1295272ebfc098f2835c5c871e6ec` and classifies the negative-`xy`
+  triclinic LAMMPS dump bounds change as `source_contract`, based on
+  `scripts/Z1+import-lammps.pl` lines 436-441 and 510-515
+- `.omo/evidence/task-143-z1plus-code-io-contract/pytest.txt`:
+  remote GPU-cluster RED/GREEN and non-SP pytest evidence; RED job `416442`
+  failed as expected with old `box.x == 12.0`, final-path GREEN job `416450`
+  passed, and final non-SP pytest shards in job array `416451` passed
+  `41/40/40`
+- `.omo/evidence/task-143-z1plus-code-io-contract/ruff.txt` and
+  `.omo/evidence/task-143-z1plus-code-io-contract/basedpyright.txt`:
+  scoped static final job `416452` passed `ruff check src tests` and
+  `basedpyright`; superseded job `416445` failed only because generated
+  `.omo/evidence` scripts were included in the synced remote run root
+- `.omo/evidence/task-143-z1plus-code-io-contract/package-smoke.txt`:
+  package smoke job `416453` passed
 - `.omo/evidence/task-142-chain39-spplus-residual/pytest.txt`:
-  remote GPU-cluster split: non-SP shards `40/40/40 passed` and SP+
+  latest full reducer/SP+ remote GPU-cluster split: non-SP shards
+  `40/40/40 passed` and SP+
   shards `10/10/9/9/9/9/9 passed`
 - `.omo/evidence/task-142-chain39-spplus-residual/ruff.txt`:
   `All checks passed!`

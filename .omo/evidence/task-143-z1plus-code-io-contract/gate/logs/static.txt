@@ -1,0 +1,58 @@
+INP001 File `.omo/evidence/task-138-chain31-spplus-residual/prepare_shards.py` is part of an implicit namespace package. Add an `__init__.py`.
+--> .omo/evidence/task-138-chain31-spplus-residual/prepare_shards.py:1:1
+
+INP001 File `.omo/evidence/task-138-chain31-spplus-residual/run_pytest_shard.py` is part of an implicit namespace package. Add an `__init__.py`.
+--> .omo/evidence/task-138-chain31-spplus-residual/run_pytest_shard.py:1:1
+
+INP001 File `.omo/evidence/task-139-chain32-spplus-residual/prepare_shards.py` is part of an implicit namespace package. Add an `__init__.py`.
+--> .omo/evidence/task-139-chain32-spplus-residual/prepare_shards.py:1:1
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> .omo/evidence/task-139-chain32-spplus-residual/prepare_shards.py:1:1
+  |
+1 | from pathlib import Path
+  | ^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+help: Organize imports
+
+INP001 File `.omo/evidence/task-139-chain32-spplus-residual/run_pytest_shard.py` is part of an implicit namespace package. Add an `__init__.py`.
+--> .omo/evidence/task-139-chain32-spplus-residual/run_pytest_shard.py:1:1
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> .omo/evidence/task-139-chain32-spplus-residual/run_pytest_shard.py:1:1
+  |
+1 | / from pathlib import Path
+2 | | import sys
+3 | |
+4 | | import pytest
+  | |_____________^
+  |
+help: Organize imports
+
+INP001 File `.omo/evidence/task-140-chain34-spplus-residual/prepare_shards.py` is part of an implicit namespace package. Add an `__init__.py`.
+--> .omo/evidence/task-140-chain34-spplus-residual/prepare_shards.py:1:1
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> .omo/evidence/task-140-chain34-spplus-residual/prepare_shards.py:1:1
+  |
+1 | from pathlib import Path
+  | ^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+help: Organize imports
+
+INP001 File `.omo/evidence/task-140-chain34-spplus-residual/run_pytest_shard.py` is part of an implicit namespace package. Add an `__init__.py`.
+--> .omo/evidence/task-140-chain34-spplus-residual/run_pytest_shard.py:1:1
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> .omo/evidence/task-140-chain34-spplus-residual/run_pytest_shard.py:1:1
+  |
+1 | / from pathlib import Path
+2 | | import sys
+3 | |
+4 | | import pytest
+  | |_____________^
+  |
+help: Organize imports
+
+Found 10 errors.
+[*] 4 fixable with the `--fix` option.

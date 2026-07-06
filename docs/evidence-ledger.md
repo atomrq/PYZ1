@@ -7,12 +7,33 @@ parity claim.
 For a requirement-by-requirement completion verdict, see
 `docs/completion-audit.md`.
 
+Future development is governed by `docs/source-informed-development-plan.md`.
+That plan records the local `Z1plus-code` source mirror, makes source-first
+parser/writer/reducer checks mandatory, and defines the updated work order:
+source-trace/I/O contract first, benchmark-05 SP+ parity next, then benchmark
+07/10/11 and PPA+ log-smoke expansion.
+
 ## Current Quality Gates
 
 Latest remote GPU-cluster gate evidence:
 
+- `.omo/evidence/task-143-z1plus-code-io-contract/source-trace.md`:
+  records the source-backed negative-`xy` triclinic LAMMPS dump bounds contract
+  from `mkmat/Z1plus-code` commit
+  `c7219cd394b1295272ebfc098f2835c5c871e6ec`
+- `.omo/evidence/task-143-z1plus-code-io-contract/pytest.txt`:
+  focused RED job `416442` failed for the old `box.x == 12.0` behavior,
+  final-path focused GREEN job `416450` passed, and final non-SP pytest array
+  `416451` passed shards `41/40/40`
+- `.omo/evidence/task-143-z1plus-code-io-contract/ruff.txt` and
+  `.omo/evidence/task-143-z1plus-code-io-contract/basedpyright.txt`:
+  scoped static final job `416452` passed; superseded job `416445` documents a
+  gate-script issue from scanning generated `.omo/evidence` Python scripts
+- `.omo/evidence/task-143-z1plus-code-io-contract/package-smoke.txt`:
+  package smoke job `416453` passed
 - `.omo/evidence/task-142-chain39-spplus-residual/pytest.txt`:
-  remote GPU-cluster split: non-SP shards `40/40/40 passed` and SP+
+  latest full reducer/SP+ remote GPU-cluster split: non-SP shards
+  `40/40/40 passed` and SP+
   shards `10/10/9/9/9/9/9 passed`
 - `.omo/evidence/task-55-ppa-coverage/ppa-focused.txt`: `21 passed`
 - `.omo/evidence/task-57-ppa-nan-root/ppa-focused.txt`: `22 passed`
@@ -38,7 +59,7 @@ modes and checks the expected mode-specific output files.
 | Requirement | Current proof | Evidence |
 | --- | --- | --- |
 | Z1 input parser and typed models | Unit tests for valid inputs, malformed inputs, metadata, true-chain filtering, and model invariants | `tests/test_z1_io.py`, `tests/test_models.py` |
-| Z1+ output parser/writer | Summary, SP/SP+, initconfig, value files, PPA, and PPA+ round-trip tests | `tests/test_output_io.py`, `tests/test_output_values.py`, `tests/test_initconfig_io.py` |
+| Z1+ output parser/writer | Summary, SP/SP+, initconfig, value files, PPA, and PPA+ round-trip tests plus source-backed LAMMPS dump triclinic bounds import | `tests/test_output_io.py`, `tests/test_output_values.py`, `tests/test_initconfig_io.py`, `tests/test_lammps_import.py`, `.omo/evidence/task-143-z1plus-code-io-contract/` |
 | Summary and `Ne` estimators | Estimator unit tests plus oracle-SP-through-pyz1 summary parity for benchmark-04 SP+ | `tests/test_estimators.py`, `tests/test_summary.py`, `tests/test_spplus_regression.py`, `.omo/evidence/task-42-summary-ne-source/` |
 | Oracle fixture tooling and parity reporting | Oracle manifest tests, CLI help smoke, benchmark regression report tests, and logged oracle run metadata | `tests/test_oracle.py`, `tests/test_z1plus_parity.py`, `tests/test_spplus_regression.py` |
 | Native PPA/PPA+ slices | PPA mode tests, CLI mode tests, package-level smoke, WCA cell-list candidate generation, native PPA summary regression reporting, Z1+ PPA+ phase-stop regression, 12 parseable oracle coordinate-path summary parity cases, explicit Fortran-overflow known-invalid fixture handling, reusable oracle coordinate fixture status reports, a package script that discovers all oracle benchmark directories for coordinate fixture reporting, and an installed native PPA/PPA+ regression report surface | `tests/test_ppa.py`, `tests/test_ppa_regression.py`, `tests/test_ppa_oracle_coordinates.py`, `tests/test_ppa_oracle_coordinates_cli.py`, `tests/test_ppa_regression_cli.py`, `tests/test_cli_scaffold.py`, `tests/test_package_integration_smoke.py`, `.omo/evidence/task-46-ppa-summary-oracle-coverage/`, `.omo/evidence/task-47-ppa-neighbor-list/`, `.omo/evidence/task-48-ppa-native-regression/`, `.omo/evidence/task-49-ppa-lpp-debug/`, `.omo/evidence/task-78-ppa-oracle-coordinate-report/`, `.omo/evidence/task-79-ppa-oracle-coordinate-cli/`, `.omo/evidence/task-80-ppa-oracle-coordinate-discovery/`, `.omo/evidence/task-82-ppa-regression-cli/` |
