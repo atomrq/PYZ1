@@ -1,0 +1,29 @@
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+F                                                                        [100%]
+=================================== FAILURES ===================================
+______ test_reduce_snapshot_when_benchmark05_chain43_matches_oracle_pair _______
+
+    def test_reduce_snapshot_when_benchmark05_chain43_matches_oracle_pair() -> None:
+        snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-05.Z1")
+
+        result = reduce_snapshot(snapshot, ReducerSettings(pairing_enabled=True))
+
+        chain_43_pairs = tuple(
+            (
+                node.source_bead,
+                node.pair.chain_index,
+                node.pair.node_index,
+            )
+            for node in result.shortest_path.chains[42].nodes[1:-1]
+            if node.pair is not None
+        )
+>       assert chain_43_pairs == ((4.17, 39, 1),)
+E       assert ((4.17, 39, 1...18.25, 28, 2)) == ((4.17, 39, 1),)
+E
+E         Left contains one more item: (18.25, 28, 2)
+E         Use -v to get more diff
+
+tests/test_spplus_regression.py:1167: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_spplus_regression.py::test_reduce_snapshot_when_benchmark05_chain43_matches_oracle_pair
+1 failed in 31.14s

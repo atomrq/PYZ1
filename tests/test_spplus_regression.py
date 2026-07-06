@@ -1150,6 +1150,23 @@ def test_reduce_snapshot_when_benchmark05_chain42_matches_oracle_pair() -> None:
     assert chain_42_pairs == ((3.83, 34, 1),)
 
 
+def test_reduce_snapshot_when_benchmark05_chain43_matches_oracle_pair() -> None:
+    snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-05.Z1")
+
+    result = reduce_snapshot(snapshot, ReducerSettings(pairing_enabled=True))
+
+    chain_43_pairs = tuple(
+        (
+            node.source_bead,
+            node.pair.chain_index,
+            node.pair.node_index,
+        )
+        for node in result.shortest_path.chains[42].nodes[1:-1]
+        if node.pair is not None
+    )
+    assert chain_43_pairs == ((4.17, 39, 1),)
+
+
 def test_reduce_snapshot_when_benchmark05_chain28_keeps_pair34_contact() -> None:
     snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-05.Z1")
 

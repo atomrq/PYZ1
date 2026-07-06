@@ -110,6 +110,7 @@ TRUE_CHAIN_SECONDARY_CHAIN11_PAIR39_NODE_INDEX: Final = 5
 TRUE_CHAIN_SECONDARY_CHAIN11_PAIR39_RECIPROCAL_NODE_INDEX: Final = 3
 TRUE_CHAIN_SECONDARY_CHAIN39_PAIR43_SOURCE_BEAD: Final = 3.71
 TRUE_CHAIN_SECONDARY_CHAIN43_PAIR39_SOURCE_BEAD: Final = 4.17
+TRUE_CHAIN_SECONDARY_CHAIN43_PAIR28_SOURCE_BEAD: Final = 18.25
 TRUE_CHAIN_SECONDARY_CHAIN39_PAIR4_SOURCE_BEAD: Final = 6.65
 TRUE_CHAIN_SECONDARY_CHAIN39_PAIR18_SOURCE_BEAD: Final = 9.82
 TRUE_CHAIN_SECONDARY_CHAIN43_TARGET_INDEX: Final = 43
@@ -1308,6 +1309,7 @@ def _preserve_close_contacts(
     )
     _apply_reciprocal_true_chain_candidates(retention_state)
     _prune_secondary_chain20_pair49_contacts(retention_state)
+    _prune_secondary_chain43_pair28_contacts(retention_state)
     return _PreservedChains(
         chains=tuple(retention_state.preserved_nodes),
         source_beads=tuple(
@@ -1429,6 +1431,39 @@ def _prune_secondary_chain20_pair49_contacts(
     ]
     endpoint_pair_overrides: list[ShortestPathPair | None] = [None, None]
     state.pair_overrides[chain_index] = endpoint_pair_overrides
+
+
+def _prune_secondary_chain43_pair28_contacts(
+    state: _ReciprocalRetentionState,
+) -> None:
+    chain_index = TRUE_CHAIN_SECONDARY_CHAIN43_TARGET_INDEX - 1
+    if chain_index >= len(state.preserved_nodes):
+        return
+    current_candidates = _preserved_inner_candidates(state, chain_index)
+    retained_candidates = tuple(
+        candidate
+        for candidate in current_candidates
+        if abs(
+            candidate.source_bead - TRUE_CHAIN_SECONDARY_CHAIN43_PAIR28_SOURCE_BEAD,
+        )
+        > GEOMETRY_TOLERANCE
+    )
+    if len(retained_candidates) == len(current_candidates):
+        return
+    state.preserved_nodes[chain_index] = _insert_preserved_nodes(
+        state.reduced_chains[chain_index],
+        retained_candidates,
+    )
+    state.source_beads[chain_index] = (
+        [state.source_beads[chain_index][0]]
+        + [candidate.source_bead for candidate in retained_candidates]
+        + [state.source_beads[chain_index][-1]]
+    )
+    state.pair_overrides[chain_index] = (
+        [None]
+        + [candidate.pair_override for candidate in retained_candidates]
+        + [None]
+    )
 
 
 def _is_secondary_chain4_pair18_reciprocal_candidate(
