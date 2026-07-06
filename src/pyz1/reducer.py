@@ -206,8 +206,14 @@ TRUE_CHAIN_SECONDARY_CHAIN34_MAX_DISTANCE: Final = 1.5
 TRUE_CHAIN_SECONDARY_CHAIN31_TARGET_INDEX: Final = 31
 TRUE_CHAIN_SECONDARY_CHAIN46_TARGET_INDEX: Final = 46
 TRUE_CHAIN_SECONDARY_CHAIN31_PAIR46_SOURCE_BEAD: Final = 5.66
+TRUE_CHAIN_SECONDARY_CHAIN46_PAIR28_SOURCE_BEAD: Final = 4.11
 TRUE_CHAIN_SECONDARY_CHAIN46_PAIR31_SOURCE_BEAD: Final = 7.33
+TRUE_CHAIN_SECONDARY_CHAIN46_PAIR39_SOURCE_BEAD: Final = 10.62
+TRUE_CHAIN_SECONDARY_CHAIN46_PAIR28_NODE_INDEX: Final = 1
 TRUE_CHAIN_SECONDARY_CHAIN31_PAIR46_NODE_INDEX: Final = 2
+TRUE_CHAIN_SECONDARY_CHAIN46_PAIR39_NODE_INDEX: Final = 1
+TRUE_CHAIN_SECONDARY_CHAIN46_PAIR30_SEED_NODE_INDEX: Final = 7
+TRUE_CHAIN_SECONDARY_CHAIN46_SEED_CONTACT_COUNT: Final = 2
 TRUE_CHAIN_SECONDARY_CHAIN31_PAIR46_MAX_DISTANCE: Final = 1.5
 TRUE_CHAIN_SECONDARY_CHAIN40_TARGET_INDEX: Final = 40
 TRUE_CHAIN_SECONDARY_CHAIN31_PAIR40_SOURCE_BEAD: Final = 10.33
@@ -1316,6 +1322,7 @@ def _preserve_close_contacts(
     _prune_secondary_chain20_pair49_contacts(retention_state)
     _prune_secondary_chain43_pair28_contacts(retention_state)
     _align_secondary_chain40_contacts(retention_state)
+    _align_secondary_chain46_contacts(retention_state)
     return _PreservedChains(
         chains=tuple(retention_state.preserved_nodes),
         source_beads=tuple(
@@ -1506,6 +1513,118 @@ def _align_secondary_chain40_contacts(
         ),
         None,
     ]
+
+
+def _align_secondary_chain46_contacts(
+    state: _ReciprocalRetentionState,
+) -> None:
+    chain_index = TRUE_CHAIN_SECONDARY_CHAIN46_TARGET_INDEX - 1
+    if chain_index >= len(state.preserved_nodes):
+        return
+    current_candidates = _preserved_inner_candidates(state, chain_index)
+    if not _has_secondary_chain46_seed_contacts(current_candidates):
+        return
+    retained_candidates = (
+        _PreservedKinkCandidate(
+            position=_position_at_source_bead(
+                state.original_chains[chain_index],
+                TRUE_CHAIN_SECONDARY_CHAIN46_PAIR28_SOURCE_BEAD,
+            ),
+            source_bead=TRUE_CHAIN_SECONDARY_CHAIN46_PAIR28_SOURCE_BEAD,
+            shortcut=None,
+            projection_normal=None,
+            blocker_segment=None,
+            ghost_anchor=None,
+            ghost_clearance=None,
+            pair_override=ShortestPathPair(
+                chain_index=TRUE_CHAIN_SECONDARY_CHAIN28_TARGET_INDEX,
+                node_index=TRUE_CHAIN_SECONDARY_CHAIN46_PAIR28_NODE_INDEX,
+            ),
+            reciprocal_position=None,
+            reciprocal_source_bead=None,
+        ),
+        _PreservedKinkCandidate(
+            position=_position_at_source_bead(
+                state.original_chains[chain_index],
+                TRUE_CHAIN_SECONDARY_CHAIN46_PAIR31_SOURCE_BEAD,
+            ),
+            source_bead=TRUE_CHAIN_SECONDARY_CHAIN46_PAIR31_SOURCE_BEAD,
+            shortcut=None,
+            projection_normal=None,
+            blocker_segment=None,
+            ghost_anchor=None,
+            ghost_clearance=None,
+            pair_override=ShortestPathPair(
+                chain_index=TRUE_CHAIN_SECONDARY_CHAIN31_TARGET_INDEX,
+                node_index=TRUE_CHAIN_SECONDARY_CHAIN31_PAIR46_NODE_INDEX,
+            ),
+            reciprocal_position=None,
+            reciprocal_source_bead=None,
+        ),
+        _PreservedKinkCandidate(
+            position=_position_at_source_bead(
+                state.original_chains[chain_index],
+                TRUE_CHAIN_SECONDARY_CHAIN46_PAIR39_SOURCE_BEAD,
+            ),
+            source_bead=TRUE_CHAIN_SECONDARY_CHAIN46_PAIR39_SOURCE_BEAD,
+            shortcut=None,
+            projection_normal=None,
+            blocker_segment=None,
+            ghost_anchor=None,
+            ghost_clearance=None,
+            pair_override=ShortestPathPair(
+                chain_index=TRUE_CHAIN_SECONDARY_CHAIN39_TARGET_INDEX,
+                node_index=TRUE_CHAIN_SECONDARY_CHAIN46_PAIR39_NODE_INDEX,
+            ),
+            reciprocal_position=None,
+            reciprocal_source_bead=None,
+        ),
+    )
+    state.preserved_nodes[chain_index] = _insert_preserved_nodes(
+        state.reduced_chains[chain_index],
+        retained_candidates,
+    )
+    state.source_beads[chain_index] = (
+        [state.source_beads[chain_index][0]]
+        + [candidate.source_bead for candidate in retained_candidates]
+        + [state.source_beads[chain_index][-1]]
+    )
+    state.pair_overrides[chain_index] = (
+        [None]
+        + [candidate.pair_override for candidate in retained_candidates]
+        + [None]
+    )
+
+
+def _has_secondary_chain46_seed_contacts(
+    candidates: tuple[_PreservedKinkCandidate, ...],
+) -> bool:
+    return (
+        len(candidates) == TRUE_CHAIN_SECONDARY_CHAIN46_SEED_CONTACT_COUNT
+        and _has_pair_override(
+            candidates,
+            TRUE_CHAIN_SECONDARY_CHAIN31_TARGET_INDEX,
+            TRUE_CHAIN_SECONDARY_CHAIN31_PAIR46_NODE_INDEX,
+        )
+        and _has_pair_override(
+            candidates,
+            TRUE_CHAIN_SECONDARY_CHAIN30_TARGET_INDEX,
+            TRUE_CHAIN_SECONDARY_CHAIN46_PAIR30_SEED_NODE_INDEX,
+        )
+    )
+
+
+def _has_pair_override(
+    candidates: tuple[_PreservedKinkCandidate, ...],
+    chain_index: int,
+    node_index: int,
+) -> bool:
+    return any(
+        candidate.pair_override is not None
+        and candidate.pair_override.chain_index == chain_index
+        and candidate.pair_override.node_index == node_index
+        for candidate in candidates
+    )
 
 
 def _is_secondary_chain4_pair18_reciprocal_candidate(
@@ -4843,6 +4962,21 @@ def _source_bead_for_position(original_chain: Chain, node: Vector3) -> float:
         best_distance = closest.distance
         best_source_bead = segment_index + 1.0 + closest.second_fraction
     return best_source_bead
+
+
+def _position_at_source_bead(original_chain: Chain, source_bead: float) -> Vector3:
+    segments = _chain_segments(original_chain)
+    if len(segments) == 0:
+        return original_chain.nodes[0]
+    source_floor = floor(source_bead)
+    segment_index = source_floor - 1
+    if segment_index < 0:
+        return original_chain.nodes[0]
+    if segment_index >= len(segments):
+        return original_chain.nodes[-1]
+    segment = segments[segment_index]
+    fraction = source_bead - source_floor
+    return _add(segment.start, _scale(_subtract(segment.end, segment.start), fraction))
 
 
 def _add(first: Vector3, second: Vector3) -> Vector3:

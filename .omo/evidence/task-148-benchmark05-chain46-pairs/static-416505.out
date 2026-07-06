@@ -1,0 +1,13 @@
+/bin/sh: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+PLR2004 Magic value used in comparison, consider replacing `2` with a constant variable
+    --> src/pyz1/reducer.py:1602:28
+     |
+1600 | ) -> bool:
+1601 |     return (
+1602 |         len(candidates) == 2
+     |                            ^
+1603 |         and _has_pair_override(
+1604 |             candidates,
+     |
+
+Found 1 error.

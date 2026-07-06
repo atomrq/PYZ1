@@ -1,0 +1,21 @@
+task-148 benchmark-05 SP+ chain46 pair delta
+
+RED job: 416501
+  actual chain46 pairs: ((7.33, 31, 2), (16.329891433585477, 30, 7))
+  oracle chain46 pairs: ((4.11, 28, 1), (7.33, 31, 2), (10.62, 39, 1))
+
+GREEN/final jobs:
+  focused green2: 416508, COMPLETED 0:0, 1 passed in 30.67s
+  regression2: 416507, COMPLETED 0:0
+  static2: 416509, COMPLETED 0:0
+  package2: 416506, COMPLETED 0:0
+
+Final benchmark-04/05 SP+ report: benchmark-04-05-spplus-final2.md
+  benchmark-04: passed, pair mismatches 0, node count mismatches 0
+  benchmark-05: mismatch remains, pair mismatches 4, node count mismatches 2, pyz1 final nodes 168, oracle final nodes 170
+  remaining source residual details: c48n3, c48n4, c48n5, c49n2
+
+Task movement:
+  chain46 pair sequence now matches oracle in focused assertion.
+  benchmark-05 pair mismatches moved from task-147 post-chain40 state (8) to 4.
+  remaining active coverage moves to chains 48/49 and related reciprocal placement.
