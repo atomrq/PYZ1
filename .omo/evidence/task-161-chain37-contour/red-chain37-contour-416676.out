@@ -1,0 +1,22 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_____ test_reduce_snapshot_when_benchmark05_chain37_contour_matches_oracle _____
+
+    def test_reduce_snapshot_when_benchmark05_chain37_contour_matches_oracle() -> None:
+        snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-05.Z1")
+        oracle = read_shortest_path_file(
+            ORACLE_ROOT / "benchmark-05" / "spplus" / "Z1+SP.dat",
+        )
+
+        result = reduce_snapshot(snapshot, ReducerSettings(pairing_enabled=True))
+
+        actual_contour = _shortest_path_chain_contour(result.shortest_path.chains[36])
+        expected_contour = _shortest_path_chain_contour(oracle.chains[36])
+>       assert abs(actual_contour - expected_contour) < 0.001
+E       assert 1.032397164933963 < 0.001
+E        +  where 1.032397164933963 = abs((15.732259528203835 - 14.699862363269872))
+
+tests/test_spplus_regression.py:1212: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_spplus_regression.py::test_reduce_snapshot_when_benchmark05_chain37_contour_matches_oracle
+1 failed in 31.40s

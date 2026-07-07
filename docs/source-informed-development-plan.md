@@ -1,6 +1,6 @@
 # Source-Informed Development Plan
 
-Last updated: 2026-07-06.
+Last updated: 2026-07-07.
 
 This plan guides future `pyz1` clean-room development. It updates the active
 direction after reading the public `mkmat/Z1plus-code` repository. It does not
@@ -44,6 +44,40 @@ Prefer `source_contract` fixes over residual fitting. `oracle_residual_inference
 is allowed for SP/SP+ reducer parity, but the test/evidence must name the
 residual being closed and must not weaken existing mismatch diagnostics.
 
+## Reducer Generalization Policy
+
+SP/SP+ detail parity remains a goal, but reducer runtime behavior must move
+toward a clean-room algorithm that can run on new systems without oracle final
+coordinates. Oracle output is allowed as a teacher and regression target; it is
+not allowed as production reducer input.
+
+Do not treat benchmark-specific oracle final geometry as a final reducer
+solution. Any `Vector3(...)` coordinate copied from a Z1+ oracle SP/SP+ output
+is only a diagnostic scaffold or temporary oracle-regression shim unless and
+until it is replaced by a rule derived from the input system itself.
+
+Reducer implementation should depend on information available for any input:
+
+- chain endpoints and current chain geometry;
+- box, shear, PBC/folded-unfolded coordinate handling;
+- obstacle/contact constraints and candidate contact surfaces;
+- pair topology, paired node ordering, and source bead/contour ordering;
+- endpoint-fixed, topology-preserving constrained shortening or relaxation
+  rules.
+
+When oracle residuals expose a geometry gap, the GREEN target is not "copy the
+oracle coordinate". The GREEN target is to identify and implement a
+generalizable constrained-relaxation rule, then use oracle fixtures to measure
+whether that rule moves parity in the right direction.
+
+If a short-term regression scaffold must retain oracle-position constants, it
+must be explicitly labeled `temporary oracle-regression shim` in code-adjacent
+evidence and docs, with an owner task to replace it. Do not add new
+benchmark-specific final-position constants as normal reducer progress.
+
+Current audit and replacement plan:
+`docs/reducer-oracle-geometry-audit.md`.
+
 ## Updated Work Order
 
 1. **Source trace and I/O contract slice**
@@ -72,6 +106,10 @@ residual being closed and must not weaken existing mismatch diagnostics.
    - Paired-chain coverage and final node count are now locally closed for the
      task-150 benchmark-05 SP+ slice; continue from final geometry, Lpp, and
      summary mismatch diagnostics.
+   - For final geometry and contour residuals, prefer generalized
+     endpoint-fixed/contact-constrained relaxation over benchmark-specific
+     oracle-position constants. Existing oracle-position shims must be audited
+     and replaced rather than expanded.
    - Before each reducer change, re-check the public source/script contract and
      label the change as `source_contract` or `oracle_residual_inference`.
    - Benchmark-04 SP+ must remain passed.
@@ -132,6 +170,9 @@ For every non-trivial future slice:
 - Do not weaken existing mismatch diagnostics to make a benchmark pass.
 - Do not add benchmark-specific reducer constants without naming whether the
   rationale is source-backed or oracle-residual clean-room inference.
+- Do not use benchmark-specific oracle final coordinates as a formal reducer
+  algorithm. Such coordinates are at most temporary diagnostic/regression shims
+  and must have a replacement plan.
 - Do not push RED/GREEN-incomplete slices or worktrees with unexplained
   side-effects.
 
@@ -149,8 +190,15 @@ benchmark-04 SP+ `passed` and keeps benchmark-05 pair mismatches,
 node-count mismatches, source residual details, and `Z` delta closed at
 `0`/`none`; benchmark-05 remains a true `mismatch` with `Lpp` delta `0.242685`,
 six summary mismatches, and the largest remaining chain-contour residual now
-on chain37 (`max chain contour delta = 1.0324`). Start the next reducer slice
-from chain37 final geometry and contour placement. Before each reducer change,
-re-check the visible Z1+/Z1plus-code source surface and classify the rationale
-as `source_contract` or `oracle_residual_inference`. Keep benchmark-04 SP+
-passed and do not weaken existing mismatch diagnostics.
+on chain37 (`max chain contour delta = 1.0324`).
+
+Task-161 is redirected from another oracle-coordinate contour patch to a
+project-level reducer generalization slice. Keep the chain37 contour RED and
+diagnostic evidence, but do not close it by hardcoding the three oracle final
+positions. The next reducer work should first audit existing oracle-position
+shims and prototype a general endpoint-fixed/contact-constrained relaxation
+rule that uses only input-system geometry, topology, and constraints. Before
+each reducer change, re-check the visible Z1+/Z1plus-code source surface and
+classify the rationale as `source_contract`, `oracle_residual_inference`, or
+`diagnostic_only`. Keep benchmark-04 SP+ passed and do not weaken existing
+mismatch diagnostics.

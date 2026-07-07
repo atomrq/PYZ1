@@ -13,6 +13,11 @@ parser/writer/reducer checks mandatory, and defines the updated work order:
 source-trace/I/O contract first, benchmark-05 SP+ parity next, then benchmark
 07/10/11 and PPA+ log-smoke expansion.
 
+Reducer geometry parity is additionally constrained by
+`docs/reducer-oracle-geometry-audit.md`: oracle final coordinates may be used
+to diagnose residuals, but benchmark-specific oracle `Vector3(...)` values are
+temporary oracle-regression shims, not final clean-room reducer algorithms.
+
 ## Current Quality Gates
 
 Latest remote GPU-cluster gate evidence:
@@ -1590,6 +1595,17 @@ residual details `none`, `Z` delta `0`, `Lpp` delta `0.242685`, summary
 mismatches `6`, and max chain-contour delta now `1.0324` on chain37. The next
 reducer slice should start from chain37 final geometry and contour placement.
 
+Task-161 redirects benchmark-05 SP+ chain37 contour work into a project-level
+reducer generalization audit. Corrected RED job `416676` failed for the
+intended chain37 contour assertion (`15.732259528203835` vs oracle
+`14.699862363269872`, delta `1.032397164933963`). Diagnostic job `416677`
+records that chain37 source beads, node count, and pair sequence already match
+while retained positions differ from oracle. A short-lived oracle-coordinate
+hardcode attempt was rejected before commit and is not a formal reducer
+solution. Future GREEN work for this residual must target generalized
+endpoint-fixed/contact-constrained relaxation rather than copying oracle final
+coordinates.
+
 ## Open Boundaries
 
 The following are intentionally not claimed complete:
@@ -1658,7 +1674,10 @@ The following are intentionally not claimed complete:
   to chain37;
   these cumulatively
   improve benchmark-05 local source residuals and parts of the pair topology
-  while leaving downstream geometry, Lpp, and summary mismatches open.
+  while leaving downstream geometry, Lpp, and summary mismatches open; the
+  contour-position constants introduced in those slices are now classified as
+  temporary oracle-regression shims pending replacement by generalized
+  constrained-relaxation logic.
 - scalable all-14 benchmark reducer regression without relying on a
   node-count performance guard; task-84 makes the guard user-tunable but does
   not prove full unguarded 06+ execution

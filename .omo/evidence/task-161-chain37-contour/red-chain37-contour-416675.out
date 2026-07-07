@@ -1,0 +1,37 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_____ test_reduce_snapshot_when_benchmark05_chain37_contour_matches_oracle _____
+
+    def test_reduce_snapshot_when_benchmark05_chain37_contour_matches_oracle() -> None:
+>       snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-05.Z1")
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_spplus_regression.py:1203:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src/pyz1/z1_io.py:18: in read_z1_file
+    return parse_z1_text(path.read_text(encoding="utf-8"))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../micromamba/envs/pygamd/lib/python3.11/pathlib.py:1058: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = PosixPath('/Users/jiaxm/Contents/CodexProjects/source_code/Z1+/.benchmark-05.Z1')
+mode = 'r', buffering = -1, encoding = 'utf-8', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/Users/jiaxm/Contents/CodexProjects/source_code/Z1+/.benchmark-05.Z1'
+
+../../../micromamba/envs/pygamd/lib/python3.11/pathlib.py:1044: FileNotFoundError
+=========================== short test summary info ============================
+FAILED tests/test_spplus_regression.py::test_reduce_snapshot_when_benchmark05_chain37_contour_matches_oracle
+1 failed in 0.28s

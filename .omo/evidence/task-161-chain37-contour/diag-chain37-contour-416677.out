@@ -1,0 +1,14 @@
+actual contour=15.732259528203835 node_count=5
+actual node1: source=1 pos=(-1.991200,-1.476200,-1.594700) pair=none
+actual node2: source=4.15 pos=(-1.546700,1.438600,-1.409000) pair=(11,2)
+actual node3: source=7.27 pos=(0.401019,0.192067,-0.342134) pair=(4,2)
+actual node4: source=10.38 pos=(1.384000,-0.646710,-1.642800) pair=(6,2)
+actual node5: source=20 pos=(-2.447400,-8.047200,-2.680000) pair=none
+actual segments=2.954340,2.546695,1.833448,8.397777
+oracle contour=14.699862363269872 node_count=5
+oracle node1: source=1 pos=(-1.991200,-1.476200,-1.594700) pair=none
+oracle node2: source=4.15 pos=(-1.397895,1.512652,-1.280013) pair=(11,2)
+oracle node3: source=7.27 pos=(0.443149,-0.063088,-1.085852) pair=(4,2)
+oracle node4: source=10.38 pos=(0.656694,-3.028057,-2.523118) pair=(6,2)
+oracle node5: source=20 pos=(-2.447400,-8.047200,-2.680000) pair=none
+oracle segments=3.063376,2.431069,3.301875,5.903542
