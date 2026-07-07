@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from enum import StrEnum
 from itertools import zip_longest
 from math import sqrt
@@ -85,6 +85,12 @@ class RegressionStatus(StrEnum):
 
 
 @dataclass(frozen=True, slots=True)
+class RegressionSettingsOverride:
+    mode: RegressionMode
+    settings: ReducerSettings
+
+
+@dataclass(frozen=True, slots=True)
 class RegressionRequest:
     source_dir: Path
     oracle_root: Path
@@ -93,6 +99,7 @@ class RegressionRequest:
     benchmark_ids: tuple[str, ...]
     max_node_count: int = 1000
     trace_diagnostics_max_node_count: int = 1000
+    settings_overrides: tuple[RegressionSettingsOverride, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -456,6 +463,7 @@ def _compare_benchmark_mode(
         snapshot,
         _settings_for_mode(
             mode,
+            request.settings_overrides,
             trace_diagnostics_enabled=(
                 snapshot.node_count <= request.trace_diagnostics_max_node_count
             ),
@@ -1124,9 +1132,16 @@ def _pyz1_core_stage_chain(
 
 def _settings_for_mode(
     mode: RegressionMode,
+    overrides: tuple[RegressionSettingsOverride, ...],
     *,
     trace_diagnostics_enabled: bool = True,
 ) -> ReducerSettings:
+    for override in overrides:
+        if override.mode == mode:
+            return replace(
+                override.settings,
+                trace_diagnostics_enabled=trace_diagnostics_enabled,
+            )
     match mode:
         case RegressionMode.DEFAULT | RegressionMode.SELFZ:
             return ReducerSettings(

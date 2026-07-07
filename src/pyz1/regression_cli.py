@@ -5,9 +5,11 @@ from typing import Annotated, Final
 
 import typer
 
+from pyz1.reducer import ReducerSettings
 from pyz1.regression import (
     RegressionMode,
     RegressionRequest,
+    RegressionSettingsOverride,
     write_benchmark_regression_report,
 )
 
@@ -79,6 +81,13 @@ def main(  # noqa: PLR0913 - Typer callback parameters define the CLI surface.
             help="Disable expensive trace diagnostics above this source node count.",
         ),
     ] = 1000,
+    contact_relaxation: Annotated[
+        bool,
+        typer.Option(
+            "--contact-relaxation/--no-contact-relaxation",
+            help="Enable the experimental contact-relaxation reducer guard for SP+.",
+        ),
+    ] = False,
 ) -> None:
     requested_benchmark_ids = (
         tuple(benchmark_ids)
@@ -95,6 +104,7 @@ def main(  # noqa: PLR0913 - Typer callback parameters define the CLI surface.
             benchmark_ids=requested_benchmark_ids,
             max_node_count=max_node_count,
             trace_diagnostics_max_node_count=trace_diagnostics_max_node_count,
+            settings_overrides=_settings_overrides(contact_relaxation),
         ),
     )
     typer.echo(
@@ -107,6 +117,22 @@ def discover_benchmark_ids(oracle_root: Path) -> tuple[str, ...]:
         path.name.removeprefix("benchmark-")
         for path in sorted(oracle_root.glob("benchmark-*"))
         if path.is_dir()
+    )
+
+
+def _settings_overrides(
+    contact_relaxation: bool,
+) -> tuple[RegressionSettingsOverride, ...]:
+    if not contact_relaxation:
+        return ()
+    return (
+        RegressionSettingsOverride(
+            mode=RegressionMode.SPPLUS,
+            settings=ReducerSettings(
+                pairing_enabled=True,
+                contact_relaxation_enabled=True,
+            ),
+        ),
     )
 
 

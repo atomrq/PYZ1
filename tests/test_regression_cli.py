@@ -120,6 +120,41 @@ def test_regression_cli_when_trace_guard_requested_disables_trace_diagnostics(
     assert "| 10 | 11 | 10 | 0 | 0 | 0 | n/a | n/a | n/a | n/a | n/a |" in text
 
 
+def test_regression_cli_when_contact_relaxation_requested_writes_guarded_report(
+    tmp_path: Path,
+) -> None:
+    report_path = tmp_path / "pyz1-benchmark-regression.md"
+
+    result = subprocess.run(  # noqa: S603 - command is fixed package smoke.
+        [
+            sys.executable,
+            "-m",
+            "pyz1.regression_cli",
+            "--source-dir",
+            str(SOURCE_Z1),
+            "--oracle-root",
+            str(ORACLE_ROOT),
+            "--report-path",
+            str(report_path),
+            "--benchmark-id",
+            "05",
+            "--mode",
+            "spplus",
+            "--contact-relaxation",
+        ],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+
+    assert result.returncode == 0, result.stdout + result.stderr
+    text = report_path.read_text(encoding="utf-8")
+    assert "wrote 1 benchmark regression records" in result.stdout
+    assert "| benchmark-05 | spplus | mismatch | 0.147902 | 0 | 0.999611 | 17 |" in text
+    assert "| 6 | 0 | 0 |" in text
+    assert "| 0 | 0 | none |" in text
+
+
 def test_discover_benchmark_ids_when_root_has_mixed_entries_returns_sorted_ids(
     tmp_path: Path,
 ) -> None:

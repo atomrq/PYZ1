@@ -12,6 +12,7 @@ from pyz1.regression import (
     RegressionMode,
     RegressionRecord,
     RegressionRequest,
+    RegressionSettingsOverride,
     RegressionStatus,
     compare_spplus_pairing,
     write_benchmark_regression_report,
@@ -1216,6 +1217,40 @@ def test_reduce_snapshot_when_contact_relaxation_shortens_chain37() -> None:
     assert _paired_source_sequence(relaxed_chain) == _paired_source_sequence(
         baseline_chain,
     )
+
+
+def test_write_benchmark_report_when_contact_relaxation_measures_guarded_spplus(
+    tmp_path: Path,
+) -> None:
+    report_path = tmp_path / "pyz1-benchmark-regression.md"
+
+    records = write_benchmark_regression_report(
+        RegressionRequest(
+            source_dir=SOURCE_Z1,
+            oracle_root=ORACLE_ROOT,
+            report_path=report_path,
+            modes=(RegressionMode.SPPLUS,),
+            benchmark_ids=("05",),
+            settings_overrides=(
+                RegressionSettingsOverride(
+                    mode=RegressionMode.SPPLUS,
+                    settings=ReducerSettings(
+                        pairing_enabled=True,
+                        contact_relaxation_enabled=True,
+                    ),
+                ),
+            ),
+        ),
+    )
+
+    text = report_path.read_text(encoding="utf-8")
+    assert len(records) == 1
+    assert "| benchmark-05 | spplus | mismatch |" in text
+    assert records[0].pairing_mismatches == 0
+    assert records[0].node_count_mismatches == 0
+    assert records[0].pyz1_source_sequence_mismatch_count == 0
+    assert records[0].max_chain_contour_delta is not None
+    assert records[0].max_chain_contour_delta < 1.0324
 
 
 def test_reduce_snapshot_when_benchmark05_chain39_matches_oracle_pairs() -> None:

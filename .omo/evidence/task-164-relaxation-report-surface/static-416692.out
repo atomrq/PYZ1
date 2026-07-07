@@ -1,0 +1,17 @@
+All checks passed!
+/public/home/jxm/codex_runs/z1-task164-relaxation-report-surface-20260707/repo/src/pyz1/regression_cli.py
+  /public/home/jxm/codex_runs/z1-task164-relaxation-report-surface-20260707/repo/src/pyz1/regression_cli.py:6:8 - error: Import "typer" could not be resolved (reportMissingImports)
+  /public/home/jxm/codex_runs/z1-task164-relaxation-report-surface-20260707/repo/src/pyz1/regression_cli.py:27:1 - error: Type of "app" is unknown (reportUnknownVariableType)
+  /public/home/jxm/codex_runs/z1-task164-relaxation-report-surface-20260707/repo/src/pyz1/regression_cli.py:27:7 - error: Type of "Typer" is unknown (reportUnknownMemberType)
+  /public/home/jxm/codex_runs/z1-task164-relaxation-report-surface-20260707/repo/src/pyz1/regression_cli.py:33:2 - error: Type of "callback" is unknown (reportUnknownMemberType)
+  /public/home/jxm/codex_runs/z1-task164-relaxation-report-surface-20260707/repo/src/pyz1/regression_cli.py:33:2 - error: Untyped function decorator obscures type of function; ignoring decorator (reportUntypedFunctionDecorator)
+  /public/home/jxm/codex_runs/z1-task164-relaxation-report-surface-20260707/repo/src/pyz1/regression_cli.py:37:9 - error: Type of "Option" is unknown (reportUnknownMemberType)
+  /public/home/jxm/codex_runs/z1-task164-relaxation-report-surface-20260707/repo/src/pyz1/regression_cli.py:44:9 - error: Type of "Option" is unknown (reportUnknownMemberType)
+  /public/home/jxm/codex_runs/z1-task164-relaxation-report-surface-20260707/repo/src/pyz1/regression_cli.py:51:9 - error: Type of "Option" is unknown (reportUnknownMemberType)
+  /public/home/jxm/codex_runs/z1-task164-relaxation-report-surface-20260707/repo/src/pyz1/regression_cli.py:58:9 - error: Type of "Option" is unknown (reportUnknownMemberType)
+  /public/home/jxm/codex_runs/z1-task164-relaxation-report-surface-20260707/repo/src/pyz1/regression_cli.py:65:9 - error: Type of "Option" is unknown (reportUnknownMemberType)
+  /public/home/jxm/codex_runs/z1-task164-relaxation-report-surface-20260707/repo/src/pyz1/regression_cli.py:72:9 - error: Type of "Option" is unknown (reportUnknownMemberType)
+  /public/home/jxm/codex_runs/z1-task164-relaxation-report-surface-20260707/repo/src/pyz1/regression_cli.py:79:9 - error: Type of "Option" is unknown (reportUnknownMemberType)
+  /public/home/jxm/codex_runs/z1-task164-relaxation-report-surface-20260707/repo/src/pyz1/regression_cli.py:86:9 - error: Type of "Option" is unknown (reportUnknownMemberType)
+  /public/home/jxm/codex_runs/z1-task164-relaxation-report-surface-20260707/repo/src/pyz1/regression_cli.py:110:5 - error: Type of "echo" is unknown (reportUnknownMemberType)
+14 errors, 0 warnings, 0 notes

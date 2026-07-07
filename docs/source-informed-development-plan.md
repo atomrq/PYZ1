@@ -222,3 +222,14 @@ benchmark-04/05 SP+ deltas with the guard enabled, identify which existing
 temporary oracle-regression shims become redundant or conflict with the
 general relaxation path, and then retire only those shims that are covered by
 remote regression evidence.
+
+Task-164 adds that measurement surface through
+`RegressionSettingsOverride` and the `pyz1-benchmark-regression`
+`--contact-relaxation` option. Remote benchmark-04/05 SP+ evidence with the
+guard enabled keeps benchmark-04 `passed`; benchmark-05 remains a true
+`mismatch`, but `Lpp delta` improves from `0.242685` to `0.147902`, max
+chain-contour delta improves from `1.0324` on chain37 to `0.999611` on
+chain17, and pair mismatches, node-count mismatches, source residual details,
+and `Z` delta remain closed. The next reducer slice should inspect the
+guard-enabled chain17 residual and compare it against the temporary
+oracle-position shims before changing default reducer behavior.

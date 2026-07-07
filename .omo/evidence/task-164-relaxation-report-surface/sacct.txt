@@ -1,0 +1,17 @@
+       JobID    JobName      State ExitCode    Elapsed 
+------------ ---------- ---------- -------- ---------- 
+416691       z1-t164-s+  COMPLETED      0:0   00:00:11 
+416691.batch      batch  COMPLETED      0:0   00:00:11 
+416691.exte+     extern  COMPLETED      0:0   00:00:11 
+416692       z1-t164-s+     FAILED      1:0   00:00:04 
+416692.batch      batch     FAILED      1:0   00:00:04 
+416692.exte+     extern  COMPLETED      0:0   00:00:04 
+416693       z1-t164-f+  COMPLETED      0:0   00:01:04 
+416693.batch      batch  COMPLETED      0:0   00:01:04 
+416693.exte+     extern  COMPLETED      0:0   00:01:04 
+416694       z1-t164-r+  COMPLETED      0:0   00:00:31 
+416694.batch      batch  COMPLETED      0:0   00:00:31 
+416694.exte+     extern  COMPLETED      0:0   00:00:31 
+416699       z1-t164-s+  COMPLETED      0:0   00:00:05 
+416699.batch      batch  COMPLETED      0:0   00:00:05 
+416699.exte+     extern  COMPLETED      0:0   00:00:05 

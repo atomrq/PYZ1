@@ -22,6 +22,32 @@ temporary oracle-regression shims, not final clean-room reducer algorithms.
 
 Latest remote GPU-cluster gate evidence:
 
+- `.omo/evidence/task-164-relaxation-report-surface/source-trace.md`:
+  classifies the contact-relaxation regression surface as `diagnostic_only`
+  with `oracle_residual_inference_generalizable` measurement; default reducer
+  behavior is unchanged
+- `.omo/evidence/task-164-relaxation-report-surface/red-focused-pytest.txt`:
+  focused RED failed because `RegressionSettingsOverride` did not yet exist
+- `.omo/evidence/task-164-relaxation-report-surface/red-cli-pytest.txt`:
+  CLI RED failed because `pyz1.regression_cli` did not yet expose
+  `--contact-relaxation`
+- `.omo/evidence/task-164-relaxation-report-surface/focused-tests-416693.out`:
+  remote focused API/CLI tests passed for guard-enabled benchmark report
+  generation
+- `.omo/evidence/task-164-relaxation-report-surface/benchmark-04-05-spplus-contact-relaxation.md`:
+  guard-enabled SP+ report keeps benchmark-04 `passed`; benchmark-05 remains
+  `mismatch`, but `Lpp delta` improves to `0.147902`, max chain-contour delta
+  improves to `0.999611` on chain17, and pair mismatches, node-count
+  mismatches, source residual details, and `Z` delta remain closed
+- `.omo/evidence/task-164-relaxation-report-surface/static2-416699.out`:
+  corrected remote ruff and basedpyright passed for regression API/CLI and
+  focused tests; superseded static job `416692` failed because basedpyright was
+  not pointed at the remote venv Python for `typer`
+- `.omo/evidence/task-164-relaxation-report-surface/package-smoke-416691.out`:
+  package integration smoke passed
+- `.omo/evidence/task-164-relaxation-report-surface/sacct.txt`:
+  records package smoke `416691`, focused tests `416693`, guard report
+  `416694`, and corrected static `416699` as `COMPLETED` with exit code `0:0`
 - `.omo/evidence/task-163-relaxation-reducer-guard/source-trace.md`:
   classifies the settings-gated reducer contact-relaxation integration as
   `oracle_residual_inference_generalizable`; the slice uses benchmark-05

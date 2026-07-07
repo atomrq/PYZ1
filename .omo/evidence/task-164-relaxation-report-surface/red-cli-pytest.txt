@@ -1,0 +1,47 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_ test_regression_cli_when_contact_relaxation_requested_writes_guarded_report __
+
+tmp_path = PosixPath('/private/var/folders/8m/1t87yc1x1p701t_8qv3flk4h0000gp/T/pytest-of-jiaxm/pytest-308/test_regression_cli_when_conta0')
+
+    def test_regression_cli_when_contact_relaxation_requested_writes_guarded_report(
+        tmp_path: Path,
+    ) -> None:
+        report_path = tmp_path / "pyz1-benchmark-regression.md"
+    
+        result = subprocess.run(  # noqa: S603 - command is fixed package smoke.
+            [
+                sys.executable,
+                "-m",
+                "pyz1.regression_cli",
+                "--source-dir",
+                str(SOURCE_Z1),
+                "--oracle-root",
+                str(ORACLE_ROOT),
+                "--report-path",
+                str(report_path),
+                "--benchmark-id",
+                "05",
+                "--mode",
+                "spplus",
+                "--contact-relaxation",
+            ],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+    
+>       assert result.returncode == 0, result.stdout + result.stderr
+E       AssertionError: Usage: python -m pyz1.regression_cli [OPTIONS] COMMAND [ARGS]...
+E         Try 'python -m pyz1.regression_cli --help' for help.
+E         ╭─ Error ──────────────────────────────────────────────────────────────────────╮
+E         │ No such option: --contact-relaxation                                         │
+E         ╰──────────────────────────────────────────────────────────────────────────────╯
+E         
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['/Users/jiaxm/Contents/CodexProjects/Z1/.venv/bin/python3', '-m', 'pyz1.regression_cli', '--sou...                                │\n╰──────────────────────────────────────────────────────────────────────────────╯\n").returncode
+
+tests/test_regression_cli.py:150: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_regression_cli.py::test_regression_cli_when_contact_relaxation_requested_writes_guarded_report
+1 failed in 0.21s

@@ -120,5 +120,9 @@ coordinates must not be production inputs.
 4. Re-run benchmark-04/05 SP+ regression with the guard enabled and record
    whether existing
    oracle-position shims can be removed or narrowed.
+   - Task164 adds a regression/report surface for this measurement. The
+     guard-enabled report keeps benchmark-04 SP+ passed and improves
+     benchmark-05 `Lpp delta` and max chain-contour residual, but benchmark-05
+     remains a mismatch and the guard remains default-off.
 5. Gradually replace the listed temporary shims with the generalized
    constrained-relaxation path.
