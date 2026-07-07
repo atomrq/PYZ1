@@ -1,0 +1,2 @@
+/bin/bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+ERROR: found no collectors for /public/home/jxm/pyz1-cleanroom-runs/task-167-chain3-single-contact/repo/tests/test_spplus_regression.py::test_reduce_snapshot_when_contact_relaxation_shortens_chain3

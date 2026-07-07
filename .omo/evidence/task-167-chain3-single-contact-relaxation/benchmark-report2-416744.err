@@ -1,0 +1,94 @@
+/bin/bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+╭───────────────────── Traceback (most recent call last) ──────────────────────╮
+│ /public/home/jxm/pyz1-cleanroom-runs/task-167-chain3-single-contact/repo/src │
+│ /pyz1/regression_cli.py:98 in main                                           │
+│                                                                              │
+│    95 │   │   else discover_benchmark_ids(oracle_root)                       │
+│    96 │   )                                                                  │
+│    97 │   requested_modes = tuple(modes) if modes is not None else           │
+│       DEFAULT_MODES                                                          │
+│ ❱  98 │   records = write_benchmark_regression_report(                       │
+│    99 │   │   RegressionRequest(                                             │
+│   100 │   │   │   source_dir=source_dir,                                     │
+│   101 │   │   │   oracle_root=oracle_root,                                   │
+│                                                                              │
+│ /public/home/jxm/pyz1-cleanroom-runs/task-167-chain3-single-contact/repo/src │
+│ /pyz1/regression.py:350 in write_benchmark_regression_report                 │
+│                                                                              │
+│    347 def write_benchmark_regression_report(                                │
+│    348 │   request: RegressionRequest,                                       │
+│    349 ) -> tuple[RegressionRecord, ...]:                                    │
+│ ❱  350 │   records = tuple(                                                  │
+│    351 │   │   _compare_benchmark_mode(request, benchmark_id, mode)          │
+│    352 │   │   for benchmark_id in request.benchmark_ids                     │
+│    353 │   │   for mode in request.modes                                     │
+│                                                                              │
+│ /public/home/jxm/pyz1-cleanroom-runs/task-167-chain3-single-contact/repo/src │
+│ /pyz1/regression.py:351 in <genexpr>                                         │
+│                                                                              │
+│    348 │   request: RegressionRequest,                                       │
+│    349 ) -> tuple[RegressionRecord, ...]:                                    │
+│    350 │   records = tuple(                                                  │
+│ ❱  351 │   │   _compare_benchmark_mode(request, benchmark_id, mode)          │
+│    352 │   │   for benchmark_id in request.benchmark_ids                     │
+│    353 │   │   for mode in request.modes                                     │
+│    354 │   )                                                                 │
+│                                                                              │
+│ /public/home/jxm/pyz1-cleanroom-runs/task-167-chain3-single-contact/repo/src │
+│ /pyz1/regression.py:462 in _compare_benchmark_mode                           │
+│                                                                              │
+│    459 │   │   │   pyz1_core_stage_source_bead_max_delta=None,               │
+│    460 │   │   │   note=f"skipped: node_count>{request.max_node_count}",     │
+│    461 │   │   )                                                             │
+│ ❱  462 │   result = reduce_snapshot(                                         │
+│    463 │   │   snapshot,                                                     │
+│    464 │   │   _settings_for_mode(                                           │
+│    465 │   │   │   mode,                                                     │
+│                                                                              │
+│ /public/home/jxm/pyz1-cleanroom-runs/task-167-chain3-single-contact/repo/src │
+│ /pyz1/reducer.py:513 in reduce_snapshot                                      │
+│                                                                              │
+│    510 │   │   else _empty_core_trace_diagnostics(chains)                    │
+│    511 │   )                                                                 │
+│    512 │   core_chains = _reduce_chains(chains, active_settings)             │
+│ ❱  513 │   preserved = _preserve_close_contacts(chains, core_chains,         │
+│        active_settings)                                                      │
+│    514 │   reduced_chains = preserved.chains                                 │
+│    515 │   source_beads = preserved.source_beads                             │
+│    516 │   pairings = (                                                      │
+│                                                                              │
+│ /public/home/jxm/pyz1-cleanroom-runs/task-167-chain3-single-contact/repo/src │
+│ /pyz1/reducer.py:1477 in _preserve_close_contacts                            │
+│                                                                              │
+│   1474 │   _align_secondary_chain48_contacts(retention_state)                │
+│   1475 │   _align_secondary_chain34_contacts(retention_state)                │
+│   1476 │   _align_secondary_chain49_contacts(retention_state)                │
+│ ❱ 1477 │   _relax_final_contact_constrained_chains(retention_state)          │
+│   1478 │   return _PreservedChains(                                          │
+│   1479 │   │   chains=tuple(retention_state.preserved_nodes),                │
+│   1480 │   │   source_beads=tuple(                                           │
+│                                                                              │
+│ /public/home/jxm/pyz1-cleanroom-runs/task-167-chain3-single-contact/repo/src │
+│ /pyz1/reducer.py:1608 in _relax_final_contact_constrained_chains             │
+│                                                                              │
+│   1605 │   │   │   continue                                                  │
+│   1606 │   │   if len(current_candidates) == 1:                              │
+│   1607 │   │   │   relaxed_candidates = (                                    │
+│ ❱ 1608 │   │   │   │   _relax_single_final_contact_candidate(                │
+│   1609 │   │   │   │   │   state,                                            │
+│   1610 │   │   │   │   │   chain_index,                                      │
+│   1611 │   │   │   │   │   current_candidates[0],                            │
+│                                                                              │
+│ /public/home/jxm/pyz1-cleanroom-runs/task-167-chain3-single-contact/repo/src │
+│ /pyz1/reducer.py:1649 in _relax_single_final_contact_candidate               │
+│                                                                              │
+│   1646 │   │   │   max_contact_distance=current_contact_distance,            │
+│   1647 │   │   ),                                                            │
+│   1648 │   )                                                                 │
+│ ❱ 1649 │   move_distance = _distance(candidate.position, relaxed_position)   │
+│   1650 │   max_move = min(                                                   │
+│   1651 │   │   FINAL_SINGLE_CONTACT_RELAXATION_MAX_MOVE,                     │
+│   1652 │   │   current_contact_distance *                                    │
+│        FINAL_SINGLE_CONTACT_RELAXATION_MAX_MOVE_TO_CLEARANCE,                │
+╰──────────────────────────────────────────────────────────────────────────────╯
+NameError: name '_distance' is not defined

@@ -1,0 +1,15 @@
+
+==================================== ERRORS ====================================
+_______________ ERROR collecting tests/test_spplus_regression.py _______________
+ImportError while importing test module '/public/home/jxm/pyz1-cleanroom-runs/task-167-chain3-single-contact/repo/tests/test_spplus_regression.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+../../../codex_runs/z1-task129-20260705-230350/.mm-env/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_spplus_regression.py:11: in <module>
+    from pyz1.regression import (
+E   ImportError: cannot import name 'RegressionSettingsOverride' from 'pyz1.regression' (/public/home/jxm/codex_runs/z1-task129-20260705-230350/src/pyz1/regression.py)
+=========================== short test summary info ============================
+ERROR tests/test_spplus_regression.py
+1 error in 0.30s

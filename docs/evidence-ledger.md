@@ -22,6 +22,35 @@ temporary oracle-regression shims, not final clean-room reducer algorithms.
 
 Latest remote GPU-cluster gate evidence:
 
+- `.omo/evidence/task-167-chain3-single-contact-relaxation/source-trace.md`:
+  classifies the guarded single-contact relaxation pass as
+  `oracle_residual_inference_generalizable`; it records the project correction
+  that SP/SP+ parity should be evaluated primarily on statistical/report
+  metrics while chain-level residuals remain diagnostics
+- `.omo/evidence/task-167-chain3-single-contact-relaxation/red-focused-corrected-416739.out`:
+  corrected RED failed for the intended reason: the previous guard-enabled
+  path left benchmark-05 chain3 contour unchanged despite closed source/pair
+  topology
+- `.omo/evidence/task-167-chain3-single-contact-relaxation/focused-suite-final-416747.out`:
+  final remote focused suite passed 17 tests, including geometry tests,
+  chain17/chain37 relaxation guards, guarded statistical report coverage, and
+  CLI guarded report coverage
+- `.omo/evidence/task-167-chain3-single-contact-relaxation/static-final-416751.out`:
+  final ruff and basedpyright passed for the changed reducer and regression
+  test files
+- `.omo/evidence/task-167-chain3-single-contact-relaxation/package-smoke-final-416749.out`:
+  package integration smoke passed
+- `.omo/evidence/task-167-chain3-single-contact-relaxation/benchmark-04-05-spplus-contact-relaxation.md`:
+  guard-enabled SP+ report keeps benchmark-04 `passed`; benchmark-05 remains
+  `mismatch`, but `Lpp delta` improves to `0.00409694`, max chain-contour
+  delta improves to `0.886959` on chain5, summary field residuals are much
+  closer, and pair mismatches, node-count mismatches, source residual details,
+  and `Z` delta remain closed
+- `.omo/evidence/task-167-chain3-single-contact-relaxation/sacct.txt`:
+  records final jobs `416747`, `416749`, `416750`, and `416751` as
+  `COMPLETED` with exit code `0:0`; superseded jobs document the invalid RED
+  setup, corrected RED, an over-broad single-contact attempt that worsened
+  diagnostics, and the E501 static failure before the final rerun
 - `.omo/evidence/task-166-chain17-multinode-relaxation/source-trace.md`:
   classifies the guarded final contact-relaxation pass as
   `oracle_residual_inference_generalizable`; it uses input-derived retained

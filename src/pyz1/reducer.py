@@ -46,7 +46,9 @@ TRUE_CHAIN_CONTACT_CLUSTER_MIN_CANDIDATES: Final = 2
 TRUE_CHAIN_CONTACT_HALF_BEAD_SNAP_FRACTION: Final = 0.75
 TRUE_CHAIN_CONTACT_HALF_BEAD_SNAP_SOURCE_OFFSET: Final = 0.4
 TRUE_CHAIN_CONTACT_SECOND_SOURCE_SNAP_OFFSET: Final = 0.58
-FINAL_CONTACT_RELAXATION_SUPPORTED_CANDIDATE_COUNT: Final = 2
+FINAL_CONTACT_RELAXATION_SUPPORTED_CANDIDATE_COUNTS: Final[tuple[int, ...]] = (1, 2)
+FINAL_SINGLE_CONTACT_RELAXATION_MAX_MOVE: Final = 1.5
+FINAL_SINGLE_CONTACT_RELAXATION_MAX_MOVE_TO_CLEARANCE: Final = 1.25
 TRUE_CHAIN_REPEATED_SINGLE_TARGET_MIN_CANDIDATES: Final = 3
 TRUE_CHAIN_REPEATED_SINGLE_TARGET_MAX_FIRST_SOURCE: Final = 2.0
 TRUE_CHAIN_REPEATED_SINGLE_TARGET_SOURCE_SNAP_OFFSET: Final = 1.5
@@ -1596,20 +1598,65 @@ def _relax_final_contact_constrained_chains(
         if chain.node_count <= MIN_CHAIN_NODE_COUNT:
             continue
         current_candidates = _preserved_inner_candidates(state, chain_index)
-        supported_count = FINAL_CONTACT_RELAXATION_SUPPORTED_CANDIDATE_COUNT
-        if len(current_candidates) != supported_count:
+        if (
+            len(current_candidates)
+            not in FINAL_CONTACT_RELAXATION_SUPPORTED_CANDIDATE_COUNTS
+        ):
             continue
-        relaxed_candidates = _relax_contact_constrained_candidates(
-            state,
-            chain_index,
-            current_candidates,
-        )
+        if len(current_candidates) == 1:
+            relaxed_candidates = (
+                _relax_single_final_contact_candidate(
+                    state,
+                    chain_index,
+                    current_candidates[0],
+                ),
+            )
+        else:
+            relaxed_candidates = _relax_contact_constrained_candidates(
+                state,
+                chain_index,
+                current_candidates,
+            )
         if relaxed_candidates == current_candidates:
             continue
         state.preserved_nodes[chain_index] = _insert_preserved_nodes(
             state.reduced_chains[chain_index],
             relaxed_candidates,
         )
+
+
+def _relax_single_final_contact_candidate(
+    state: _ReciprocalRetentionState,
+    chain_index: int,
+    candidate: _PreservedKinkCandidate,
+) -> _PreservedKinkCandidate:
+    contact = _candidate_pair_contact_segment(state, candidate)
+    if contact is None:
+        return candidate
+    current_contact_distance = segment_distance(
+        Segment(start=candidate.position, end=candidate.position),
+        contact,
+    )
+    relaxed_position = relax_contact_constrained_node(
+        ContactConstrainedNodeRelaxation(
+            previous=state.reduced_chains[chain_index].nodes[0],
+            current=candidate.position,
+            next_node=state.reduced_chains[chain_index].nodes[-1],
+            contact=contact,
+            max_contact_distance=current_contact_distance,
+        ),
+    )
+    move_distance = _vector_distance(candidate.position, relaxed_position)
+    clearance_limited_move = (
+        current_contact_distance * FINAL_SINGLE_CONTACT_RELAXATION_MAX_MOVE_TO_CLEARANCE
+    )
+    max_move = min(
+        FINAL_SINGLE_CONTACT_RELAXATION_MAX_MOVE,
+        clearance_limited_move,
+    )
+    if move_distance > max_move:
+        return candidate
+    return replace(candidate, position=relaxed_position)
 
 
 def _candidate_pair_contact_segment(

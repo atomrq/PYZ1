@@ -138,5 +138,14 @@ coordinates must not be production inputs.
    - A broader 3+ retained-node final pass regressed benchmark-05 diagnostics
      and is recorded as rejected evidence. Future 3+ node relaxation needs a
      stronger multi-node solver, not the current sequential two-contact rule.
-7. Gradually replace the listed temporary shims with the generalized
+7. Treat per-chain residuals as diagnostics, not the final objective.
+   - Task167 extends the guarded final pass to single-contact chains only under
+     contact-clearance-scaled displacement limits.
+   - The accepted evidence is statistical/report movement: benchmark-05 guard
+     `Lpp delta` improves to `0.00409694` while pair/node/source/`Z`
+     diagnostics stay closed and benchmark-04 SP+ remains passed.
+   - Exact per-chain final geometry equality is not required for acceptance
+     unless it protects source, pair, node-count, or a clearly generalized
+     relaxation contract.
+8. Gradually replace the listed temporary shims with the generalized
    constrained-relaxation path.

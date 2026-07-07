@@ -1,0 +1,23 @@
+E501 Line too long (89 > 88)
+    --> src/pyz1/reducer.py:1652:89
+     |
+1650 |     max_move = min(
+1651 |         FINAL_SINGLE_CONTACT_RELAXATION_MAX_MOVE,
+1652 |         current_contact_distance * FINAL_SINGLE_CONTACT_RELAXATION_MAX_MOVE_TO_CLEARANCE,
+     |                                                                                         ^
+1653 |     )
+1654 |     if move_distance > max_move:
+     |
+
+E501 Line too long (89 > 88)
+   --> tests/test_regression_cli.py:153:89
+    |
+151 |     text = report_path.read_text(encoding="utf-8")
+152 |     assert "wrote 1 benchmark regression records" in result.stdout
+153 |     assert "| benchmark-05 | spplus | mismatch | 0.00409694 | 0 | 0.886959 | 5 |" in text
+    |                                                                                         ^
+154 |     assert "| 6 | 0 | 0 |" in text
+155 |     assert "| 0 | 0 | none |" in text
+    |
+
+Found 2 errors.

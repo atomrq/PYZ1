@@ -1,0 +1,29 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_________ test_reduce_snapshot_when_contact_relaxation_shortens_chain3 _________
+
+    def test_reduce_snapshot_when_contact_relaxation_shortens_chain3() -> None:
+        snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-05.Z1")
+
+        default_result = reduce_snapshot(snapshot, ReducerSettings(pairing_enabled=True))
+        relaxed_result = reduce_snapshot(
+            snapshot,
+            ReducerSettings(pairing_enabled=True, contact_relaxation_enabled=True),
+        )
+
+        default_chain = default_result.shortest_path.chains[2]
+        relaxed_chain = relaxed_result.shortest_path.chains[2]
+        assert _paired_source_sequence(relaxed_chain) == _paired_source_sequence(
+            default_chain,
+        )
+>       assert _shortest_path_chain_contour(relaxed_chain) < (
+            _shortest_path_chain_contour(default_chain) - 0.5
+        )
+E       assert 10.860486087341101 < (10.860486087341101 - 0.5)
+E        +  where 10.860486087341101 = _shortest_path_chain_contour(ShortestPathChain(nodes=(ShortestPathNode(position=Vector3(x=-3.7059, y=-0.22302, z=1.1606), source_bead=1.0, is_entan... ShortestPathNode(position=Vector3(x=-6.449, y=4.7584, z=4.9477), source_bead=20.0, is_entanglement=False, pair=None))))
+E        +  and   10.860486087341101 = _shortest_path_chain_contour(ShortestPathChain(nodes=(ShortestPathNode(position=Vector3(x=-3.7059, y=-0.22302, z=1.1606), source_bead=1.0, is_entan... ShortestPathNode(position=Vector3(x=-6.449, y=4.7584, z=4.9477), source_bead=20.0, is_entanglement=False, pair=None))))
+
+tests/test_spplus_regression.py:564: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_spplus_regression.py::test_reduce_snapshot_when_contact_relaxation_shortens_chain3
+1 failed in 61.71s (0:01:01)

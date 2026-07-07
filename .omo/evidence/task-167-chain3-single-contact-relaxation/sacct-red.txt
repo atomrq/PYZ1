@@ -1,0 +1,4 @@
+JobID|State|ExitCode
+416738|FAILED|4:0
+416738.batch|FAILED|4:0
+416738.extern|COMPLETED|0:0

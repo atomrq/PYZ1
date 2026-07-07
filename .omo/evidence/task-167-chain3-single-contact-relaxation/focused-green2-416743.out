@@ -1,0 +1,57 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_________ test_reduce_snapshot_when_contact_relaxation_shortens_chain3 _________
+
+    def test_reduce_snapshot_when_contact_relaxation_shortens_chain3() -> None:
+        snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-05.Z1")
+
+        default_result = reduce_snapshot(snapshot, ReducerSettings(pairing_enabled=True))
+>       relaxed_result = reduce_snapshot(
+            snapshot,
+            ReducerSettings(pairing_enabled=True, contact_relaxation_enabled=True),
+        )
+
+tests/test_spplus_regression.py:554:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src/pyz1/reducer.py:513: in reduce_snapshot
+    preserved = _preserve_close_contacts(chains, core_chains, active_settings)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/pyz1/reducer.py:1477: in _preserve_close_contacts
+    _relax_final_contact_constrained_chains(retention_state)
+src/pyz1/reducer.py:1608: in _relax_final_contact_constrained_chains
+    _relax_single_final_contact_candidate(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+state = _ReciprocalRetentionState(preserved_nodes=[Chain(nodes=(Vector3(x=3.923, y=-3.7305, z=-0.60597), Vector3(x=-0.61619256...ring_enabled=True, contact_preservation_distance=0.1, contact_relaxation_enabled=True, trace_diagnostics_enabled=True))
+chain_index = 2
+candidate = _PreservedKinkCandidate(position=Vector3(x=-5.755055051855641, y=-2.3271307233481475, z=1.520290044119767), source_bea...e, pair_override=ShortestPathPair(chain_index=25, node_index=1), reciprocal_position=None, reciprocal_source_bead=None)
+
+    def _relax_single_final_contact_candidate(
+        state: _ReciprocalRetentionState,
+        chain_index: int,
+        candidate: _PreservedKinkCandidate,
+    ) -> _PreservedKinkCandidate:
+        contact = _candidate_pair_contact_segment(state, candidate)
+        if contact is None:
+            return candidate
+        current_contact_distance = segment_distance(
+            Segment(start=candidate.position, end=candidate.position),
+            contact,
+        )
+        relaxed_position = relax_contact_constrained_node(
+            ContactConstrainedNodeRelaxation(
+                previous=state.reduced_chains[chain_index].nodes[0],
+                current=candidate.position,
+                next_node=state.reduced_chains[chain_index].nodes[-1],
+                contact=contact,
+                max_contact_distance=current_contact_distance,
+            ),
+        )
+>       move_distance = _distance(candidate.position, relaxed_position)
+                        ^^^^^^^^^
+E       NameError: name '_distance' is not defined
+
+src/pyz1/reducer.py:1649: NameError
+=========================== short test summary info ============================
+FAILED tests/test_spplus_regression.py::test_reduce_snapshot_when_contact_relaxation_shortens_chain3
+1 failed in 61.84s (0:01:01)

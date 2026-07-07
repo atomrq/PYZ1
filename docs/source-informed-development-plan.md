@@ -51,6 +51,15 @@ toward a clean-room algorithm that can run on new systems without oracle final
 coordinates. Oracle output is allowed as a teacher and regression target; it is
 not allowed as production reducer input.
 
+The primary long-term parity target is statistical parity, not exact
+per-chain final geometry equality. Chain-level source, pair, node-count,
+contour, and coordinate residuals remain important diagnostics for discovering
+missing rules, but they are not the final objective by themselves. Prefer
+changes that improve summary/statistical outputs such as `Lpp`, `Z`, `Ne`,
+mean/root-mean-square contour measures, and report-level parity while
+preserving closed topology diagnostics. Do not turn every remaining per-chain
+contour or coordinate residual into a benchmark-specific acceptance target.
+
 Do not treat benchmark-specific oracle final geometry as a final reducer
 solution. Any `Vector3(...)` coordinate copied from a Z1+ oracle SP/SP+ output
 is only a diagnostic scaffold or temporary oracle-regression shim unless and
@@ -256,3 +265,17 @@ chain3 while pair mismatches, node-count mismatches, source residual details,
 and `Z` delta remain closed. A wider 3+ retained-node final pass regressed
 benchmark-05 diagnostics and must not be reintroduced without a stronger
 multi-node solver and RED coverage.
+
+Task-167 shifts the guarded relaxation acceptance from chain micro-parity
+toward statistical parity. It extends the final pass to single retained-contact
+chains only when the relaxed move remains within the original contact-clearance
+scale and an absolute displacement cap; the 3+ retained-node path remains
+excluded. Remote evidence in
+`.omo/evidence/task-167-chain3-single-contact-relaxation/` keeps benchmark-04
+SP+ `passed`; benchmark-05 remains a true `mismatch`, but guard-enabled `Lpp
+delta` improves to `0.00409694`, max chain-contour delta improves to
+`0.886959`, pair mismatches, node-count mismatches, source residual details,
+and `Z` delta remain closed, and summary fields are much closer. Future
+reducer work should use per-chain residuals as diagnostics unless a chain-level
+assertion protects topology/source/pair invariants or a clearly generalized
+relaxation rule.

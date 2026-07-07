@@ -1268,6 +1268,9 @@ def test_write_benchmark_report_when_contact_relaxation_measures_guarded_spplus(
     assert records[0].pairing_mismatches == 0
     assert records[0].node_count_mismatches == 0
     assert records[0].pyz1_source_sequence_mismatch_count == 0
+    assert records[0].lpp_delta is not None
+    assert records[0].lpp_delta < 0.01
+    assert records[0].summary_field_mismatches == 6
     assert records[0].max_chain_contour_delta is not None
     assert records[0].max_chain_contour_delta < 1.0324
 
