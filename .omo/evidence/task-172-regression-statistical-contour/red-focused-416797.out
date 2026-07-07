@@ -1,0 +1,39 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_ test_write_benchmark_report_when_contact_relaxation_measures_guarded_spplus __
+
+tmp_path = PosixPath('/tmp/pytest-of-jxm/pytest-285/test_write_benchmark_report_wh0')
+
+    def test_write_benchmark_report_when_contact_relaxation_measures_guarded_spplus(
+        tmp_path: Path,
+    ) -> None:
+        report_path = tmp_path / "pyz1-benchmark-regression.md"
+    
+        records = write_benchmark_regression_report(
+            RegressionRequest(
+                source_dir=SOURCE_Z1,
+                oracle_root=ORACLE_ROOT,
+                report_path=report_path,
+                modes=(RegressionMode.SPPLUS,),
+                benchmark_ids=("05",),
+                settings_overrides=(
+                    RegressionSettingsOverride(
+                        mode=RegressionMode.SPPLUS,
+                        settings=ReducerSettings(
+                            pairing_enabled=True,
+                            contact_relaxation_enabled=True,
+                        ),
+                    ),
+                ),
+            ),
+        )
+    
+        text = report_path.read_text(encoding="utf-8")
+        assert len(records) == 1
+>       assert "| benchmark-05 | spplus | mismatch |" in text
+E       AssertionError: assert '| benchmark-05 | spplus | mismatch |' in '# pyz1 Benchmark Regression\n\n| benchmark | mode | status | Lpp delta | Z delta | max chain contour delta | max chai.../a | n/a | n/a | n/a | n/a | n/a | n/a | n/a | n/a | n/a | n/a | n/a | n/a | n/a | missing source or oracle output |\n'
+
+tests/test_spplus_regression.py:1267: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_spplus_regression.py::test_write_benchmark_report_when_contact_relaxation_measures_guarded_spplus
+1 failed in 0.26s

@@ -1,0 +1,2 @@
+/bin/bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+/opt/gridview/slurm/spool/slurmd/job416803/slurm_script: line 9: pyz1-benchmark-regression: command not found

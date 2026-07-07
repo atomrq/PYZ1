@@ -257,6 +257,8 @@ class RegressionRecord:
     max_chain_contour_delta: float | None = None
     max_chain_contour_delta_chain: int | None = None
     chain_contour_residuals: tuple[ChainContourResidual, ...] | None = None
+    mean_chain_contour_delta: float | None = None
+    root_mean_square_chain_contour_delta: float | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -327,6 +329,12 @@ class _RegressionStatusInput:
     pairing_mismatches: int | None
     node_count_mismatches: int
     max_node_position_delta: float
+
+
+@dataclass(frozen=True, slots=True)
+class _ChainContourStatistics:
+    mean_absolute_delta: float
+    root_mean_square_delta: float
 
 
 def compare_spplus_pairing(
@@ -484,6 +492,10 @@ def _compare_benchmark_mode(
     pairing_mismatches = _pairing_mismatch_count(mode, result.shortest_path, sp_path)
     oracle_shortest_path = parse_shortest_path_text(sp_path.read_text(encoding="utf-8"))
     chain_contour_residuals = _chain_contour_residuals(
+        result.shortest_path,
+        oracle_shortest_path,
+    )
+    chain_contour_statistics = _chain_contour_statistics(
         result.shortest_path,
         oracle_shortest_path,
     )
@@ -752,6 +764,10 @@ def _compare_benchmark_mode(
             _max_chain_contour_delta_chain(chain_contour_residuals)
         ),
         chain_contour_residuals=chain_contour_residuals,
+        mean_chain_contour_delta=chain_contour_statistics.mean_absolute_delta,
+        root_mean_square_chain_contour_delta=(
+            chain_contour_statistics.root_mean_square_delta
+        ),
     )
 
 
@@ -1636,6 +1652,40 @@ def _chain_contour_residuals(
     )
 
 
+def _chain_contour_statistics(
+    actual: ShortestPathSnapshot,
+    expected: ShortestPathSnapshot,
+) -> _ChainContourStatistics:
+    deltas = _chain_contour_deltas(actual, expected)
+    if len(deltas) == 0:
+        return _ChainContourStatistics(
+            mean_absolute_delta=0.0,
+            root_mean_square_delta=0.0,
+        )
+    return _ChainContourStatistics(
+        mean_absolute_delta=sum(deltas) / len(deltas),
+        root_mean_square_delta=sqrt(
+            sum(delta * delta for delta in deltas) / len(deltas),
+        ),
+    )
+
+
+def _chain_contour_deltas(
+    actual: ShortestPathSnapshot,
+    expected: ShortestPathSnapshot,
+) -> tuple[float, ...]:
+    actual_contours = _shortest_path_chain_contours(actual)
+    expected_contours = _shortest_path_chain_contours(expected)
+    return tuple(
+        abs(actual_contour - expected_contour)
+        for actual_contour, expected_contour in zip_longest(
+            actual_contours,
+            expected_contours,
+        )
+        if actual_contour is not None and expected_contour is not None
+    )
+
+
 def _shortest_path_chain_contours(
     snapshot: ShortestPathSnapshot,
 ) -> tuple[float, ...]:
@@ -1688,6 +1738,7 @@ def _format_report(records: tuple[RegressionRecord, ...]) -> str:
     header = (
         "| benchmark | mode | status | Lpp delta | Z delta | "
         "max chain contour delta | max chain contour delta chain | "
+        "mean chain contour delta | rms chain contour delta | "
         "chain contour residual details | "
         "summary field mismatches | pair mismatches | "
         "node count mismatches | max node position delta | "
@@ -1775,6 +1826,8 @@ def _format_record(record: RegressionRecord) -> str:
         f"{_format_optional_float(record.z_delta)} | "
         f"{_format_optional_float(record.max_chain_contour_delta)} | "
         f"{_format_optional_int(record.max_chain_contour_delta_chain)} | "
+        f"{_format_optional_float(record.mean_chain_contour_delta)} | "
+        f"{_format_optional_float(record.root_mean_square_chain_contour_delta)} | "
         f"{_format_chain_contour_residuals(record.chain_contour_residuals)} | "
         f"{_format_optional_int(record.summary_field_mismatches)} | "
         f"{_format_optional_int(record.pairing_mismatches)} | "

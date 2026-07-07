@@ -40,6 +40,19 @@ evidence still leaves scientific and scalability boundaries open.
 
 Latest gate artifacts:
 
+- `.omo/evidence/task-172-regression-statistical-contour/source-trace.md`:
+  records a `diagnostic_only` regression-report slice that adds ensemble
+  mean/RMS chain-contour delta metrics without weakening per-chain residual
+  diagnostics
+- `.omo/evidence/task-172-regression-statistical-contour/focused-green-416800.out`,
+  `.omo/evidence/task-172-regression-statistical-contour/static-416802.out`,
+  `.omo/evidence/task-172-regression-statistical-contour/package-smoke-416804.out`,
+  `.omo/evidence/task-172-regression-statistical-contour/benchmark-05-spplus-statistical-contour.md`,
+  and `.omo/evidence/task-172-regression-statistical-contour/sacct.txt`:
+  record the remote GPU-cluster gate for the statistical contour report
+  surface; benchmark-05 SP+ remains `mismatch`, with `Lpp delta` `0.00409694`,
+  `Z delta` `0`, zero pair/node/source-sequence mismatches, mean chain-contour
+  delta `0.171325`, and RMS chain-contour delta `0.308536`
 - `.omo/evidence/task-171-statistical-parity-policy/source-trace.md`:
   records the current project-level correction that long-term SP/SP+ reducer
   acceptance is statistical/ensemble parity, while per-chain chain-level

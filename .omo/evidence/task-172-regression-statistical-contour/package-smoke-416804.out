@@ -1,0 +1,19 @@
+Looking in indexes: https://pypi.tuna.tsinghua.edu.cn/simple
+Obtaining file:///public/home/jxm/pyz1-cleanroom-runs/task-172-regression-statistical-contour/repo
+  Checking if build backend supports build_editable: started
+  Checking if build backend supports build_editable: finished with status 'done'
+  Preparing editable metadata (pyproject.toml): started
+  Preparing editable metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: pyz1
+  Building editable for pyz1 (pyproject.toml): started
+  Building editable for pyz1 (pyproject.toml): finished with status 'done'
+  Created wheel for pyz1: filename=pyz1-0.1.0-0.editable-py3-none-any.whl size=5116 sha256=6a0063ad547d6c659e4626acd37b48fafd60a625ff37e05a762a03bceade1ea6
+  Stored in directory: /tmp/pip-ephem-wheel-cache-uvg5_i8m/wheels/b3/37/c6/1a3daa27d5cae77b31bee2b1de75fff8e6d887d2a708eb440f
+Successfully built pyz1
+Installing collected packages: pyz1
+  Attempting uninstall: pyz1
+    Found existing installation: pyz1 0.1.0
+    Uninstalling pyz1-0.1.0:
+      Successfully uninstalled pyz1-0.1.0
+Successfully installed pyz1-0.1.0
+[pyz1] wrote 1 benchmark regression records to /public/home/jxm/pyz1-cleanroom-runs/task-172-regression-statistical-contour/benchmark-05-spplus-statistical-contour.md

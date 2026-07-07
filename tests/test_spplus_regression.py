@@ -1273,6 +1273,15 @@ def test_write_benchmark_report_when_contact_relaxation_measures_guarded_spplus(
     assert records[0].summary_field_mismatches == 6
     assert records[0].max_chain_contour_delta is not None
     assert records[0].max_chain_contour_delta < 1.0324
+    assert records[0].mean_chain_contour_delta is not None
+    assert records[0].root_mean_square_chain_contour_delta is not None
+    assert records[0].mean_chain_contour_delta > 0.0
+    assert (
+        records[0].mean_chain_contour_delta
+        <= records[0].root_mean_square_chain_contour_delta
+        <= records[0].max_chain_contour_delta
+    )
+    assert "mean chain contour delta | rms chain contour delta" in text
 
 
 def test_reduce_snapshot_when_benchmark05_chain39_matches_oracle_pairs() -> None:

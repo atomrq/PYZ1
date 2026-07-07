@@ -312,3 +312,10 @@ chain. Per-chain SP/SP+ residuals remain useful diagnostics and regression
 guards for generalized topology, source, pairing, and contact-relaxation rules,
 but future reducer slices should not treat chain-by-chain coordinate overlay as
 the primary acceptance condition.
+
+Task-172 applies that policy to the benchmark regression report surface. The
+report now includes ensemble `mean chain contour delta` and
+`rms chain contour delta` columns next to the existing max chain-contour and
+per-chain residual-detail diagnostics. This is a diagnostic/report improvement,
+not a reducer algorithm change and not a claim that benchmark-05 full parity is
+closed.

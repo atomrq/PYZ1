@@ -26,6 +26,28 @@ generalized topology/source/pairing rule.
 
 Latest remote GPU-cluster gate evidence:
 
+- `.omo/evidence/task-172-regression-statistical-contour/source-trace.md`:
+  classifies the benchmark regression contour-statistics report slice as
+  `diagnostic_only`; it adds ensemble-level mean/RMS chain-contour deltas while
+  preserving max per-chain contour residual diagnostics and mismatch details
+- `.omo/evidence/task-172-regression-statistical-contour/red-focused-416798.out`:
+  corrected RED failed for the intended reason:
+  `RegressionRecord` did not yet expose `mean_chain_contour_delta`
+- `.omo/evidence/task-172-regression-statistical-contour/focused-green-416800.out`:
+  final focused benchmark-05 SP+ contact-relaxation report test passed
+- `.omo/evidence/task-172-regression-statistical-contour/static-416802.out`:
+  `ruff` and `basedpyright` passed for the changed regression report and SP+
+  regression test files
+- `.omo/evidence/task-172-regression-statistical-contour/package-smoke-416804.out`:
+  editable install and console-script benchmark regression smoke passed
+- `.omo/evidence/task-172-regression-statistical-contour/benchmark-05-spplus-statistical-contour.md`:
+  generated benchmark-05 SP+ contact-relaxation report records `Lpp delta`
+  `0.00409694`, `Z delta` `0`, zero pair/node/source-sequence mismatches,
+  mean chain-contour delta `0.171325`, and RMS chain-contour delta `0.308536`
+- `.omo/evidence/task-172-regression-statistical-contour/sacct.txt`:
+  records final jobs `416800`, `416802`, and `416804` as `COMPLETED` with
+  `ExitCode=0:0`; invalid/superseded setup jobs are retained for traceability
+
 - `.omo/evidence/task-171-statistical-parity-policy/source-trace.md`:
   classifies this documentation/policy slice as `diagnostic_only`; it points to
   `docs/source-informed-development-plan.md`, `docs/pyz1-contract.md`, and the
