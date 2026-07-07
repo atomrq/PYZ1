@@ -42,6 +42,18 @@ evidence still leaves scientific and scalability boundaries open.
 
 Latest gate artifacts:
 
+- `.omo/evidence/task-180-regression-settings-trace/source-trace.md`:
+  records a `diagnostic_only` benchmark regression report expansion that adds a
+  contact-relaxation settings trace column
+- `.omo/evidence/task-180-regression-settings-trace/focused-416864.out`,
+  `.omo/evidence/task-180-regression-settings-trace/static-416865.out`,
+  `.omo/evidence/task-180-regression-settings-trace/package-smoke-416866.out`,
+  `.omo/evidence/task-180-regression-settings-trace/benchmark-05-spplus-settings-trace.md`,
+  `.omo/evidence/task-180-regression-settings-trace/docs-gate-416868.out`,
+  and `.omo/evidence/task-180-regression-settings-trace/sacct.txt`:
+  record the remote GPU-cluster gate for reporting benchmark-05 SP+ as
+  `spplus | yes | mismatch | passed`, making the contact-relaxation override
+  explicit in the report
 - `.omo/evidence/task-179-contour-residual-p95/source-trace.md`:
   records a `diagnostic_only` benchmark regression report expansion that adds
   a nearest-rank p95 chain-contour residual delta as a statistical residual-tail

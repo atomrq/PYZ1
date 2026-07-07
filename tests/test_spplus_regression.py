@@ -1264,7 +1264,8 @@ def test_write_benchmark_report_when_contact_relaxation_measures_guarded_spplus(
 
     text = report_path.read_text(encoding="utf-8")
     assert len(records) == 1
-    assert "| benchmark-05 | spplus | mismatch |" in text
+    assert "| benchmark-05 | spplus | yes | mismatch |" in text
+    assert records[0].contact_relaxation_enabled is True
     assert records[0].pairing_mismatches == 0
     assert records[0].node_count_mismatches == 0
     assert records[0].pyz1_source_sequence_mismatch_count == 0
@@ -1303,10 +1304,11 @@ def test_write_benchmark_report_when_contact_relaxation_measures_guarded_spplus(
         < 1.0e-12
     )
     assert "mean chain contour delta | rms chain contour delta" in text
+    assert "contact relaxation" in text
+    assert "| benchmark-05 | spplus | yes | mismatch | passed |" in text
     assert "chain contour residual count | chain contour residual fraction" in text
     assert "chain contour residual p95 delta" in text
     assert records[0].statistical_status.value == "passed"
-    assert "| benchmark-05 | spplus | mismatch | passed |" in text
 
 
 def test_reduce_snapshot_when_benchmark05_chain39_matches_oracle_pairs() -> None:

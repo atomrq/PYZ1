@@ -29,6 +29,27 @@ regression safety, not on exact equality for every individual chain.
 
 Latest remote GPU-cluster gate evidence:
 
+- `.omo/evidence/task-180-regression-settings-trace/source-trace.md`:
+  classifies the benchmark regression contact-relaxation settings trace as
+  `diagnostic_only`; it makes default SP+ and `--contact-relaxation` SP+
+  report rows distinguishable without changing reducer behavior
+- `.omo/evidence/task-180-regression-settings-trace/red-focused-416863.out`:
+  RED failed for the intended reason: `RegressionRecord` did not yet expose
+  `contact_relaxation_enabled`
+- `.omo/evidence/task-180-regression-settings-trace/focused-416864.out`:
+  focused benchmark-05 SP+ contact-relaxation report test passed after adding
+  the settings trace field
+- `.omo/evidence/task-180-regression-settings-trace/static-416865.out`:
+  `ruff` and `basedpyright` passed for `src/pyz1/regression.py` and
+  `tests/test_spplus_regression.py`
+- `.omo/evidence/task-180-regression-settings-trace/package-smoke-416866.out`
+  and `.omo/evidence/task-180-regression-settings-trace/benchmark-05-spplus-settings-trace.md`:
+  installed CLI smoke passed and recorded benchmark-05 SP+ as
+  `spplus | yes | mismatch | passed`
+- `.omo/evidence/task-180-regression-settings-trace/docs-gate-416868.out` and
+  `.omo/evidence/task-180-regression-settings-trace/sacct.txt`:
+  record RED job `416863` as expected `FAILED` and final jobs `416864`,
+  `416865`, `416866`, and `416868` as `COMPLETED`
 - `.omo/evidence/task-179-contour-residual-p95/source-trace.md`:
   classifies the chain-contour residual p95 report expansion as
   `diagnostic_only`; it exposes residual-tail behavior for statistical parity

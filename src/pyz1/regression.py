@@ -180,6 +180,7 @@ class TrueChainContactCandidate:
 class RegressionRecord:
     benchmark_id: str
     mode: RegressionMode
+    contact_relaxation_enabled: bool
     status: RegressionStatus
     lpp_delta: float | None
     z_delta: float | None
@@ -408,6 +409,7 @@ def _compare_benchmark_mode(
     benchmark_id: str,
     mode: RegressionMode,
 ) -> RegressionRecord:
+    base_settings = _settings_for_mode(mode, request.settings_overrides)
     source_path = request.source_dir / f".benchmark-{benchmark_id}.Z1"
     oracle_dir = request.oracle_root / f"benchmark-{benchmark_id}" / mode.value
     summary_path = oracle_dir / _summary_filename(mode)
@@ -416,6 +418,7 @@ def _compare_benchmark_mode(
         return RegressionRecord(
             benchmark_id=benchmark_id,
             mode=mode,
+            contact_relaxation_enabled=base_settings.contact_relaxation_enabled,
             status=RegressionStatus.KNOWN_INVALID,
             lpp_delta=None,
             z_delta=None,
@@ -463,6 +466,7 @@ def _compare_benchmark_mode(
         return RegressionRecord(
             benchmark_id=benchmark_id,
             mode=mode,
+            contact_relaxation_enabled=base_settings.contact_relaxation_enabled,
             status=RegressionStatus.KNOWN_INVALID,
             lpp_delta=None,
             z_delta=None,
@@ -505,16 +509,13 @@ def _compare_benchmark_mode(
             pyz1_core_stage_source_bead_max_delta=None,
             note=f"skipped: node_count>{request.max_node_count}",
         )
-    result = reduce_snapshot(
-        snapshot,
-        _settings_for_mode(
-            mode,
-            request.settings_overrides,
-            trace_diagnostics_enabled=(
-                snapshot.node_count <= request.trace_diagnostics_max_node_count
-            ),
+    reducer_settings = replace(
+        base_settings,
+        trace_diagnostics_enabled=(
+            snapshot.node_count <= request.trace_diagnostics_max_node_count
         ),
     )
+    result = reduce_snapshot(snapshot, reducer_settings)
     oracle_summary = read_summary_file(summary_path)[0]
     actual_summary = result.summary.record
     lpp_delta = abs(
@@ -579,6 +580,7 @@ def _compare_benchmark_mode(
     return RegressionRecord(
         benchmark_id=benchmark_id,
         mode=mode,
+        contact_relaxation_enabled=reducer_settings.contact_relaxation_enabled,
         status=status,
         lpp_delta=lpp_delta,
         z_delta=z_delta,
@@ -1810,7 +1812,8 @@ def _chain_contour_residual_delta(residual: ChainContourResidual) -> float:
 
 def _format_report(records: tuple[RegressionRecord, ...]) -> str:
     header = (
-        "| benchmark | mode | status | statistical status | Lpp delta | Z delta | "
+        "| benchmark | mode | contact relaxation | status | statistical status | "
+        "Lpp delta | Z delta | "
         "max chain contour delta | max chain contour delta chain | "
         "mean chain contour delta | rms chain contour delta | "
         "chain contour residual count | chain contour residual fraction | "
@@ -1898,6 +1901,7 @@ def _format_report_separator(header: str) -> str:
 def _format_record(record: RegressionRecord) -> str:
     return (
         f"| benchmark-{record.benchmark_id} | {record.mode.value} | "
+        f"{_format_optional_bool(record.contact_relaxation_enabled)} | "
         f"{record.status.value} | {record.statistical_status.value} | "
         f"{_format_optional_float(record.lpp_delta)} | "
         f"{_format_optional_float(record.z_delta)} | "

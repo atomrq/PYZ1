@@ -252,6 +252,11 @@ contour residual delta. This is still `diagnostic_only`: it exposes the residual
 tail for future statistical parity work without making an individual chain's
 final geometry an acceptance target and without changing reducer behavior.
 
+Task-180 makes benchmark regression evidence traceable across reducer settings:
+rows now report whether the contact-relaxation guard was enabled. This keeps
+default SP+ and `--contact-relaxation` SP+ evidence distinguishable without
+changing reducer behavior or pass/fail logic.
+
 Task-162 adds the first generalized building block in
 `src/pyz1/contact_relaxation.py`: endpoint-fixed contact-constrained node
 relaxation driven by local geometry, not oracle final positions. The next
