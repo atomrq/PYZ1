@@ -336,3 +336,9 @@ Task-175 extends the same corpus statistical smoke with source-backed
 benchmark 07/10/11 reference logs. These are reference-log summary targets for
 statistical tracking only; they do not introduce PPA+ coordinate-level parity
 requirements.
+
+Task-176 extends the benchmark 07/10/11 reference-log smoke report with
+source-backed `Ree`, `app`, `bpp`, and `<N>` fields that were already parsed
+from public Z1+/PPA+ logs but not visible in the markdown report. This keeps
+physical/statistical reference targets auditable without changing reducer or
+native PPA+ execution behavior.

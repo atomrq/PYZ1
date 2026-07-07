@@ -1,0 +1,4 @@
+JobID|JobName|State|ExitCode|Elapsed
+416833|pyz1-t176-red|FAILED|1:0|00:00:00
+416833.batch|batch|FAILED|1:0|00:00:00
+416833.extern|extern|COMPLETED|0:0|00:00:01

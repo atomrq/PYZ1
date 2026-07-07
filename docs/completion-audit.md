@@ -40,6 +40,18 @@ evidence still leaves scientific and scalability boundaries open.
 
 Latest gate artifacts:
 
+- `.omo/evidence/task-176-reference-log-physical-fields/source-trace.md`:
+  records a `source_contract` reference-log smoke expansion over public
+  `mkmat/Z1plus-code` benchmark 07/10/11 Z1+/PPA+ reference logs
+- `.omo/evidence/task-176-reference-log-physical-fields/focused-416835.out`,
+  `.omo/evidence/task-176-reference-log-physical-fields/static-416836.out`,
+  `.omo/evidence/task-176-reference-log-physical-fields/package-smoke-416837.out`,
+  `.omo/evidence/task-176-reference-log-physical-fields/reference-log-physical-fields-final.md`,
+  `.omo/evidence/task-176-reference-log-physical-fields/docs-gate-416839.out`,
+  and `.omo/evidence/task-176-reference-log-physical-fields/sacct.txt`:
+  record the remote GPU-cluster gate for adding source-backed `Ree`, `app`,
+  `bpp`, and `<N>` columns to the benchmark 07/10/11 Z1+/PPA+ reference-log
+  smoke report
 - `.omo/evidence/task-175-corpus-ppaplus-stat-fields/source-trace.md`:
   records a `source_contract` corpus smoke expansion over public
   `mkmat/Z1plus-code` benchmark 07/10/11 Z1+/PPA+ reference logs

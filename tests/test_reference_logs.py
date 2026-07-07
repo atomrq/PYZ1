@@ -39,6 +39,10 @@ def test_write_reference_log_report_when_z1plus_code_logs_exist_lists_smoke_reco
     assert records[0].chains == 129
     assert records[0].mean_shortest_path_contour == 57.13698
     assert records[0].mean_entanglements == 16.48062
+    assert records[0].ree == 24.25065
+    assert records[0].app == 10.29270
+    assert records[0].bpp == 0.57714
+    assert records[0].mean_original_beads == 100.0
     assert records[0].generated_files == (
         "N_values.dat",
         "Ree_values.dat",
@@ -53,7 +57,12 @@ def test_write_reference_log_report_when_z1plus_code_logs_exist_lists_smoke_reco
     assert records[3].chains == 129
     assert records[3].mean_shortest_path_contour == 64.43319
     assert records[3].mean_entanglements == -1.0
+    assert records[3].app == 9.12719
+    assert records[3].bpp == 0.65084
     assert records[3].ne_classical_kink is None
     assert records[3].ne_classical_coil == 14.02370
+    assert "Ree | app | bpp | <N>" in text
+    assert "57.13698 | 16.48062 | 24.25065 | 10.2927 | 0.57714 | 100 |" in text
+    assert "64.43319 | -1 | 24.25065 | 9.12719 | 0.65084 | 100 |" in text
     assert "| benchmark-11 | ppaplus | parseable | 1044 | 92.52998 |" in text
     assert "| benchmark-07 | z1plus | parseable | 129 | 57.13698 |" in text

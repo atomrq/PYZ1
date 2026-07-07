@@ -26,6 +26,30 @@ generalized topology/source/pairing rule.
 
 Latest remote GPU-cluster gate evidence:
 
+- `.omo/evidence/task-176-reference-log-physical-fields/source-trace.md`:
+  classifies the reference-log physical-field report expansion as
+  `source_contract` over public `mkmat/Z1plus-code` benchmark 07/10/11 Z1+/PPA+
+  reference logs
+- `.omo/evidence/task-176-reference-log-physical-fields/red-focused-416833.out`:
+  RED failed for the intended reason: `ReferenceLogRecord` already parsed
+  `Ree/app/bpp/<N>`, but the markdown report did not expose those fields
+- `.omo/evidence/task-176-reference-log-physical-fields/focused-416835.out`:
+  focused reference-log smoke test passed after adding `Ree`, `app`, `bpp`,
+  and `<N>` columns to the report
+- `.omo/evidence/task-176-reference-log-physical-fields/static-416836.out`:
+  `ruff` and `basedpyright` passed for `src/pyz1/reference_logs.py` and
+  `tests/test_reference_logs.py`
+- `.omo/evidence/task-176-reference-log-physical-fields/package-smoke-416837.out`:
+  editable install and `pyz1-reference-log-smoke` console-script report
+  generation passed
+- `.omo/evidence/task-176-reference-log-physical-fields/reference-log-physical-fields-final.md`:
+  final report records six parseable benchmark 07/10/11 Z1+/PPA+ reference-log
+  records with source-backed `Ree`, `app`, `bpp`, and `<N>` values
+- `.omo/evidence/task-176-reference-log-physical-fields/sacct.txt`:
+  records RED job `416833` as expected `FAILED` and final jobs `416835`,
+  `416836`, `416837`, and docs gate `416839` as `COMPLETED` with
+  `ExitCode=0:0`
+
 - `.omo/evidence/task-175-corpus-ppaplus-stat-fields/source-trace.md`:
   classifies the corpus PPA+ statistical-field expansion as `source_contract`
   over public `mkmat/Z1plus-code` benchmark 07/10/11 Z1+/PPA+ reference logs

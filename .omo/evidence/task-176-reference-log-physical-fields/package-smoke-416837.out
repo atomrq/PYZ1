@@ -1,0 +1,19 @@
+Looking in indexes: https://pypi.tuna.tsinghua.edu.cn/simple
+Obtaining file:///public/home/jxm/pyz1-cleanroom-runs/task-176-reference-log-physical-fields-green/repo
+  Checking if build backend supports build_editable: started
+  Checking if build backend supports build_editable: finished with status 'done'
+  Preparing editable metadata (pyproject.toml): started
+  Preparing editable metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: pyz1
+  Building editable for pyz1 (pyproject.toml): started
+  Building editable for pyz1 (pyproject.toml): finished with status 'done'
+  Created wheel for pyz1: filename=pyz1-0.1.0-0.editable-py3-none-any.whl size=5119 sha256=5a648a1c3f677c31499d15794527ae017eb6466de185d3ac2c175e96b3a07476
+  Stored in directory: /tmp/pip-ephem-wheel-cache-pnm7jbfg/wheels/fe/26/2b/124574d72cbb849f47832919b2319695bd8975efbe5f3b5245
+Successfully built pyz1
+Installing collected packages: pyz1
+  Attempting uninstall: pyz1
+    Found existing installation: pyz1 0.1.0
+    Uninstalling pyz1-0.1.0:
+      Successfully uninstalled pyz1-0.1.0
+Successfully installed pyz1-0.1.0
+wrote 6 reference log smoke records to /public/home/jxm/pyz1-cleanroom-runs/task-176-reference-log-physical-fields-green/reference-log-physical-fields-final.md

@@ -13,7 +13,9 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 
-REPORT_HEADER_PREFIX: Final = "| benchmark | mode | status | chains | Lpp | Z |"
+REPORT_HEADER_PREFIX: Final = (
+    "| benchmark | mode | status | chains | Lpp | Z | Ree | app | bpp | <N> |"
+)
 REPORT_HEADER_NE: Final = "Ne_CK | Ne_MK |"
 REPORT_HEADER_RIGHT: Final = "Ne_CC | Ne_MC | generated files | note |"
 REPORT_HEADER: Final = (
@@ -222,7 +224,7 @@ def _format_report(records: tuple[ReferenceLogRecord, ...]) -> str:
         "# pyz1 reference log smoke",
         "",
         REPORT_HEADER,
-        "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+        _format_report_separator(),
     ]
     lines.extend(_format_record_row(record) for record in records)
     lines.append("")
@@ -235,12 +237,21 @@ def _format_record_row(record: ReferenceLogRecord) -> str:
         f"{record.status.value} | {_format_int(record.chains)} | "
         f"{_format_float(record.mean_shortest_path_contour)} | "
         f"{_format_float(record.mean_entanglements)} | "
+        f"{_format_float(record.ree)} | "
+        f"{_format_float(record.app)} | "
+        f"{_format_float(record.bpp)} | "
+        f"{_format_float(record.mean_original_beads)} | "
         f"{_format_float(record.ne_classical_kink)} | "
         f"{_format_float(record.ne_modified_kink)} | "
         f"{_format_float(record.ne_classical_coil)} | "
         f"{_format_float(record.ne_modified_coil)} | "
         f"{', '.join(record.generated_files)} | {record.note} |"
     )
+
+
+def _format_report_separator() -> str:
+    column_count = len(REPORT_HEADER.strip().strip("|").split("|"))
+    return "| " + " | ".join("---" for _ in range(column_count)) + " |"
 
 
 def _format_int(value: int | None) -> str:
