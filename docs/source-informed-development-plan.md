@@ -46,10 +46,11 @@ residual being closed and must not weaken existing mismatch diagnostics.
 
 ## Reducer Generalization Policy
 
-SP/SP+ detail parity remains a goal, but reducer runtime behavior must move
-toward a clean-room algorithm that can run on new systems without oracle final
-coordinates. Oracle output is allowed as a teacher and regression target; it is
-not allowed as production reducer input.
+SP/SP+ statistical/report parity is the goal; per-chain detail parity is a
+diagnostic tool. Reducer runtime behavior must move toward a clean-room
+algorithm that can run on new systems without oracle final coordinates. Oracle
+output is allowed as a teacher and regression target; it is not allowed as
+production reducer input.
 
 The primary long-term parity target is statistical parity, not exact
 per-chain final geometry equality. Chain-level source, pair, node-count,
@@ -59,10 +60,11 @@ changes that improve summary/statistical outputs such as `Lpp`, `Z`, `Ne`,
 mean/root-mean-square contour measures, and report-level parity while
 preserving closed topology diagnostics. Do not turn every remaining per-chain
 contour or coordinate residual into a benchmark-specific acceptance target.
-Exact SP/SP+ detail matching remains useful when it protects a generalized
-topology/source/pairing rule, but a new slice should not be judged solely by
-whether every individual chain overlays the oracle chain. Acceptance should
-separate statistical parity gates from chain-level diagnostic regressions.
+Exact SP/SP+ detail matching is not a project acceptance target by itself. It
+remains useful only when it protects a generalized topology/source/pairing rule,
+but a new slice should not be judged by whether every individual chain overlays
+the oracle chain. Acceptance must separate statistical parity gates from
+chain-level diagnostic regressions.
 The benchmark regression report now carries a separate `statistical status`
 column for that purpose: strict `status` continues to protect detailed
 per-chain/oracle diagnostics, while `statistical status` tracks report-level
