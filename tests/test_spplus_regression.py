@@ -953,6 +953,25 @@ def test_reduce_snapshot_when_benchmark05_chain17_matches_oracle_pairs() -> None
     assert chain_44_pairs == ((13.0, 17, 3),)
 
 
+def test_reduce_snapshot_when_contact_relaxation_shortens_chain17() -> None:
+    snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-05.Z1")
+
+    default_result = reduce_snapshot(snapshot, ReducerSettings(pairing_enabled=True))
+    relaxed_result = reduce_snapshot(
+        snapshot,
+        ReducerSettings(pairing_enabled=True, contact_relaxation_enabled=True),
+    )
+
+    default_chain = default_result.shortest_path.chains[16]
+    relaxed_chain = relaxed_result.shortest_path.chains[16]
+    assert _paired_source_sequence(relaxed_chain) == _paired_source_sequence(
+        default_chain,
+    )
+    assert _shortest_path_chain_contour(relaxed_chain) < (
+        _shortest_path_chain_contour(default_chain) - 0.2
+    )
+
+
 def test_reduce_snapshot_when_benchmark05_chain18_matches_oracle_pairs() -> None:
     snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-05.Z1")
 

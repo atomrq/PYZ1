@@ -1,0 +1,12 @@
+E501 Line too long (89 > 88)
+    --> src/pyz1/reducer.py:1599:89
+     |
+1597 |             continue
+1598 |         current_candidates = _preserved_inner_candidates(state, chain_index)
+1599 |         if len(current_candidates) != FINAL_CONTACT_RELAXATION_SUPPORTED_CANDIDATE_COUNT:
+     |                                                                                         ^
+1600 |             continue
+1601 |         relaxed_candidates = _relax_contact_constrained_candidates(
+     |
+
+Found 1 error.

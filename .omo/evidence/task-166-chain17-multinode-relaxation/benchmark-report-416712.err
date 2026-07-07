@@ -1,0 +1,5 @@
+/bin/bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+  File "<stdin>", line 8
+    report_path=Path(/public/home/jxm/pyz1-cleanroom-runs/task-166-chain17-relaxation/evidence/benchmark-04-05-spplus-contact-relaxation.md),
+                                                                                                         ^
+SyntaxError: leading zeros in decimal integer literals are not permitted; use an 0o prefix for octal integers

@@ -1,0 +1,84 @@
+...............FF                                                        [100%]
+=================================== FAILURES ===================================
+_ test_write_benchmark_report_when_contact_relaxation_measures_guarded_spplus __
+
+tmp_path = PosixPath('/tmp/pytest-of-jxm/pytest-3/test_write_benchmark_report_wh0')
+
+    def test_write_benchmark_report_when_contact_relaxation_measures_guarded_spplus(
+        tmp_path: Path,
+    ) -> None:
+        report_path = tmp_path / "pyz1-benchmark-regression.md"
+
+        records = write_benchmark_regression_report(
+            RegressionRequest(
+                source_dir=SOURCE_Z1,
+                oracle_root=ORACLE_ROOT,
+                report_path=report_path,
+                modes=(RegressionMode.SPPLUS,),
+                benchmark_ids=("05",),
+                settings_overrides=(
+                    RegressionSettingsOverride(
+                        mode=RegressionMode.SPPLUS,
+                        settings=ReducerSettings(
+                            pairing_enabled=True,
+                            contact_relaxation_enabled=True,
+                        ),
+                    ),
+                ),
+            ),
+        )
+
+        text = report_path.read_text(encoding="utf-8")
+        assert len(records) == 1
+        assert "| benchmark-05 | spplus | mismatch |" in text
+        assert records[0].pairing_mismatches == 0
+        assert records[0].node_count_mismatches == 0
+        assert records[0].pyz1_source_sequence_mismatch_count == 0
+        assert records[0].max_chain_contour_delta is not None
+>       assert records[0].max_chain_contour_delta < 1.0324
+E       AssertionError: assert 1.7958895288078196 < 1.0324
+E        +  where 1.7958895288078196 = RegressionRecord(benchmark_id='05', mode=<RegressionMode.SPPLUS: 'spplus'>, status=<RegressionStatus.MISMATCH: 'mismat..., ChainContourResidual(chain_index=49, actual=7.967152327768505, expected=9.190793721664887, delta=1.223641393896382))).max_chain_contour_delta
+
+tests/test_spplus_regression.py:1272: AssertionError
+_ test_regression_cli_when_contact_relaxation_requested_writes_guarded_report __
+
+tmp_path = PosixPath('/tmp/pytest-of-jxm/pytest-3/test_regression_cli_when_conta0')
+
+    def test_regression_cli_when_contact_relaxation_requested_writes_guarded_report(
+        tmp_path: Path,
+    ) -> None:
+        report_path = tmp_path / "pyz1-benchmark-regression.md"
+
+        result = subprocess.run(  # noqa: S603 - command is fixed package smoke.
+            [
+                sys.executable,
+                "-m",
+                "pyz1.regression_cli",
+                "--source-dir",
+                str(SOURCE_Z1),
+                "--oracle-root",
+                str(ORACLE_ROOT),
+                "--report-path",
+                str(report_path),
+                "--benchmark-id",
+                "05",
+                "--mode",
+                "spplus",
+                "--contact-relaxation",
+            ],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+
+        assert result.returncode == 0, result.stdout + result.stderr
+        text = report_path.read_text(encoding="utf-8")
+        assert "wrote 1 benchmark regression records" in result.stdout
+>       assert "| benchmark-05 | spplus | mismatch | 0.147902 | 0 | 0.999611 | 17 |" in text
+E       AssertionError: assert '| benchmark-05 | spplus | mismatch | 0.147902 | 0 | 0.999611 | 17 |' in '# pyz1 Benchmark Regression\n\n| benchmark | mode | status | Lpp delta | Z delta | max chain contour delta | max chai...ssical_coil: 16.867 != 16.210; ne_modified_coil: 89.728 != 73.825 | current clean-room reducer differs from oracle |\n'
+
+tests/test_regression_cli.py:153: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_spplus_regression.py::test_write_benchmark_report_when_contact_relaxation_measures_guarded_spplus
+FAILED tests/test_regression_cli.py::test_regression_cli_when_contact_relaxation_requested_writes_guarded_report
+2 failed, 15 passed in 187.00s (0:03:07)

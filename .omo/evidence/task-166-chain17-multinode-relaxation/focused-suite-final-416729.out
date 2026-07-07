@@ -1,0 +1,43 @@
+................F                                                        [100%]
+=================================== FAILURES ===================================
+_ test_regression_cli_when_contact_relaxation_requested_writes_guarded_report __
+
+tmp_path = PosixPath('/tmp/pytest-of-jxm/pytest-7/test_regression_cli_when_conta0')
+
+    def test_regression_cli_when_contact_relaxation_requested_writes_guarded_report(
+        tmp_path: Path,
+    ) -> None:
+        report_path = tmp_path / "pyz1-benchmark-regression.md"
+
+        result = subprocess.run(  # noqa: S603 - command is fixed package smoke.
+            [
+                sys.executable,
+                "-m",
+                "pyz1.regression_cli",
+                "--source-dir",
+                str(SOURCE_Z1),
+                "--oracle-root",
+                str(ORACLE_ROOT),
+                "--report-path",
+                str(report_path),
+                "--benchmark-id",
+                "05",
+                "--mode",
+                "spplus",
+                "--contact-relaxation",
+            ],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+
+        assert result.returncode == 0, result.stdout + result.stderr
+        text = report_path.read_text(encoding="utf-8")
+        assert "wrote 1 benchmark regression records" in result.stdout
+>       assert "| benchmark-05 | spplus | mismatch | 0.147902 | 0 | 0.999611 | 17 |" in text
+E       AssertionError: assert '| benchmark-05 | spplus | mismatch | 0.147902 | 0 | 0.999611 | 17 |' in '# pyz1 Benchmark Regression\n\n| benchmark | mode | status | Lpp delta | Z delta | max chain contour delta | max chai...ssical_coil: 16.008 != 16.210; ne_modified_coil: 69.560 != 73.825 | current clean-room reducer differs from oracle |\n'
+
+tests/test_regression_cli.py:153: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_regression_cli.py::test_regression_cli_when_contact_relaxation_requested_writes_guarded_report
+1 failed, 16 passed in 184.24s (0:03:04)

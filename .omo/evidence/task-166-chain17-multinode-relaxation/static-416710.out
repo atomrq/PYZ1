@@ -1,0 +1,10 @@
+C901 `_preserve_close_contacts` is too complex (11 > 10)
+    --> src/pyz1/reducer.py:1359:5
+     |
+1359 | def _preserve_close_contacts(
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^
+1360 |     original_chains: tuple[Chain, ...],
+1361 |     reduced_chains: tuple[Chain, ...],
+     |
+
+Found 1 error.

@@ -131,5 +131,12 @@ coordinates must not be production inputs.
      geometry still leaves `0.999611` contour delta. This points to a missing
      multi-node endpoint-fixed contact-relaxation rule, not another
      benchmark-specific coordinate constant.
-6. Gradually replace the listed temporary shims with the generalized
+6. Apply generalized relaxation only where the current solver is supported.
+   - Task166 adds a default-off final pass for already-retained two-contact
+     chains. It improves benchmark-05 guard metrics without oracle final
+     coordinates.
+   - A broader 3+ retained-node final pass regressed benchmark-05 diagnostics
+     and is recorded as rejected evidence. Future 3+ node relaxation needs a
+     stronger multi-node solver, not the current sequential two-contact rule.
+7. Gradually replace the listed temporary shims with the generalized
    constrained-relaxation path.

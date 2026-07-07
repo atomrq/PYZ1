@@ -150,7 +150,7 @@ def test_regression_cli_when_contact_relaxation_requested_writes_guarded_report(
     assert result.returncode == 0, result.stdout + result.stderr
     text = report_path.read_text(encoding="utf-8")
     assert "wrote 1 benchmark regression records" in result.stdout
-    assert "| benchmark-05 | spplus | mismatch | 0.147902 | 0 | 0.999611 | 17 |" in text
+    assert "| benchmark-05 | spplus | mismatch | 0.0646243 | 0 | 0.986713 | 3 |" in text
     assert "| 6 | 0 | 0 |" in text
     assert "| 0 | 0 | none |" in text
 

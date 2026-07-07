@@ -1,0 +1,9 @@
+/bin/bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+Using CPython 3.14.2
+Creating virtual environment at: .venv
+error: Failed to fetch: `https://pypi.mirrors.ustc.edu.cn/simple/rich/`
+  Caused by: Request failed after 3 retries
+  Caused by: error sending request for url (https://pypi.mirrors.ustc.edu.cn/simple/rich/)
+  Caused by: client error (Connect)
+  Caused by: dns error
+  Caused by: failed to lookup address information: Name or service not known

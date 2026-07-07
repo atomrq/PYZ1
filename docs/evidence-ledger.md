@@ -22,6 +22,33 @@ temporary oracle-regression shims, not final clean-room reducer algorithms.
 
 Latest remote GPU-cluster gate evidence:
 
+- `.omo/evidence/task-166-chain17-multinode-relaxation/source-trace.md`:
+  classifies the guarded final contact-relaxation pass as
+  `oracle_residual_inference_generalizable`; it uses input-derived retained
+  geometry and pair contact segments only, with no oracle final-coordinate
+  runtime input
+- `.omo/evidence/task-166-chain17-multinode-relaxation/red-focused-416705.out`:
+  focused RED failed for the intended reason: benchmark-05 chain17 guard
+  contour did not shorten before the final-pass integration
+- `.omo/evidence/task-166-chain17-multinode-relaxation/focused-suite-final-416734.out`:
+  final remote focused suite passed 17 tests, including chain17/chain37
+  contact-relaxation coverage, guarded report coverage, CLI guarded report
+  coverage, and geometry tests
+- `.omo/evidence/task-166-chain17-multinode-relaxation/static-final-cli-416735.out`:
+  final ruff and basedpyright passed for the changed reducer and regression
+  test files
+- `.omo/evidence/task-166-chain17-multinode-relaxation/package-smoke-final-416736.out`:
+  package integration smoke passed
+- `.omo/evidence/task-166-chain17-multinode-relaxation/benchmark-04-05-spplus-contact-relaxation.md`:
+  guard-enabled SP+ report keeps benchmark-04 `passed`; benchmark-05 remains
+  `mismatch`, but `Lpp delta` improves to `0.0646243`, max chain-contour delta
+  improves to `0.986713` on chain3, and pair mismatches, node-count
+  mismatches, source residual details, and `Z` delta remain closed
+- `.omo/evidence/task-166-chain17-multinode-relaxation/sacct.txt`:
+  records final jobs `416734`, `416735`, `416736`, and `416737` as
+  `COMPLETED` with exit code `0:0`; superseded jobs document the initial RED,
+  an invalid setup failure, static lint fixes, and a rejected too-wide 3+
+  retained-node relaxation attempt
 - `.omo/evidence/task-165-chain17-guard-diagnostic/source-trace.md`:
   classifies the chain17 guard-enabled residual inspection as
   `diagnostic_only` / `oracle_residual_inference_generalizable`; visible source

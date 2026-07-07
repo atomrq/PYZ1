@@ -46,6 +46,7 @@ TRUE_CHAIN_CONTACT_CLUSTER_MIN_CANDIDATES: Final = 2
 TRUE_CHAIN_CONTACT_HALF_BEAD_SNAP_FRACTION: Final = 0.75
 TRUE_CHAIN_CONTACT_HALF_BEAD_SNAP_SOURCE_OFFSET: Final = 0.4
 TRUE_CHAIN_CONTACT_SECOND_SOURCE_SNAP_OFFSET: Final = 0.58
+FINAL_CONTACT_RELAXATION_SUPPORTED_CANDIDATE_COUNT: Final = 2
 TRUE_CHAIN_REPEATED_SINGLE_TARGET_MIN_CANDIDATES: Final = 3
 TRUE_CHAIN_REPEATED_SINGLE_TARGET_MAX_FIRST_SOURCE: Final = 2.0
 TRUE_CHAIN_REPEATED_SINGLE_TARGET_SOURCE_SNAP_OFFSET: Final = 1.5
@@ -1471,6 +1472,7 @@ def _preserve_close_contacts(
     _align_secondary_chain48_contacts(retention_state)
     _align_secondary_chain34_contacts(retention_state)
     _align_secondary_chain49_contacts(retention_state)
+    _relax_final_contact_constrained_chains(retention_state)
     return _PreservedChains(
         chains=tuple(retention_state.preserved_nodes),
         source_beads=tuple(
@@ -1583,6 +1585,31 @@ def _relax_contact_constrained_candidates(
         )
         relaxed.append(replace(candidate, position=relaxed_position))
     return tuple(relaxed)
+
+
+def _relax_final_contact_constrained_chains(
+    state: _ReciprocalRetentionState,
+) -> None:
+    if not state.settings.contact_relaxation_enabled:
+        return
+    for chain_index, chain in enumerate(state.preserved_nodes):
+        if chain.node_count <= MIN_CHAIN_NODE_COUNT:
+            continue
+        current_candidates = _preserved_inner_candidates(state, chain_index)
+        supported_count = FINAL_CONTACT_RELAXATION_SUPPORTED_CANDIDATE_COUNT
+        if len(current_candidates) != supported_count:
+            continue
+        relaxed_candidates = _relax_contact_constrained_candidates(
+            state,
+            chain_index,
+            current_candidates,
+        )
+        if relaxed_candidates == current_candidates:
+            continue
+        state.preserved_nodes[chain_index] = _insert_preserved_nodes(
+            state.reduced_chains[chain_index],
+            relaxed_candidates,
+        )
 
 
 def _candidate_pair_contact_segment(

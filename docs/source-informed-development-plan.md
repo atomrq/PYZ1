@@ -243,3 +243,16 @@ does not relax to the oracle contour. The next RED should therefore target a
 general endpoint-fixed multi-node contact-relaxation rule for paired retained
 nodes. Do not close the chain17 residual with benchmark-specific final
 coordinates.
+
+Task-166 adds the first guarded final-pass version of that rule for already
+retained two-contact chains. The pass remains behind
+`ReducerSettings.contact_relaxation_enabled`; it uses retained geometry,
+source order, pair topology, and pair contact segments, and it adds no oracle
+final coordinates. Remote focused/static/package/report evidence in
+`.omo/evidence/task-166-chain17-multinode-relaxation/` keeps benchmark-04 SP+
+`passed`; benchmark-05 remains a true `mismatch`, but guard-enabled `Lpp delta`
+improves to `0.0646243` and max chain-contour delta improves to `0.986713` on
+chain3 while pair mismatches, node-count mismatches, source residual details,
+and `Z` delta remain closed. A wider 3+ retained-node final pass regressed
+benchmark-05 diagnostics and must not be reintroduced without a stronger
+multi-node solver and RED coverage.
