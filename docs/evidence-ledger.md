@@ -29,6 +29,28 @@ regression safety, not on exact equality for every individual chain.
 
 Latest remote GPU-cluster gate evidence:
 
+- `.omo/evidence/task-185-regression-summary-input-deltas/source-trace.md`:
+  classifies the benchmark regression summary input-field delta report
+  expansion as `source_contract` over the public Z1+ `Z1+summary.dat` column
+  contract for `b0` and bead density
+- `.omo/evidence/task-185-regression-summary-input-deltas/red-focused-416910.out`:
+  RED failed for the intended reason: `RegressionRecord` did not yet expose
+  `mean_original_bond_length_delta`
+- `.omo/evidence/task-185-regression-summary-input-deltas/focused-416914.out`:
+  focused benchmark-05 SP+ contact-relaxation report test passed after adding
+  structured `b0` and density delta fields
+- `.omo/evidence/task-185-regression-summary-input-deltas/static-416915.out`:
+  `ruff` and `basedpyright` passed for `src/pyz1/regression.py` and
+  `tests/test_spplus_regression.py`
+- `.omo/evidence/task-185-regression-summary-input-deltas/package-smoke-416916.out`
+  and `.omo/evidence/task-185-regression-summary-input-deltas/benchmark-05-spplus-summary-input-deltas-final.md`:
+  installed CLI smoke passed and recorded benchmark-05 SP+ as strict
+  `mismatch` but statistical `passed`, with `b0 delta = 2.02002e-07` and
+  `density delta = 0`
+- `.omo/evidence/task-185-regression-summary-input-deltas/sacct.txt`:
+  records RED job `416910` as expected `FAILED`, final jobs `416914`,
+  `416915`, and `416916` as `COMPLETED`, plus superseded jobs `416911`,
+  `416912`, and `416913`
 - `.omo/evidence/task-184-regression-summary-physical-deltas/source-trace.md`:
   classifies the benchmark regression summary physical-field delta report
   expansion as `source_contract` over the public Z1+ `Z1+summary.dat` column

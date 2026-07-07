@@ -188,6 +188,8 @@ class RegressionRecord:
     coil_tube_diameter_delta: float | None
     coil_tube_step_length_delta: float | None
     root_mean_squared_contour_delta: float | None
+    mean_original_bond_length_delta: float | None
+    original_bead_density_delta: float | None
     ne_classical_kink_delta: float | None
     ne_modified_kink_delta: float | None
     ne_classical_coil_delta: float | None
@@ -435,6 +437,8 @@ def _compare_benchmark_mode(
             coil_tube_diameter_delta=None,
             coil_tube_step_length_delta=None,
             root_mean_squared_contour_delta=None,
+            mean_original_bond_length_delta=None,
+            original_bead_density_delta=None,
             ne_classical_kink_delta=None,
             ne_modified_kink_delta=None,
             ne_classical_coil_delta=None,
@@ -491,6 +495,8 @@ def _compare_benchmark_mode(
             coil_tube_diameter_delta=None,
             coil_tube_step_length_delta=None,
             root_mean_squared_contour_delta=None,
+            mean_original_bond_length_delta=None,
+            original_bead_density_delta=None,
             ne_classical_kink_delta=None,
             ne_modified_kink_delta=None,
             ne_classical_coil_delta=None,
@@ -561,6 +567,13 @@ def _compare_benchmark_mode(
     root_mean_squared_contour_delta = abs(
         actual_summary.root_mean_squared_contour
         - oracle_summary.root_mean_squared_contour,
+    )
+    mean_original_bond_length_delta = abs(
+        actual_summary.mean_original_bond_length
+        - oracle_summary.mean_original_bond_length,
+    )
+    original_bead_density_delta = abs(
+        actual_summary.original_bead_density - oracle_summary.original_bead_density,
     )
     ne_classical_kink_delta = abs(
         actual_summary.ne_classical_kink - oracle_summary.ne_classical_kink,
@@ -639,6 +652,8 @@ def _compare_benchmark_mode(
         coil_tube_diameter_delta=coil_tube_diameter_delta,
         coil_tube_step_length_delta=coil_tube_step_length_delta,
         root_mean_squared_contour_delta=root_mean_squared_contour_delta,
+        mean_original_bond_length_delta=mean_original_bond_length_delta,
+        original_bead_density_delta=original_bead_density_delta,
         ne_classical_kink_delta=ne_classical_kink_delta,
         ne_modified_kink_delta=ne_modified_kink_delta,
         ne_classical_coil_delta=ne_classical_coil_delta,
@@ -1878,6 +1893,7 @@ def _format_report(records: tuple[RegressionRecord, ...]) -> str:
         "| benchmark | mode | contact relaxation | status | statistical status | "
         "Lpp delta | Z delta | "
         "Ree delta | app delta | bpp delta | Lpp2 delta | "
+        "b0 delta | density delta | "
         "Ne classical kink delta | Ne modified kink delta | "
         "Ne classical coil delta | Ne modified coil delta | "
         "max chain contour delta | max chain contour delta chain | "
@@ -1976,6 +1992,8 @@ def _format_record(record: RegressionRecord) -> str:
         f"{_format_optional_float(record.coil_tube_diameter_delta)} | "
         f"{_format_optional_float(record.coil_tube_step_length_delta)} | "
         f"{_format_optional_float(record.root_mean_squared_contour_delta)} | "
+        f"{_format_optional_float(record.mean_original_bond_length_delta)} | "
+        f"{_format_optional_float(record.original_bead_density_delta)} | "
         f"{_format_optional_float(record.ne_classical_kink_delta)} | "
         f"{_format_optional_float(record.ne_modified_kink_delta)} | "
         f"{_format_optional_float(record.ne_classical_coil_delta)} | "

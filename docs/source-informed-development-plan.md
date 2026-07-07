@@ -288,6 +288,13 @@ structured summary physical-field report surface around the already tracked
 statistical status, and mismatch diagnostics unchanged while making remaining
 summary residuals auditable as statistical/report evidence.
 
+Task-185 adds the remaining source-backed summary input-field delta columns
+`b0` and density to the default/SP+/selfZ benchmark regression report. Together
+with task-182/task-183/task-184, the report now exposes structured deltas for
+all public numeric Z1+ summary fields that are meaningful for benchmark
+regression tracking. Reducer behavior, strict status, statistical status, and
+mismatch diagnostics remain unchanged.
+
 Task-162 adds the first generalized building block in
 `src/pyz1/contact_relaxation.py`: endpoint-fixed contact-constrained node
 relaxation driven by local geometry, not oracle final positions. The next

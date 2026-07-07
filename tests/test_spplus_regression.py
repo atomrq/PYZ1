@@ -1269,13 +1269,15 @@ def test_write_benchmark_report_when_contact_relaxation_measures_guarded_spplus(
     assert records[0].pairing_mismatches == 0
     assert records[0].node_count_mismatches == 0
     assert records[0].pyz1_source_sequence_mismatch_count == 0
-    summary_physical_deltas = (
+    summary_contract_deltas = (
         records[0].mean_squared_end_to_end_delta,
         records[0].coil_tube_diameter_delta,
         records[0].coil_tube_step_length_delta,
         records[0].root_mean_squared_contour_delta,
+        records[0].mean_original_bond_length_delta,
+        records[0].original_bead_density_delta,
     )
-    assert all(delta is not None for delta in summary_physical_deltas)
+    assert all(delta is not None for delta in summary_contract_deltas)
     assert records[0].lpp_delta is not None
     assert records[0].lpp_delta < 0.01
     assert records[0].ne_classical_kink_delta is not None
@@ -1324,6 +1326,7 @@ def test_write_benchmark_report_when_contact_relaxation_measures_guarded_spplus(
         < 1.0e-12
     )
     assert "Ree delta | app delta | bpp delta | Lpp2 delta" in text
+    assert "b0 delta | density delta" in text
     assert "mean chain contour delta | rms chain contour delta" in text
     assert "Ne classical kink delta | Ne modified kink delta" in text
     assert "Ne classical coil delta | Ne modified coil delta" in text
