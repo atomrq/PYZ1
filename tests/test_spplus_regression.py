@@ -1290,6 +1290,11 @@ def test_write_benchmark_report_when_contact_relaxation_measures_guarded_spplus(
     )
     p95_index = ceil(0.95 * len(residual_deltas)) - 1
     assert records[0].chain_contour_residual_p95_delta == residual_deltas[p95_index]
+    median_index = ceil(0.50 * len(residual_deltas)) - 1
+    assert (
+        records[0].chain_contour_residual_median_delta
+        == residual_deltas[median_index]
+    )
     assert records[0].mean_chain_contour_delta > 0.0
     assert (
         records[0].mean_chain_contour_delta
@@ -1307,6 +1312,7 @@ def test_write_benchmark_report_when_contact_relaxation_measures_guarded_spplus(
     assert "contact relaxation" in text
     assert "| benchmark-05 | spplus | yes | mismatch | passed |" in text
     assert "chain contour residual count | chain contour residual fraction" in text
+    assert "chain contour residual median delta" in text
     assert "chain contour residual p95 delta" in text
     assert records[0].statistical_status.value == "passed"
 

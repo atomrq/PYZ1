@@ -42,6 +42,18 @@ evidence still leaves scientific and scalability boundaries open.
 
 Latest gate artifacts:
 
+- `.omo/evidence/task-181-contour-residual-median/source-trace.md`:
+  records a `diagnostic_only` benchmark regression report expansion that adds a
+  nearest-rank median chain-contour residual delta as an ensemble-center
+  residual surface
+- `.omo/evidence/task-181-contour-residual-median/focused-416879.out`,
+  `.omo/evidence/task-181-contour-residual-median/static-416880.out`,
+  `.omo/evidence/task-181-contour-residual-median/package-smoke-final3-416884.out`,
+  `.omo/evidence/task-181-contour-residual-median/benchmark-05-spplus-contour-median.md`,
+  and `.omo/evidence/task-181-contour-residual-median/sacct.txt`:
+  record the remote GPU-cluster gate for reporting benchmark-05 SP+
+  `chain contour residual median delta = 0.147581` while preserving strict
+  `mismatch`, statistical `passed`, and existing per-chain mismatch diagnostics
 - `.omo/evidence/task-180-regression-settings-trace/source-trace.md`:
   records a `diagnostic_only` benchmark regression report expansion that adds a
   contact-relaxation settings trace column

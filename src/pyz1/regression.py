@@ -270,6 +270,7 @@ class RegressionRecord:
     root_mean_square_chain_contour_delta: float | None = None
     chain_contour_residual_count: int | None = None
     chain_contour_residual_fraction: float | None = None
+    chain_contour_residual_median_delta: float | None = None
     chain_contour_residual_p95_delta: float | None = None
 
     @property
@@ -817,6 +818,10 @@ def _compare_benchmark_mode(
         chain_contour_residual_fraction=_chain_contour_residual_fraction(
             chain_contour_residual_count,
             chain_contour_compared_chain_count,
+        ),
+        chain_contour_residual_median_delta=_chain_contour_residual_percentile(
+            chain_contour_residuals,
+            0.50,
         ),
         chain_contour_residual_p95_delta=_chain_contour_residual_percentile(
             chain_contour_residuals,
@@ -1817,6 +1822,7 @@ def _format_report(records: tuple[RegressionRecord, ...]) -> str:
         "max chain contour delta | max chain contour delta chain | "
         "mean chain contour delta | rms chain contour delta | "
         "chain contour residual count | chain contour residual fraction | "
+        "chain contour residual median delta | "
         "chain contour residual p95 delta | "
         "chain contour residual details | "
         "summary field mismatches | pair mismatches | "
@@ -1911,6 +1917,7 @@ def _format_record(record: RegressionRecord) -> str:
         f"{_format_optional_float(record.root_mean_square_chain_contour_delta)} | "
         f"{_format_optional_int(record.chain_contour_residual_count)} | "
         f"{_format_optional_float(record.chain_contour_residual_fraction)} | "
+        f"{_format_optional_float(record.chain_contour_residual_median_delta)} | "
         f"{_format_optional_float(record.chain_contour_residual_p95_delta)} | "
         f"{_format_chain_contour_residuals(record.chain_contour_residuals)} | "
         f"{_format_optional_int(record.summary_field_mismatches)} | "

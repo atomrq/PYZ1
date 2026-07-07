@@ -257,6 +257,14 @@ rows now report whether the contact-relaxation guard was enabled. This keeps
 default SP+ and `--contact-relaxation` SP+ evidence distinguishable without
 changing reducer behavior or pass/fail logic.
 
+Task-181 adds a nearest-rank median chain-contour residual delta to the
+benchmark regression report as `diagnostic_only`. Together with mean/RMS,
+count/fraction, p95, max, and per-chain details, this gives future reducer work
+an ensemble-level center/tail view of contour residuals. It does not change
+reducer runtime behavior, strict status, statistical status, or mismatch
+diagnostics; benchmark-05 SP+ remains strict `mismatch` but statistical
+`passed` under the current report-level criteria.
+
 Task-162 adds the first generalized building block in
 `src/pyz1/contact_relaxation.py`: endpoint-fixed contact-constrained node
 relaxation driven by local geometry, not oracle final positions. The next

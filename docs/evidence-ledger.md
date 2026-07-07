@@ -29,6 +29,28 @@ regression safety, not on exact equality for every individual chain.
 
 Latest remote GPU-cluster gate evidence:
 
+- `.omo/evidence/task-181-contour-residual-median/source-trace.md`:
+  classifies the chain-contour residual median report expansion as
+  `diagnostic_only`; it adds an ensemble-center residual view without changing
+  reducer behavior or pass/fail logic
+- `.omo/evidence/task-181-contour-residual-median/red-focused-416869.out`:
+  RED failed for the intended reason: `RegressionRecord` did not yet expose
+  `chain_contour_residual_median_delta`
+- `.omo/evidence/task-181-contour-residual-median/focused-416879.out`:
+  focused benchmark-05 SP+ contact-relaxation report test passed after adding
+  the median residual field
+- `.omo/evidence/task-181-contour-residual-median/static-416880.out`:
+  `ruff` and `basedpyright` passed for `src/pyz1/regression.py` and
+  `tests/test_spplus_regression.py`
+- `.omo/evidence/task-181-contour-residual-median/package-smoke-final3-416884.out`
+  and `.omo/evidence/task-181-contour-residual-median/benchmark-05-spplus-contour-median.md`:
+  installed CLI smoke passed and recorded benchmark-05 SP+ as strict
+  `mismatch` but statistical `passed`, with
+  `chain contour residual median delta = 0.147581`
+- `.omo/evidence/task-181-contour-residual-median/sacct.txt`:
+  records RED job `416869` as expected `FAILED`, final jobs `416879`,
+  `416880`, and `416884` as `COMPLETED`, plus superseded package-smoke
+  failures caused by cluster DNS dependency fetches and an obsolete CLI option
 - `.omo/evidence/task-180-regression-settings-trace/source-trace.md`:
   classifies the benchmark regression contact-relaxation settings trace as
   `diagnostic_only`; it makes default SP+ and `--contact-relaxation` SP+
