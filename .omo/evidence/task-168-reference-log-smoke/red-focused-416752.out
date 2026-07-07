@@ -1,0 +1,16 @@
+
+==================================== ERRORS ====================================
+________________ ERROR collecting tests/test_reference_logs.py _________________
+ImportError while importing test module '/public/home/jxm/pyz1-cleanroom-runs/task-168-reference-log-smoke/repo/tests/test_reference_logs.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+../../../codex_runs/z1-task129-20260705-230350/.mm-env/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_reference_logs.py:6: in <module>
+    from pyz1.reference_logs import (
+E   ModuleNotFoundError: No module named 'pyz1.reference_logs'
+=========================== short test summary info ============================
+ERROR tests/test_reference_logs.py
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.15s

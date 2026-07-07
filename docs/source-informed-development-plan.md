@@ -59,6 +59,10 @@ changes that improve summary/statistical outputs such as `Lpp`, `Z`, `Ne`,
 mean/root-mean-square contour measures, and report-level parity while
 preserving closed topology diagnostics. Do not turn every remaining per-chain
 contour or coordinate residual into a benchmark-specific acceptance target.
+Exact SP/SP+ detail matching remains useful when it protects a generalized
+topology/source/pairing rule, but a new slice should not be judged solely by
+whether every individual chain overlays the oracle chain. Acceptance should
+separate statistical parity gates from chain-level diagnostic regressions.
 
 Do not treat benchmark-specific oracle final geometry as a final reducer
 solution. Any `Vector3(...)` coordinate copied from a Z1+ oracle SP/SP+ output
@@ -128,6 +132,9 @@ Current audit and replacement plan:
      benchmark 07/10/11 inputs and reference logs.
    - Start with log/metadata smoke and parser/report coverage, not full reducer
      parity.
+   - Treat reference-log values as source-backed summary/statistical contracts
+     for report surfaces; do not reinterpret them as per-chain geometry
+     acceptance gates.
    - Keep large-case performance guards explicit until the reducer has the
      needed acceleration.
 
@@ -279,3 +286,10 @@ and `Z` delta remain closed, and summary fields are much closer. Future
 reducer work should use per-chain residuals as diagnostics unless a chain-level
 assertion protects topology/source/pair invariants or a clearly generalized
 relaxation rule.
+
+Task-168 starts the benchmark 07/10/11 and PPA+ reference-log smoke expansion.
+Its scope is a source-backed report/parser surface over public
+`Z1plus-code/benchmark-configurations/*reference-results/log-benchmark-XX.txt`
+files. This is evidence for summary/statistical parity tracking and package
+smoke only; it is not a reducer oracle-coordinate dependency and does not make
+per-chain final geometry equality an acceptance gate.

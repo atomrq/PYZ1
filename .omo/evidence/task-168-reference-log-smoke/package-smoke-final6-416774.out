@@ -1,0 +1,19 @@
+Looking in indexes: https://pypi.tuna.tsinghua.edu.cn/simple
+Obtaining file:///public/home/jxm/pyz1-cleanroom-runs/task-168-reference-log-smoke/repo
+  Checking if build backend supports build_editable: started
+  Checking if build backend supports build_editable: finished with status 'done'
+  Preparing editable metadata (pyproject.toml): started
+  Preparing editable metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: pyz1
+  Building editable for pyz1 (pyproject.toml): started
+  Building editable for pyz1 (pyproject.toml): finished with status 'done'
+  Created wheel for pyz1: filename=pyz1-0.1.0-0.editable-py3-none-any.whl size=5087 sha256=105873b928e63563a4395a117b83ed4319644cf17b04e6e7ab8d8aa006cf3f4c
+  Stored in directory: /tmp/pip-ephem-wheel-cache-6kzn2fnd/wheels/c0/ba/17/9cb95be37993f7c16e1c6642013449d9718061257296819bfa
+Successfully built pyz1
+Installing collected packages: pyz1
+  Attempting uninstall: pyz1
+    Found existing installation: pyz1 0.1.0
+    Uninstalling pyz1-0.1.0:
+      Successfully uninstalled pyz1-0.1.0
+Successfully installed pyz1-0.1.0
+wrote 6 reference log smoke records to /public/home/jxm/pyz1-cleanroom-runs/task-168-reference-log-smoke/reference-log-smoke-final6.md

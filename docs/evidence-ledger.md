@@ -22,6 +22,25 @@ temporary oracle-regression shims, not final clean-room reducer algorithms.
 
 Latest remote GPU-cluster gate evidence:
 
+- `.omo/evidence/task-168-reference-log-smoke/source-trace.md`:
+  classifies the benchmark 07/10/11 Z1+/PPA+ reference-log smoke as a
+  `source_contract` over public `mkmat/Z1plus-code` logs, not a reducer oracle
+  coordinate dependency
+- `.omo/evidence/task-168-reference-log-smoke/red-focused-416752.out`:
+  RED failed for the intended reason before implementation:
+  `ModuleNotFoundError: No module named 'pyz1.reference_logs'`
+- `.omo/evidence/task-168-reference-log-smoke/focused-final6-416772.out`:
+  final focused reference-log tests passed
+- `.omo/evidence/task-168-reference-log-smoke/static-final7-416773.out`:
+  final ruff and basedpyright passed for the reference-log parser, CLI, and
+  focused tests
+- `.omo/evidence/task-168-reference-log-smoke/package-smoke-final6-416774.out`:
+  package smoke passed after editable install and console-script execution
+- `.omo/evidence/task-168-reference-log-smoke/reference-log-smoke-final6.md`:
+  final report contains six parseable source-backed records for benchmark
+  07/10/11 Z1+ and PPA+, including benchmark-11 Z1+ `Ne_MC` parsed from the
+  public log's adjacent text/number format
+
 - `.omo/evidence/task-167-chain3-single-contact-relaxation/source-trace.md`:
   classifies the guarded single-contact relaxation pass as
   `oracle_residual_inference_generalizable`; it records the project correction
