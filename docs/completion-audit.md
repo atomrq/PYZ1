@@ -3,7 +3,7 @@
 This audit maps the active clean-room reproduction goal to current repo evidence.
 It is a completion gate, not a parity claim.
 
-Last audited: 2026-07-06.
+Last audited: 2026-07-07.
 
 ## Development Plan
 
@@ -12,7 +12,11 @@ Future clean-room reproduction work must follow
 `mkmat/Z1plus-code` checkout an explicit source trace, requires future slices to
 label changes as source-backed contract work or oracle-residual clean-room
 inference, and keeps benchmark-05 SP+ reducer parity on the active path while
-adding a source-trace/I/O-contract slice before the next reducer change.
+adding a source-trace/I/O-contract slice before the next reducer change. The
+current reducer acceptance target is statistical parity at the ensemble/report
+level, not exact equality for every individual chain; per-chain SP/SP+
+residuals are diagnostics and regression guards unless they protect a
+generalized topology/source/pairing rule.
 
 ## Current Verdict
 
@@ -30,11 +34,43 @@ evidence still leaves scientific and scalability boundaries open.
 | Oracle fixture tooling and benchmark report surface | `tests/test_oracle.py`, `tests/test_z1plus_parity.py`, `tests/test_spplus_regression.py`, `tests/test_regression_cli.py` | Covered |
 | Native PPA/PPA+ execution slices | `tests/test_ppa.py`, `tests/test_ppa_regression.py`, `tests/test_ppa_oracle_coordinates.py`, `tests/test_ppa_oracle_coordinates_cli.py`, `tests/test_ppa_regression_cli.py`, `tests/test_package_integration_smoke.py` | Covered as runnable regression slices, oracle fixture-health reports, and an installed regression report surface, not strict full parity |
 | Clean-room default/SP+/selfZ reducer report surface | `tests/test_geometry.py`, `tests/test_z1_reducer.py`, `tests/test_spplus_regression.py`, `tests/test_regression_cli.py` | Covered as a mismatch-reporting reducer with localized benchmark-04 SP+ diagnostics, a CLI-driven full-corpus default/SP+/selfZ report, and tunable node-count/trace-diagnostics guards |
+| Source-backed statistical corpus smoke | `tests/test_reference_logs.py`, `tests/test_benchmark_inputs.py`, `tests/test_corpus_smoke.py` | Covered for benchmark 07/10/11 input and reference-log statistical baselines; this is a statistical/report gate, not per-chain reducer parity |
 | Final package smoke surface | `tests/test_package_integration_smoke.py` | Covered for `python -m pyz1` default, SP+, selfZ, PPA, and PPA+ |
 | `selfZ` package execution | `tests/test_cli_scaffold.py`, `tests/test_package_integration_smoke.py`, `tests/test_regression_cli.py` | Main package execution writes Z1+ reducer outputs through `pyz1 -selfZ`; selfZ oracle comparison is covered through the regression report surface, but scientific parity remains open |
 
 Latest gate artifacts:
 
+- `.omo/evidence/task-171-statistical-parity-policy/source-trace.md`:
+  records the current project-level correction that long-term SP/SP+ reducer
+  acceptance is statistical/ensemble parity, while per-chain chain-level
+  residuals remain diagnostics and regression guards for generalized rules
+- `.omo/evidence/task-171-statistical-parity-policy/docs-gate-416794.out` and
+  `.omo/evidence/task-171-statistical-parity-policy/sacct.txt`:
+  record the remote GPU-cluster docs gate as passed; job `416794` completed
+  with `0:0`, later post-doc-sync validation is recorded in
+  `.omo/evidence/task-171-statistical-parity-policy/validation.md`, and
+  superseded job `416793` failed because the initial gate used a cross-line
+  exact grep
+- `.omo/evidence/task-170-corpus-stat-smoke/source-trace.md`,
+  `.omo/evidence/task-170-corpus-stat-smoke/focused-final-416788.out`,
+  `.omo/evidence/task-170-corpus-stat-smoke/static-final-416789.out`,
+  `.omo/evidence/task-170-corpus-stat-smoke/package-smoke-final-416790.out`,
+  and `.omo/evidence/task-170-corpus-stat-smoke/corpus-stat-smoke-final.md`:
+  record the source-backed benchmark 07/10/11 corpus statistical smoke; final
+  report marks benchmark 07, 10, and 11 `passed` with zero chain-count and
+  mean-`N` deltas between public inputs and Z1+/PPA+ reference logs
+- `.omo/evidence/task-169-benchmark-input-smoke/source-trace.md`,
+  `.omo/evidence/task-169-benchmark-input-smoke/focused-final-416781.out`,
+  `.omo/evidence/task-169-benchmark-input-smoke/static-final-416782.out`,
+  `.omo/evidence/task-169-benchmark-input-smoke/package-smoke-final-416783.out`,
+  and `.omo/evidence/task-169-benchmark-input-smoke/benchmark-input-smoke-final.md`:
+  record the source-backed benchmark 07/10/11 `.Z1`/`.dump` input smoke
+- `.omo/evidence/task-168-reference-log-smoke/source-trace.md`,
+  `.omo/evidence/task-168-reference-log-smoke/focused-final6-416772.out`,
+  `.omo/evidence/task-168-reference-log-smoke/static-final7-416773.out`,
+  `.omo/evidence/task-168-reference-log-smoke/package-smoke-final6-416774.out`,
+  and `.omo/evidence/task-168-reference-log-smoke/reference-log-smoke-final6.md`:
+  record the public Z1+/PPA+ reference-log smoke over benchmark 07/10/11
 - `.omo/evidence/task-160-chain22-contour/source-trace.md`:
   records the benchmark-05 SP+ chain22 contour placement slice as
   `oracle_residual_inference`, the visible `mkmat/Z1plus-code` checkout

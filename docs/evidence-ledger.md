@@ -17,10 +17,27 @@ Reducer geometry parity is additionally constrained by
 `docs/reducer-oracle-geometry-audit.md`: oracle final coordinates may be used
 to diagnose residuals, but benchmark-specific oracle `Vector3(...)` values are
 temporary oracle-regression shims, not final clean-room reducer algorithms.
+Task-171 records the current project-level correction: the final reducer target
+is statistical parity at the ensemble/report level, while per-chain SP/SP+
+residuals are diagnostics and regression guards unless they protect a
+generalized topology/source/pairing rule.
 
 ## Current Quality Gates
 
 Latest remote GPU-cluster gate evidence:
+
+- `.omo/evidence/task-171-statistical-parity-policy/source-trace.md`:
+  classifies this documentation/policy slice as `diagnostic_only`; it points to
+  `docs/source-informed-development-plan.md`, `docs/pyz1-contract.md`, and the
+  task168-170 source-backed smoke surfaces as the current evidence baseline for
+  statistical parity development
+- `.omo/evidence/task-171-statistical-parity-policy/docs-gate-416794.out` and
+  `.omo/evidence/task-171-statistical-parity-policy/sacct.txt`:
+  record the remote GPU-cluster docs gate as passed; job `416794` completed
+  with `0:0`, later post-doc-sync validation is recorded in
+  `.omo/evidence/task-171-statistical-parity-policy/validation.md`, and
+  superseded job `416793` failed only because the first gate used an
+  over-strict cross-line grep
 
 - `.omo/evidence/task-170-corpus-stat-smoke/source-trace.md`:
   classifies the benchmark 07/10/11 corpus statistical smoke as a

@@ -191,9 +191,16 @@ Required invariants:
 - deterministic kink cleanup for reported `Z1+SP.dat`
 - SP+ pairing for entanglement nodes
 
-Default geometrical Z1+ equivalence cannot be claimed until benchmark fixtures
-show measured agreement for `Lpp`, `Z`, shortest-path structure, and SP+ pairing
-under recorded tolerances.
+Default geometrical Z1+ equivalence is a statistical parity target, not a
+requirement that every individual chain's final coordinates overlay the oracle.
+Acceptance must prioritize ensemble/report quantities such as `Lpp`, `Z`, `Ne`,
+contour distributions, and SP/SP+ summary statistics under recorded tolerances.
+
+Per-chain shortest-path structure, source-bead placement, contour residuals,
+coordinates, and SP+ pairing are still first-class diagnostics and regression
+guards. They are acceptance blockers when they expose a broken generalized
+topology/source/pairing rule or a weakened mismatch diagnostic. They are not, by
+themselves, the final objective for every chain in every benchmark.
 
 ## Oracle Fixture Policy
 
@@ -330,10 +337,12 @@ Not complete yet:
   with default accelerated settings and Z1+ phase stops, but strict summary
   parity is still a `mismatch`. Benchmark-05 PPA+ is tracked separately as an
   upstream-invalid native overflow fixture, not a parser/writer mismatch.
-- default geometrical Z1+ numerical parity for `Lpp`, `Z`, shortest-path
-  structure, and SP+ pairings; benchmark-04 default/SP+ now pass the local
-  report contract, benchmark-03 SP+ now matches first-chain node count and
-  obstacle pair sequence but still differs in summary fields and
+- default geometrical Z1+ statistical parity for `Lpp`, `Z`, `Ne`, contour
+  distributions, and SP/SP+ report metrics, with per-chain shortest-path
+  structure/source/pairing residuals retained as diagnostics and regression
+  guards; benchmark-04 default/SP+ now pass the local report contract,
+  benchmark-03 SP+ now matches first-chain node count and obstacle pair
+  sequence but still differs in summary fields and
   geometry/source-bead placement; task-65 records the current benchmark-03 SP+
   max source-bead residual as `1.4679581658620817` at chain 1 node 5, and
   benchmark-01/02 still miss exact Z1+ obstacle-kink placement/source

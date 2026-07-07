@@ -305,3 +305,10 @@ corpus statistical smoke report. It checks that benchmark 07/10/11 `.Z1` and
 `.dump` input statistics agree and that public Z1+/PPA+ reference logs have
 zero chain-count and mean-`N` deltas relative to those input statistics. This is
 a source-backed statistical baseline gate, not full reducer parity.
+
+Task-171 records the project-level acceptance correction: the long-term reducer
+goal is ensemble/statistical parity, not exact equality for every individual
+chain. Per-chain SP/SP+ residuals remain useful diagnostics and regression
+guards for generalized topology, source, pairing, and contact-relaxation rules,
+but future reducer slices should not treat chain-by-chain coordinate overlay as
+the primary acceptance condition.
