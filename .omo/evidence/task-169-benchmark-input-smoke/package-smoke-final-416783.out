@@ -1,0 +1,19 @@
+Looking in indexes: https://pypi.tuna.tsinghua.edu.cn/simple
+Obtaining file:///public/home/jxm/pyz1-cleanroom-runs/task-169-benchmark-input-smoke/repo
+  Checking if build backend supports build_editable: started
+  Checking if build backend supports build_editable: finished with status 'done'
+  Preparing editable metadata (pyproject.toml): started
+  Preparing editable metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: pyz1
+  Building editable for pyz1 (pyproject.toml): started
+  Building editable for pyz1 (pyproject.toml): finished with status 'done'
+  Created wheel for pyz1: filename=pyz1-0.1.0-0.editable-py3-none-any.whl size=5096 sha256=0cdb6bbc2482cc25e57b840e155f03320a1097878d199a9d7ffbffc8aa989cb3
+  Stored in directory: /tmp/pip-ephem-wheel-cache-2jf3e3_l/wheels/b3/c6/0f/0cc2ec7239451773fd4633d82c4a6bb952ae89731c3fd21d85
+Successfully built pyz1
+Installing collected packages: pyz1
+  Attempting uninstall: pyz1
+    Found existing installation: pyz1 0.1.0
+    Uninstalling pyz1-0.1.0:
+      Successfully uninstalled pyz1-0.1.0
+Successfully installed pyz1-0.1.0
+wrote 6 benchmark input smoke records to /public/home/jxm/pyz1-cleanroom-runs/task-169-benchmark-input-smoke/benchmark-input-smoke-final.md

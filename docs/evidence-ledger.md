@@ -22,6 +22,24 @@ temporary oracle-regression shims, not final clean-room reducer algorithms.
 
 Latest remote GPU-cluster gate evidence:
 
+- `.omo/evidence/task-169-benchmark-input-smoke/source-trace.md`:
+  classifies the benchmark 07/10/11 `.Z1`/`.dump` input smoke as a
+  `source_contract` over public `mkmat/Z1plus-code` benchmark inputs
+- `.omo/evidence/task-169-benchmark-input-smoke/red-focused-416777.out`:
+  RED failed for the intended reason before implementation:
+  `ModuleNotFoundError: No module named 'pyz1.benchmark_inputs'`
+- `.omo/evidence/task-169-benchmark-input-smoke/focused-final-416781.out`:
+  final focused benchmark input tests passed
+- `.omo/evidence/task-169-benchmark-input-smoke/static-final-416782.out`:
+  final ruff and basedpyright passed for the benchmark input report surface,
+  CLI, and focused tests
+- `.omo/evidence/task-169-benchmark-input-smoke/package-smoke-final-416783.out`:
+  package smoke passed after editable install and console-script execution
+- `.omo/evidence/task-169-benchmark-input-smoke/benchmark-input-smoke-final.md`:
+  final report contains six parseable source-backed records for benchmark
+  07/10/11 `.Z1` and `.dump` inputs; each benchmark's formats agree on chain
+  count, node count, true-chain count, and box lengths
+
 - `.omo/evidence/task-168-reference-log-smoke/source-trace.md`:
   classifies the benchmark 07/10/11 Z1+/PPA+ reference-log smoke as a
   `source_contract` over public `mkmat/Z1plus-code` logs, not a reducer oracle

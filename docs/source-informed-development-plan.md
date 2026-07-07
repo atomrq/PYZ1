@@ -293,3 +293,9 @@ Its scope is a source-backed report/parser surface over public
 files. This is evidence for summary/statistical parity tracking and package
 smoke only; it is not a reducer oracle-coordinate dependency and does not make
 per-chain final geometry equality an acceptance gate.
+
+Task-169 adds the matching benchmark 07/10/11 input smoke surface. It parses the
+public `.Z1` and `.dump` files from `Z1plus-code/benchmark-configurations` and
+reports chain count, node count, true-chain count, box lengths, and shear. This
+locks the source-backed input baseline for future statistical parity work and
+does not claim reducer parity for those large benchmarks.

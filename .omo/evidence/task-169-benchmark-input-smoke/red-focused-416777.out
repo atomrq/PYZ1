@@ -1,0 +1,16 @@
+
+==================================== ERRORS ====================================
+_______________ ERROR collecting tests/test_benchmark_inputs.py ________________
+ImportError while importing test module '/public/home/jxm/pyz1-cleanroom-runs/task-169-benchmark-input-smoke/repo/tests/test_benchmark_inputs.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+../../../codex_runs/z1-task129-20260705-230350/.mm-env/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_benchmark_inputs.py:6: in <module>
+    from pyz1.benchmark_inputs import (
+E   ModuleNotFoundError: No module named 'pyz1.benchmark_inputs'
+=========================== short test summary info ============================
+ERROR tests/test_benchmark_inputs.py
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.17s

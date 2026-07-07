@@ -24,6 +24,7 @@ dev = [
 
 [project.scripts]
 pyz1 = "pyz1.cli:app"
+pyz1-benchmark-input-smoke = "pyz1.benchmark_input_cli:app"
 pyz1-benchmark-regression = "pyz1.regression_cli:app"
 pyz1-ppa-oracle-coordinates = "pyz1.ppa_oracle_coordinates_cli:app"
 pyz1-ppa-regression = "pyz1.ppa_regression_cli:app"
