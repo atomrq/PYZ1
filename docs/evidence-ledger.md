@@ -29,6 +29,29 @@ regression safety, not on exact equality for every individual chain.
 
 Latest remote GPU-cluster gate evidence:
 
+- `.omo/evidence/task-184-regression-summary-physical-deltas/source-trace.md`:
+  classifies the benchmark regression summary physical-field delta report
+  expansion as `source_contract` over the public Z1+ `Z1+summary.dat` column
+  contract and `Z1plus-code` summary header
+- `.omo/evidence/task-184-regression-summary-physical-deltas/red-focused-416899.out`:
+  RED failed for the intended reason: `RegressionRecord` did not yet expose
+  `mean_squared_end_to_end_delta`
+- `.omo/evidence/task-184-regression-summary-physical-deltas/focused-416906.out`:
+  focused benchmark-05 SP+ contact-relaxation report test passed after adding
+  structured `Ree`, `app`, `bpp`, and `Lpp2` delta fields
+- `.omo/evidence/task-184-regression-summary-physical-deltas/static-416907.out`:
+  `ruff` and `basedpyright` passed for `src/pyz1/regression.py` and
+  `tests/test_spplus_regression.py`
+- `.omo/evidence/task-184-regression-summary-physical-deltas/package-smoke-416908.out`
+  and `.omo/evidence/task-184-regression-summary-physical-deltas/benchmark-05-spplus-summary-physical-deltas-final.md`:
+  installed CLI smoke passed and recorded benchmark-05 SP+ as strict
+  `mismatch` but statistical `passed`, with `Ree delta = 7.17485e-05`,
+  `app delta = 0.00295412`, `bpp delta = 0.00058405`, and
+  `Lpp2 delta = 0.00945984`
+- `.omo/evidence/task-184-regression-summary-physical-deltas/sacct.txt`:
+  records RED job `416899` as expected `FAILED`, final jobs `416906`,
+  `416907`, and `416908` as `COMPLETED`, plus superseded jobs `416900`,
+  `416904`, and `416905`
 - `.omo/evidence/task-183-regression-ne-kink-deltas/source-trace.md`:
   classifies the benchmark regression Ne kink delta report expansion as
   `source_contract` over the public Z1+ `Z1+summary.dat` column contract and

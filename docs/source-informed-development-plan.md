@@ -281,6 +281,13 @@ statistical status logic unchanged, and records benchmark-05 SP+
 contact-relaxation kink-Ne residuals as statistical/report evidence rather than
 exact-equality requirements.
 
+Task-184 adds source-backed `Ree`, `app`, `bpp`, and `Lpp2` delta columns to
+the default/SP+/selfZ benchmark regression report. This completes the current
+structured summary physical-field report surface around the already tracked
+`Lpp`, `Z`, and `Ne` fields. It keeps reducer behavior, strict status,
+statistical status, and mismatch diagnostics unchanged while making remaining
+summary residuals auditable as statistical/report evidence.
+
 Task-162 adds the first generalized building block in
 `src/pyz1/contact_relaxation.py`: endpoint-fixed contact-constrained node
 relaxation driven by local geometry, not oracle final positions. The next

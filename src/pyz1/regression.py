@@ -184,6 +184,10 @@ class RegressionRecord:
     status: RegressionStatus
     lpp_delta: float | None
     z_delta: float | None
+    mean_squared_end_to_end_delta: float | None
+    coil_tube_diameter_delta: float | None
+    coil_tube_step_length_delta: float | None
+    root_mean_squared_contour_delta: float | None
     ne_classical_kink_delta: float | None
     ne_modified_kink_delta: float | None
     ne_classical_coil_delta: float | None
@@ -427,6 +431,10 @@ def _compare_benchmark_mode(
             status=RegressionStatus.KNOWN_INVALID,
             lpp_delta=None,
             z_delta=None,
+            mean_squared_end_to_end_delta=None,
+            coil_tube_diameter_delta=None,
+            coil_tube_step_length_delta=None,
+            root_mean_squared_contour_delta=None,
             ne_classical_kink_delta=None,
             ne_modified_kink_delta=None,
             ne_classical_coil_delta=None,
@@ -479,6 +487,10 @@ def _compare_benchmark_mode(
             status=RegressionStatus.KNOWN_INVALID,
             lpp_delta=None,
             z_delta=None,
+            mean_squared_end_to_end_delta=None,
+            coil_tube_diameter_delta=None,
+            coil_tube_step_length_delta=None,
+            root_mean_squared_contour_delta=None,
             ne_classical_kink_delta=None,
             ne_modified_kink_delta=None,
             ne_classical_coil_delta=None,
@@ -536,6 +548,20 @@ def _compare_benchmark_mode(
         - oracle_summary.mean_shortest_path_contour,
     )
     z_delta = abs(actual_summary.mean_entanglements - oracle_summary.mean_entanglements)
+    mean_squared_end_to_end_delta = abs(
+        actual_summary.mean_squared_end_to_end
+        - oracle_summary.mean_squared_end_to_end,
+    )
+    coil_tube_diameter_delta = abs(
+        actual_summary.coil_tube_diameter - oracle_summary.coil_tube_diameter,
+    )
+    coil_tube_step_length_delta = abs(
+        actual_summary.coil_tube_step_length - oracle_summary.coil_tube_step_length,
+    )
+    root_mean_squared_contour_delta = abs(
+        actual_summary.root_mean_squared_contour
+        - oracle_summary.root_mean_squared_contour,
+    )
     ne_classical_kink_delta = abs(
         actual_summary.ne_classical_kink - oracle_summary.ne_classical_kink,
     )
@@ -609,6 +635,10 @@ def _compare_benchmark_mode(
         status=status,
         lpp_delta=lpp_delta,
         z_delta=z_delta,
+        mean_squared_end_to_end_delta=mean_squared_end_to_end_delta,
+        coil_tube_diameter_delta=coil_tube_diameter_delta,
+        coil_tube_step_length_delta=coil_tube_step_length_delta,
+        root_mean_squared_contour_delta=root_mean_squared_contour_delta,
         ne_classical_kink_delta=ne_classical_kink_delta,
         ne_modified_kink_delta=ne_modified_kink_delta,
         ne_classical_coil_delta=ne_classical_coil_delta,
@@ -1847,6 +1877,7 @@ def _format_report(records: tuple[RegressionRecord, ...]) -> str:
     header = (
         "| benchmark | mode | contact relaxation | status | statistical status | "
         "Lpp delta | Z delta | "
+        "Ree delta | app delta | bpp delta | Lpp2 delta | "
         "Ne classical kink delta | Ne modified kink delta | "
         "Ne classical coil delta | Ne modified coil delta | "
         "max chain contour delta | max chain contour delta chain | "
@@ -1941,6 +1972,10 @@ def _format_record(record: RegressionRecord) -> str:
         f"{record.status.value} | {record.statistical_status.value} | "
         f"{_format_optional_float(record.lpp_delta)} | "
         f"{_format_optional_float(record.z_delta)} | "
+        f"{_format_optional_float(record.mean_squared_end_to_end_delta)} | "
+        f"{_format_optional_float(record.coil_tube_diameter_delta)} | "
+        f"{_format_optional_float(record.coil_tube_step_length_delta)} | "
+        f"{_format_optional_float(record.root_mean_squared_contour_delta)} | "
         f"{_format_optional_float(record.ne_classical_kink_delta)} | "
         f"{_format_optional_float(record.ne_modified_kink_delta)} | "
         f"{_format_optional_float(record.ne_classical_coil_delta)} | "

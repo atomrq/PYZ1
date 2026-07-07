@@ -42,6 +42,19 @@ evidence still leaves scientific and scalability boundaries open.
 
 Latest gate artifacts:
 
+- `.omo/evidence/task-184-regression-summary-physical-deltas/source-trace.md`:
+  records a `source_contract` benchmark regression report expansion that adds
+  structured `Ree`, `app`, `bpp`, and `Lpp2` delta fields from the public Z1+
+  summary contract
+- `.omo/evidence/task-184-regression-summary-physical-deltas/focused-416906.out`,
+  `.omo/evidence/task-184-regression-summary-physical-deltas/static-416907.out`,
+  `.omo/evidence/task-184-regression-summary-physical-deltas/package-smoke-416908.out`,
+  `.omo/evidence/task-184-regression-summary-physical-deltas/benchmark-05-spplus-summary-physical-deltas-final.md`,
+  and `.omo/evidence/task-184-regression-summary-physical-deltas/sacct.txt`:
+  record the remote GPU-cluster gate for reporting benchmark-05 SP+
+  `Ree delta = 7.17485e-05`, `app delta = 0.00295412`,
+  `bpp delta = 0.00058405`, and `Lpp2 delta = 0.00945984` while preserving
+  strict `mismatch`, statistical `passed`, and existing mismatch diagnostics
 - `.omo/evidence/task-183-regression-ne-kink-deltas/source-trace.md`:
   records a `source_contract` benchmark regression report expansion that adds
   structured `Ne_CK` and `Ne_MK` delta fields from the public Z1+ summary
