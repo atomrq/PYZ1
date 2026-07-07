@@ -29,6 +29,28 @@ regression safety, not on exact equality for every individual chain.
 
 Latest remote GPU-cluster gate evidence:
 
+- `.omo/evidence/task-179-contour-residual-p95/source-trace.md`:
+  classifies the chain-contour residual p95 report expansion as
+  `diagnostic_only`; it exposes residual-tail behavior for statistical parity
+  work without changing reducer behavior
+- `.omo/evidence/task-179-contour-residual-p95/red-focused-416853.out`:
+  RED failed for the intended reason: `RegressionRecord` did not yet expose
+  `chain_contour_residual_p95_delta`
+- `.omo/evidence/task-179-contour-residual-p95/focused-416858.out`:
+  focused benchmark-05 SP+ contact-relaxation report test passed after adding
+  the p95 residual field
+- `.omo/evidence/task-179-contour-residual-p95/static-416859.out`:
+  `ruff` and `basedpyright` passed for `src/pyz1/regression.py` and
+  `tests/test_spplus_regression.py`
+- `.omo/evidence/task-179-contour-residual-p95/package-smoke-416860.out`
+  and `.omo/evidence/task-179-contour-residual-p95/benchmark-05-spplus-contour-p95.md`:
+  installed CLI smoke passed and recorded benchmark-05 SP+ as strict
+  `mismatch` but statistical `passed`, with
+  `chain contour residual p95 delta = 0.813482`
+- `.omo/evidence/task-179-contour-residual-p95/docs-gate-416862.out` and
+  `.omo/evidence/task-179-contour-residual-p95/sacct.txt`:
+  record RED job `416853` as expected `FAILED` and final jobs `416858`,
+  `416859`, `416860`, and `416862` as `COMPLETED`
 - `.omo/evidence/task-178-statistical-residual-budget/source-trace.md`:
   classifies the chain-contour residual count/fraction report expansion as
   `diagnostic_only`; it turns remaining per-chain residuals into a

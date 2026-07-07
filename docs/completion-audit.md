@@ -42,6 +42,19 @@ evidence still leaves scientific and scalability boundaries open.
 
 Latest gate artifacts:
 
+- `.omo/evidence/task-179-contour-residual-p95/source-trace.md`:
+  records a `diagnostic_only` benchmark regression report expansion that adds
+  a nearest-rank p95 chain-contour residual delta as a statistical residual-tail
+  surface
+- `.omo/evidence/task-179-contour-residual-p95/focused-416858.out`,
+  `.omo/evidence/task-179-contour-residual-p95/static-416859.out`,
+  `.omo/evidence/task-179-contour-residual-p95/package-smoke-416860.out`,
+  `.omo/evidence/task-179-contour-residual-p95/benchmark-05-spplus-contour-p95.md`,
+  `.omo/evidence/task-179-contour-residual-p95/docs-gate-416862.out`,
+  and `.omo/evidence/task-179-contour-residual-p95/sacct.txt`:
+  record the remote GPU-cluster gate for reporting benchmark-05 SP+
+  `chain contour residual p95 delta = 0.813482` while preserving strict
+  `mismatch` and statistical `passed`
 - `.omo/evidence/task-178-statistical-residual-budget/source-trace.md`:
   records a `diagnostic_only` benchmark regression report expansion that adds
   chain-contour residual count/fraction as the first statistical residual

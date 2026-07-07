@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, replace
 from enum import StrEnum
 from itertools import zip_longest
-from math import sqrt
+from math import ceil, sqrt
 from typing import TYPE_CHECKING, Final
 
 from pyz1.geometry import (
@@ -269,6 +269,7 @@ class RegressionRecord:
     root_mean_square_chain_contour_delta: float | None = None
     chain_contour_residual_count: int | None = None
     chain_contour_residual_fraction: float | None = None
+    chain_contour_residual_p95_delta: float | None = None
 
     @property
     def statistical_status(self) -> StatisticalRegressionStatus:
@@ -814,6 +815,10 @@ def _compare_benchmark_mode(
         chain_contour_residual_fraction=_chain_contour_residual_fraction(
             chain_contour_residual_count,
             chain_contour_compared_chain_count,
+        ),
+        chain_contour_residual_p95_delta=_chain_contour_residual_percentile(
+            chain_contour_residuals,
+            0.95,
         ),
     )
 
@@ -1726,6 +1731,19 @@ def _chain_contour_residual_fraction(
     return residual_count / compared_chain_count
 
 
+def _chain_contour_residual_percentile(
+    residuals: tuple[ChainContourResidual, ...],
+    percentile: float,
+) -> float:
+    finite_deltas = sorted(
+        residual.delta for residual in residuals if residual.delta is not None
+    )
+    if len(finite_deltas) == 0:
+        return 0.0
+    nearest_rank_index = ceil(percentile * len(finite_deltas)) - 1
+    return finite_deltas[nearest_rank_index]
+
+
 def _chain_contour_deltas(
     actual: ShortestPathSnapshot,
     expected: ShortestPathSnapshot,
@@ -1796,6 +1814,7 @@ def _format_report(records: tuple[RegressionRecord, ...]) -> str:
         "max chain contour delta | max chain contour delta chain | "
         "mean chain contour delta | rms chain contour delta | "
         "chain contour residual count | chain contour residual fraction | "
+        "chain contour residual p95 delta | "
         "chain contour residual details | "
         "summary field mismatches | pair mismatches | "
         "node count mismatches | max node position delta | "
@@ -1888,6 +1907,7 @@ def _format_record(record: RegressionRecord) -> str:
         f"{_format_optional_float(record.root_mean_square_chain_contour_delta)} | "
         f"{_format_optional_int(record.chain_contour_residual_count)} | "
         f"{_format_optional_float(record.chain_contour_residual_fraction)} | "
+        f"{_format_optional_float(record.chain_contour_residual_p95_delta)} | "
         f"{_format_chain_contour_residuals(record.chain_contour_residuals)} | "
         f"{_format_optional_int(record.summary_field_mismatches)} | "
         f"{_format_optional_int(record.pairing_mismatches)} | "

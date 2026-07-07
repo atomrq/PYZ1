@@ -247,6 +247,11 @@ details for debugging while giving future reducer work an ensemble-level
 contour residual budget. It does not change reducer runtime behavior or
 statistical status thresholds.
 
+Task-179 extends that distributional surface with a nearest-rank p95 chain
+contour residual delta. This is still `diagnostic_only`: it exposes the residual
+tail for future statistical parity work without making an individual chain's
+final geometry an acceptance target and without changing reducer behavior.
+
 Task-162 adds the first generalized building block in
 `src/pyz1/contact_relaxation.py`: endpoint-fixed contact-constrained node
 relaxation driven by local geometry, not oracle final positions. The next

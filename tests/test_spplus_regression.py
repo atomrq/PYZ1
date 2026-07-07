@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from math import sqrt
+from math import ceil, sqrt
 from os import environ
 from pathlib import Path
 from shutil import copyfile
@@ -1281,6 +1281,14 @@ def test_write_benchmark_report_when_contact_relaxation_measures_guarded_spplus(
     )
     assert records[0].chain_contour_residual_fraction is not None
     assert 0.0 < records[0].chain_contour_residual_fraction < 1.0
+    assert records[0].chain_contour_residual_p95_delta is not None
+    residual_deltas = sorted(
+        residual.delta
+        for residual in records[0].chain_contour_residuals or ()
+        if residual.delta is not None
+    )
+    p95_index = ceil(0.95 * len(residual_deltas)) - 1
+    assert records[0].chain_contour_residual_p95_delta == residual_deltas[p95_index]
     assert records[0].mean_chain_contour_delta > 0.0
     assert (
         records[0].mean_chain_contour_delta
@@ -1296,6 +1304,7 @@ def test_write_benchmark_report_when_contact_relaxation_measures_guarded_spplus(
     )
     assert "mean chain contour delta | rms chain contour delta" in text
     assert "chain contour residual count | chain contour residual fraction" in text
+    assert "chain contour residual p95 delta" in text
     assert records[0].statistical_status.value == "passed"
     assert "| benchmark-05 | spplus | mismatch | passed |" in text
 
