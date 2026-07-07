@@ -26,6 +26,30 @@ generalized topology/source/pairing rule.
 
 Latest remote GPU-cluster gate evidence:
 
+- `.omo/evidence/task-175-corpus-ppaplus-stat-fields/source-trace.md`:
+  classifies the corpus PPA+ statistical-field expansion as `source_contract`
+  over public `mkmat/Z1plus-code` benchmark 07/10/11 Z1+/PPA+ reference logs
+- `.omo/evidence/task-175-corpus-ppaplus-stat-fields/red-focused-416822.out`:
+  RED failed for the intended reason:
+  `CorpusSmokeRecord` did not yet expose `z1plus_mean_shortest_path_contour`
+- `.omo/evidence/task-175-corpus-ppaplus-stat-fields/focused-final-416828.out`:
+  focused corpus smoke test passed after threading Z1+ `<Lpp>` and PPA+
+  `<Lpp>/<Z>/Ne_CC` fields into the report
+- `.omo/evidence/task-175-corpus-ppaplus-stat-fields/static-final-416829.out`:
+  `ruff` and `basedpyright` passed for `src/pyz1/corpus_smoke.py` and
+  `tests/test_corpus_smoke.py`
+- `.omo/evidence/task-175-corpus-ppaplus-stat-fields/package-smoke-final-416830.out`:
+  editable install and `pyz1-corpus-stat-smoke` console-script report
+  generation passed
+- `.omo/evidence/task-175-corpus-ppaplus-stat-fields/corpus-stat-ppaplus-fields-final.md`:
+  final report keeps benchmark 07/10/11 `passed` and records source-backed
+  Z1+ `<Lpp>/<Z>/Ne_MC` plus PPA+ `<Lpp>/<Z>/Ne_CC/Ne_MC` values; PPA+ `<Z>`
+  remains the public-log sentinel `-1`
+- `.omo/evidence/task-175-corpus-ppaplus-stat-fields/sacct.txt`:
+  records RED job `416822` as expected `FAILED` and final jobs `416828`,
+  `416829`, `416830`, and docs gate `416831` as `COMPLETED` with
+  `ExitCode=0:0`
+
 - `.omo/evidence/task-174-statistical-regression-status/source-trace.md`:
   classifies the benchmark regression status split as `diagnostic_only`; it
   implements the project correction that statistical parity is tracked beside,

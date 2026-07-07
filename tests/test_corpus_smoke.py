@@ -45,9 +45,14 @@ def test_write_corpus_smoke_report_when_inputs_and_logs_align_reports_passed(
     assert records[2].input_node_count == 104400
     assert records[2].z1plus_mean_original_beads_delta == 0.0
     assert records[2].ppaplus_mean_original_beads_delta == 0.0
+    assert records[0].z1plus_mean_shortest_path_contour == 57.13698
     assert records[0].z1plus_mean_entanglements == 16.48062
     assert records[0].z1plus_ne_modified_coil == 21.47797
+    assert records[0].ppaplus_mean_shortest_path_contour == 64.43319
+    assert records[0].ppaplus_mean_entanglements == -1.0
+    assert records[0].ppaplus_ne_classical_coil == 14.02370
     assert records[0].ppaplus_ne_modified_coil == 16.19463
-    assert "Z1+ <Z> | Z1+ Ne_MC | PPA+ Ne_MC" in text
+    assert "Z1+ <Lpp> | Z1+ <Z> | Z1+ Ne_MC" in text
+    assert "PPA+ <Lpp> | PPA+ <Z> | PPA+ Ne_CC | PPA+ Ne_MC" in text
     assert "| benchmark-07 | passed | 129 | 12900 | 100 | 0 | 0 | 0 | 0 |" in text
     assert "| benchmark-11 | passed | 1044 | 104400 | 100 | 0 | 0 | 0 | 0 |" in text

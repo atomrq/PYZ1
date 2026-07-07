@@ -26,7 +26,8 @@ FLOAT_TOLERANCE: Final = 1.0e-9
 REPORT_HEADER: Final = (
     "| benchmark | status | input chains | input nodes | input <N> | "
     "Z1+ chains delta | PPA+ chains delta | Z1+ <N> delta | "
-    "PPA+ <N> delta | Z1+ <Z> | Z1+ Ne_MC | PPA+ Ne_MC | note |"
+    "PPA+ <N> delta | Z1+ <Lpp> | Z1+ <Z> | Z1+ Ne_MC | "
+    "PPA+ <Lpp> | PPA+ <Z> | PPA+ Ne_CC | PPA+ Ne_MC | note |"
 )
 
 
@@ -54,8 +55,12 @@ class CorpusSmokeRecord:
     ppaplus_chain_count_delta: int | None
     z1plus_mean_original_beads_delta: float | None
     ppaplus_mean_original_beads_delta: float | None
+    z1plus_mean_shortest_path_contour: float | None
     z1plus_mean_entanglements: float | None
     z1plus_ne_modified_coil: float | None
+    ppaplus_mean_shortest_path_contour: float | None
+    ppaplus_mean_entanglements: float | None
+    ppaplus_ne_classical_coil: float | None
     ppaplus_ne_modified_coil: float | None
     note: str
 
@@ -155,8 +160,16 @@ def read_corpus_smoke_record(
         ppaplus_chain_count_delta=deltas.ppaplus_chain_count,
         z1plus_mean_original_beads_delta=deltas.z1plus_mean_original_beads,
         ppaplus_mean_original_beads_delta=deltas.ppaplus_mean_original_beads,
+        z1plus_mean_shortest_path_contour=(
+            z1plus_log.mean_shortest_path_contour
+        ),
         z1plus_mean_entanglements=z1plus_log.mean_entanglements,
         z1plus_ne_modified_coil=z1plus_log.ne_modified_coil,
+        ppaplus_mean_shortest_path_contour=(
+            ppaplus_log.mean_shortest_path_contour
+        ),
+        ppaplus_mean_entanglements=ppaplus_log.mean_entanglements,
+        ppaplus_ne_classical_coil=ppaplus_log.ne_classical_coil,
         ppaplus_ne_modified_coil=ppaplus_log.ne_modified_coil,
         note=_status_note(status),
     )
@@ -210,8 +223,12 @@ def _incomplete_record(benchmark_id: str) -> CorpusSmokeRecord:
         ppaplus_chain_count_delta=None,
         z1plus_mean_original_beads_delta=None,
         ppaplus_mean_original_beads_delta=None,
+        z1plus_mean_shortest_path_contour=None,
         z1plus_mean_entanglements=None,
         z1plus_ne_modified_coil=None,
+        ppaplus_mean_shortest_path_contour=None,
+        ppaplus_mean_entanglements=None,
+        ppaplus_ne_classical_coil=None,
         ppaplus_ne_modified_coil=None,
         note=_status_note(CorpusSmokeStatus.INCOMPLETE),
     )
@@ -244,8 +261,12 @@ def _format_record_row(record: CorpusSmokeRecord) -> str:
         f"{_format_int(record.ppaplus_chain_count_delta)} | "
         f"{_format_float(record.z1plus_mean_original_beads_delta)} | "
         f"{_format_float(record.ppaplus_mean_original_beads_delta)} | "
+        f"{_format_float(record.z1plus_mean_shortest_path_contour)} | "
         f"{_format_float(record.z1plus_mean_entanglements)} | "
         f"{_format_float(record.z1plus_ne_modified_coil)} | "
+        f"{_format_float(record.ppaplus_mean_shortest_path_contour)} | "
+        f"{_format_float(record.ppaplus_mean_entanglements)} | "
+        f"{_format_float(record.ppaplus_ne_classical_coil)} | "
         f"{_format_float(record.ppaplus_ne_modified_coil)} | "
         f"{record.note} |"
     )

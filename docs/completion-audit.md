@@ -40,6 +40,18 @@ evidence still leaves scientific and scalability boundaries open.
 
 Latest gate artifacts:
 
+- `.omo/evidence/task-175-corpus-ppaplus-stat-fields/source-trace.md`:
+  records a `source_contract` corpus smoke expansion over public
+  `mkmat/Z1plus-code` benchmark 07/10/11 Z1+/PPA+ reference logs
+- `.omo/evidence/task-175-corpus-ppaplus-stat-fields/focused-final-416828.out`,
+  `.omo/evidence/task-175-corpus-ppaplus-stat-fields/static-final-416829.out`,
+  `.omo/evidence/task-175-corpus-ppaplus-stat-fields/package-smoke-final-416830.out`,
+  `.omo/evidence/task-175-corpus-ppaplus-stat-fields/corpus-stat-ppaplus-fields-final.md`,
+  `.omo/evidence/task-175-corpus-ppaplus-stat-fields/docs-gate-final-416831.out`,
+  and `.omo/evidence/task-175-corpus-ppaplus-stat-fields/sacct.txt`:
+  record the remote GPU-cluster gate for adding source-backed Z1+ `<Lpp>` and
+  PPA+ `<Lpp>/<Z>/Ne_CC` tracking fields to the benchmark 07/10/11 corpus
+  statistical smoke report
 - `.omo/evidence/task-174-statistical-regression-status/source-trace.md`:
   records a `diagnostic_only` regression-report slice that separates
   statistical parity tracking from strict per-chain/oracle mismatch

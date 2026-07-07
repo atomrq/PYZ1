@@ -330,3 +330,9 @@ source-backed `Z1+ <Z>`, `Z1+ Ne_MC`, and `PPA+ Ne_MC` columns parsed from the
 public `mkmat/Z1plus-code` reference logs. This strengthens summary/Ne tracking
 for future statistical parity work while keeping the report explicitly separate
 from full native reducer or PPA+ runtime parity.
+
+Task-175 extends the same corpus statistical smoke with source-backed
+`Z1+ <Lpp>`, `PPA+ <Lpp>`, `PPA+ <Z>`, and `PPA+ Ne_CC` fields from the public
+benchmark 07/10/11 reference logs. These are reference-log summary targets for
+statistical tracking only; they do not introduce PPA+ coordinate-level parity
+requirements.

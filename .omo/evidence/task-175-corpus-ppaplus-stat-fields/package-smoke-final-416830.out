@@ -1,0 +1,19 @@
+Looking in indexes: https://pypi.tuna.tsinghua.edu.cn/simple
+Obtaining file:///public/home/jxm/pyz1-cleanroom-runs/task-175-corpus-ppaplus-stat-fields-green/repo
+  Checking if build backend supports build_editable: started
+  Checking if build backend supports build_editable: finished with status 'done'
+  Preparing editable metadata (pyproject.toml): started
+  Preparing editable metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: pyz1
+  Building editable for pyz1 (pyproject.toml): started
+  Building editable for pyz1 (pyproject.toml): finished with status 'done'
+  Created wheel for pyz1: filename=pyz1-0.1.0-0.editable-py3-none-any.whl size=5120 sha256=fbc69c83d7860f17e99597a792b8cfd85482fbb0761fa21e1828665d7b2ba155
+  Stored in directory: /tmp/pip-ephem-wheel-cache-8h22dn8o/wheels/5c/5d/bf/ee0c459df8f2c3128b351f9632324505e5f9079d0168a2495e
+Successfully built pyz1
+Installing collected packages: pyz1
+  Attempting uninstall: pyz1
+    Found existing installation: pyz1 0.1.0
+    Uninstalling pyz1-0.1.0:
+      Successfully uninstalled pyz1-0.1.0
+Successfully installed pyz1-0.1.0
+wrote 3 corpus smoke records to /public/home/jxm/pyz1-cleanroom-runs/task-175-corpus-ppaplus-stat-fields-green/corpus-stat-ppaplus-fields-final.md
