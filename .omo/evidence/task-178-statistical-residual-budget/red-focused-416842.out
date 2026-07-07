@@ -1,0 +1,51 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_ test_write_benchmark_report_when_contact_relaxation_measures_guarded_spplus __
+
+tmp_path = PosixPath('/tmp/pytest-of-jxm/pytest-300/test_write_benchmark_report_wh0')
+
+    def test_write_benchmark_report_when_contact_relaxation_measures_guarded_spplus(
+        tmp_path: Path,
+    ) -> None:
+        report_path = tmp_path / "pyz1-benchmark-regression.md"
+    
+        records = write_benchmark_regression_report(
+            RegressionRequest(
+                source_dir=SOURCE_Z1,
+                oracle_root=ORACLE_ROOT,
+                report_path=report_path,
+                modes=(RegressionMode.SPPLUS,),
+                benchmark_ids=("05",),
+                settings_overrides=(
+                    RegressionSettingsOverride(
+                        mode=RegressionMode.SPPLUS,
+                        settings=ReducerSettings(
+                            pairing_enabled=True,
+                            contact_relaxation_enabled=True,
+                        ),
+                    ),
+                ),
+            ),
+        )
+    
+        text = report_path.read_text(encoding="utf-8")
+        assert len(records) == 1
+        assert "| benchmark-05 | spplus | mismatch |" in text
+        assert records[0].pairing_mismatches == 0
+        assert records[0].node_count_mismatches == 0
+        assert records[0].pyz1_source_sequence_mismatch_count == 0
+        assert records[0].lpp_delta is not None
+        assert records[0].lpp_delta < 0.01
+        assert records[0].summary_field_mismatches == 6
+        assert records[0].max_chain_contour_delta is not None
+        assert records[0].max_chain_contour_delta < 1.0324
+        assert records[0].mean_chain_contour_delta is not None
+        assert records[0].root_mean_square_chain_contour_delta is not None
+>       assert records[0].chain_contour_residual_count is not None
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'RegressionRecord' object has no attribute 'chain_contour_residual_count'
+
+tests/test_spplus_regression.py:1278: AttributeError
+=========================== short test summary info ============================
+FAILED tests/test_spplus_regression.py::test_write_benchmark_report_when_contact_relaxation_measures_guarded_spplus
+1 failed in 33.43s

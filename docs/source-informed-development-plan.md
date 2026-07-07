@@ -240,6 +240,13 @@ slice should therefore convert any remaining "largest chain residual" framing
 into a statistical residual budget or distributional metric before changing
 the reducer.
 
+Task-178 adds that first distributional report surface as `diagnostic_only`:
+the benchmark regression report now records chain-contour residual count and
+fraction alongside max/mean/RMS residuals. This preserves per-chain residual
+details for debugging while giving future reducer work an ensemble-level
+contour residual budget. It does not change reducer runtime behavior or
+statistical status thresholds.
+
 Task-162 adds the first generalized building block in
 `src/pyz1/contact_relaxation.py`: endpoint-fixed contact-constrained node
 relaxation driven by local geometry, not oracle final positions. The next

@@ -42,6 +42,20 @@ evidence still leaves scientific and scalability boundaries open.
 
 Latest gate artifacts:
 
+- `.omo/evidence/task-178-statistical-residual-budget/source-trace.md`:
+  records a `diagnostic_only` benchmark regression report expansion that adds
+  chain-contour residual count/fraction as the first statistical residual
+  budget surface after the task-177 acceptance-boundary correction
+- `.omo/evidence/task-178-statistical-residual-budget/focused-416843.out`,
+  `.omo/evidence/task-178-statistical-residual-budget/static-416844.out`,
+  `.omo/evidence/task-178-statistical-residual-budget/package-smoke-416849.out`,
+  `.omo/evidence/task-178-statistical-residual-budget/benchmark-05-spplus-residual-budget.md`,
+  `.omo/evidence/task-178-statistical-residual-budget/docs-gate-416852.out`,
+  and `.omo/evidence/task-178-statistical-residual-budget/sacct.txt`:
+  record the remote GPU-cluster gate for reporting benchmark-05 SP+
+  `chain contour residual count = 32` and
+  `chain contour residual fraction = 0.64` while preserving strict
+  `mismatch` and statistical `passed`
 - `.omo/evidence/task-177-statistical-acceptance-boundary/validation.md`:
   records the docs/evidence-only policy update that SP/SP+ parity is an
   ensemble/statistical target and per-chain final geometry equality is

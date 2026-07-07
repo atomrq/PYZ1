@@ -267,6 +267,8 @@ class RegressionRecord:
     chain_contour_residuals: tuple[ChainContourResidual, ...] | None = None
     mean_chain_contour_delta: float | None = None
     root_mean_square_chain_contour_delta: float | None = None
+    chain_contour_residual_count: int | None = None
+    chain_contour_residual_fraction: float | None = None
 
     @property
     def statistical_status(self) -> StatisticalRegressionStatus:
@@ -533,6 +535,11 @@ def _compare_benchmark_mode(
     chain_contour_statistics = _chain_contour_statistics(
         result.shortest_path,
         oracle_shortest_path,
+    )
+    chain_contour_residual_count = len(chain_contour_residuals)
+    chain_contour_compared_chain_count = max(
+        result.shortest_path.chain_count,
+        oracle_shortest_path.chain_count,
     )
     oracle_default_source_sequence = _oracle_default_source_sequence(
         request,
@@ -802,6 +809,11 @@ def _compare_benchmark_mode(
         mean_chain_contour_delta=chain_contour_statistics.mean_absolute_delta,
         root_mean_square_chain_contour_delta=(
             chain_contour_statistics.root_mean_square_delta
+        ),
+        chain_contour_residual_count=chain_contour_residual_count,
+        chain_contour_residual_fraction=_chain_contour_residual_fraction(
+            chain_contour_residual_count,
+            chain_contour_compared_chain_count,
         ),
     )
 
@@ -1705,6 +1717,15 @@ def _chain_contour_statistics(
     )
 
 
+def _chain_contour_residual_fraction(
+    residual_count: int,
+    compared_chain_count: int,
+) -> float:
+    if compared_chain_count == 0:
+        return 0.0
+    return residual_count / compared_chain_count
+
+
 def _chain_contour_deltas(
     actual: ShortestPathSnapshot,
     expected: ShortestPathSnapshot,
@@ -1774,6 +1795,7 @@ def _format_report(records: tuple[RegressionRecord, ...]) -> str:
         "| benchmark | mode | status | statistical status | Lpp delta | Z delta | "
         "max chain contour delta | max chain contour delta chain | "
         "mean chain contour delta | rms chain contour delta | "
+        "chain contour residual count | chain contour residual fraction | "
         "chain contour residual details | "
         "summary field mismatches | pair mismatches | "
         "node count mismatches | max node position delta | "
@@ -1864,6 +1886,8 @@ def _format_record(record: RegressionRecord) -> str:
         f"{_format_optional_int(record.max_chain_contour_delta_chain)} | "
         f"{_format_optional_float(record.mean_chain_contour_delta)} | "
         f"{_format_optional_float(record.root_mean_square_chain_contour_delta)} | "
+        f"{_format_optional_int(record.chain_contour_residual_count)} | "
+        f"{_format_optional_float(record.chain_contour_residual_fraction)} | "
         f"{_format_chain_contour_residuals(record.chain_contour_residuals)} | "
         f"{_format_optional_int(record.summary_field_mismatches)} | "
         f"{_format_optional_int(record.pairing_mismatches)} | "

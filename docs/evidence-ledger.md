@@ -29,6 +29,29 @@ regression safety, not on exact equality for every individual chain.
 
 Latest remote GPU-cluster gate evidence:
 
+- `.omo/evidence/task-178-statistical-residual-budget/source-trace.md`:
+  classifies the chain-contour residual count/fraction report expansion as
+  `diagnostic_only`; it turns remaining per-chain residuals into a
+  distributional budget surface without changing reducer behavior
+- `.omo/evidence/task-178-statistical-residual-budget/red-focused-416842.out`:
+  RED failed for the intended reason: `RegressionRecord` did not yet expose
+  `chain_contour_residual_count`
+- `.omo/evidence/task-178-statistical-residual-budget/focused-416843.out`:
+  focused benchmark-05 SP+ contact-relaxation report test passed after adding
+  residual count/fraction fields
+- `.omo/evidence/task-178-statistical-residual-budget/static-416844.out`:
+  `ruff` and `basedpyright` passed for `src/pyz1/regression.py` and
+  `tests/test_spplus_regression.py`
+- `.omo/evidence/task-178-statistical-residual-budget/package-smoke-416849.out`
+  and `.omo/evidence/task-178-statistical-residual-budget/benchmark-05-spplus-residual-budget.md`:
+  installed CLI smoke passed and recorded benchmark-05 SP+ as strict
+  `mismatch` but statistical `passed`, with `chain contour residual count =
+  32` and `chain contour residual fraction = 0.64`
+- `.omo/evidence/task-178-statistical-residual-budget/docs-gate-416852.out`
+  and `.omo/evidence/task-178-statistical-residual-budget/sacct.txt`:
+  records RED job `416842` as expected `FAILED`, final jobs `416843`,
+  `416844`, `416849`, and `416852` as `COMPLETED`, plus superseded smoke/script
+  failures caused by stale CLI/job wrapper arguments
 - `.omo/evidence/task-177-statistical-acceptance-boundary/validation.md`:
   records the docs/evidence-only acceptance-boundary update that per-chain
   contour and final-geometry residuals are diagnostics unless they protect a

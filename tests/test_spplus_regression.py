@@ -1275,13 +1275,27 @@ def test_write_benchmark_report_when_contact_relaxation_measures_guarded_spplus(
     assert records[0].max_chain_contour_delta < 1.0324
     assert records[0].mean_chain_contour_delta is not None
     assert records[0].root_mean_square_chain_contour_delta is not None
+    assert records[0].chain_contour_residual_count is not None
+    assert records[0].chain_contour_residual_count == len(
+        records[0].chain_contour_residuals or (),
+    )
+    assert records[0].chain_contour_residual_fraction is not None
+    assert 0.0 < records[0].chain_contour_residual_fraction < 1.0
     assert records[0].mean_chain_contour_delta > 0.0
     assert (
         records[0].mean_chain_contour_delta
         <= records[0].root_mean_square_chain_contour_delta
         <= records[0].max_chain_contour_delta
     )
+    assert (
+        abs(
+            records[0].chain_contour_residual_fraction
+            - records[0].chain_contour_residual_count / 50,
+        )
+        < 1.0e-12
+    )
     assert "mean chain contour delta | rms chain contour delta" in text
+    assert "chain contour residual count | chain contour residual fraction" in text
     assert records[0].statistical_status.value == "passed"
     assert "| benchmark-05 | spplus | mismatch | passed |" in text
 
