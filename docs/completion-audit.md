@@ -16,7 +16,9 @@ adding a source-trace/I/O-contract slice before the next reducer change. The
 current reducer acceptance target is statistical parity at the ensemble/report
 level, not exact equality for every individual chain; per-chain SP/SP+
 residuals are diagnostics and regression guards unless they protect a
-generalized topology/source/pairing rule.
+generalized topology/source/pairing rule. Task-177 sharpens this into the
+active acceptance boundary: future reducer slices should not fail solely because
+one benchmark chain still differs from the oracle.
 
 ## Current Verdict
 
@@ -40,6 +42,10 @@ evidence still leaves scientific and scalability boundaries open.
 
 Latest gate artifacts:
 
+- `.omo/evidence/task-177-statistical-acceptance-boundary/validation.md`:
+  records the docs/evidence-only policy update that SP/SP+ parity is an
+  ensemble/statistical target and per-chain final geometry equality is
+  diagnostic unless it protects a generalized source/topology/contact rule
 - `.omo/evidence/task-176-reference-log-physical-fields/source-trace.md`:
   records a `source_contract` reference-log smoke expansion over public
   `mkmat/Z1plus-code` benchmark 07/10/11 Z1+/PPA+ reference logs

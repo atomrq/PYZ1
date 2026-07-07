@@ -21,11 +21,18 @@ Task-171 records the current project-level correction: the final reducer target
 is statistical parity at the ensemble/report level, while per-chain SP/SP+
 residuals are diagnostics and regression guards unless they protect a
 generalized topology/source/pairing rule.
+Task-177 sharpens that boundary: future SP/SP+ reducer slices should pass or
+fail on statistical/report parity, source-backed topology contracts, and
+regression safety, not on exact equality for every individual chain.
 
 ## Current Quality Gates
 
 Latest remote GPU-cluster gate evidence:
 
+- `.omo/evidence/task-177-statistical-acceptance-boundary/validation.md`:
+  records the docs/evidence-only acceptance-boundary update that per-chain
+  contour and final-geometry residuals are diagnostics unless they protect a
+  generalized topology/contact rule
 - `.omo/evidence/task-176-reference-log-physical-fields/source-trace.md`:
   classifies the reference-log physical-field report expansion as
   `source_contract` over public `mkmat/Z1plus-code` benchmark 07/10/11 Z1+/PPA+

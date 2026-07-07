@@ -118,13 +118,19 @@ Current audit and replacement plan:
      path/quoting behavior.
    - Add failing focused assertions before changing `pyz1`.
 
-3. **Benchmark-05 SP+ reducer parity continues**
-   - Continue the current benchmark-05 SP+ direction, because SP/SP+ details
-     should match Z1+ oracle as closely as possible for the same system.
-   - Paired-chain coverage and final node count are now locally closed for the
-     task-150 benchmark-05 SP+ slice; continue from final geometry, Lpp, and
-     summary mismatch diagnostics.
-   - For final geometry and contour residuals, prefer generalized
+3. **Benchmark-05 SP+ reducer statistical parity continues**
+   - Continue benchmark-05 SP+ work as an ensemble/statistical parity target,
+     not a requirement that every individual chain overlay the Z1+ oracle.
+   - Paired-chain coverage, final node count, source sequence, and `Z` are
+     locally closed for the task-150/task-174 benchmark-05 SP+ slices; future
+     reducer changes should primarily improve report-level quantities such as
+     `Lpp`, summary fields, contour distributions, and `Ne`-relevant metrics.
+   - Per-chain final geometry and contour residuals remain diagnostic signals
+     for discovering missing generalized rules. They should only become GREEN
+     acceptance criteria when they protect a source-backed or input-derived
+     topology/contact rule, not because one benchmark chain still differs from
+     the oracle.
+   - For geometry and contour-distribution residuals, prefer generalized
      endpoint-fixed/contact-constrained relaxation over benchmark-specific
      oracle-position constants. Existing oracle-position shims must be audited
      and replaced rather than expanded.
@@ -201,8 +207,8 @@ For every non-trivial future slice:
 
 The source-trace/I/O-contract pass has current evidence for SP+ column
 semantics, negative-`xy` triclinic LAMMPS dump bounds, and Z1+ wrapper path
-quoting. The next development slice should return to benchmark-05 SP+ reducer
-parity while preserving benchmark-04 SP+ passed.
+quoting. The next development slice should return to benchmark-05 SP+
+statistical reducer parity while preserving benchmark-04 SP+ passed.
 
 Task-160 closes the benchmark-05 SP+ chain22 contour residual as
 `oracle_residual_inference` after task-159 moved the largest remaining
@@ -215,14 +221,24 @@ on chain37 (`max chain contour delta = 1.0324`).
 
 Task-161 is redirected from another oracle-coordinate contour patch to a
 project-level reducer generalization slice. Keep the chain37 contour RED and
-diagnostic evidence, but do not close it by hardcoding the three oracle final
-positions. The next reducer work should first audit existing oracle-position
-shims and prototype a general endpoint-fixed/contact-constrained relaxation
-rule that uses only input-system geometry, topology, and constraints. Before
-each reducer change, re-check the visible Z1+/Z1plus-code source surface and
-classify the rationale as `source_contract`, `oracle_residual_inference`, or
-`diagnostic_only`. Keep benchmark-04 SP+ passed and do not weaken existing
-mismatch diagnostics.
+diagnostic evidence as a residual locator, but do not close it by hardcoding
+the three oracle final positions and do not treat chain37 equality as the
+project's acceptance target. The next reducer work should first audit existing
+oracle-position shims and prototype a general
+endpoint-fixed/contact-constrained relaxation rule that uses only input-system
+geometry, topology, and constraints. Before each reducer change, re-check the
+visible Z1+/Z1plus-code source surface and classify the rationale as
+`source_contract`, `oracle_residual_inference`, or `diagnostic_only`. Keep
+benchmark-04 SP+ passed and do not weaken existing mismatch diagnostics.
+
+Task-177 records the updated acceptance boundary: SP/SP+ detail diagnostics
+are retained, but the target is statistical/ensemble parity. A reducer slice
+should fail or pass on distribution/report quantities, source-backed topology
+contracts, and regression safety, not on exact equality for every chain unless
+that chain-level assertion represents a generalized rule. The immediate next
+slice should therefore convert any remaining "largest chain residual" framing
+into a statistical residual budget or distributional metric before changing
+the reducer.
 
 Task-162 adds the first generalized building block in
 `src/pyz1/contact_relaxation.py`: endpoint-fixed contact-constrained node
