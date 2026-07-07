@@ -29,6 +29,29 @@ regression safety, not on exact equality for every individual chain.
 
 Latest remote GPU-cluster gate evidence:
 
+- `.omo/evidence/task-182-regression-ne-deltas/source-trace.md`:
+  classifies the benchmark regression Ne coil delta report expansion as
+  `source_contract` over the public Z1+ `Z1+summary.dat` column contract and
+  `Z1plus-code` summary header
+- `.omo/evidence/task-182-regression-ne-deltas/red-focused-416886.out`:
+  RED failed for the intended reason: `RegressionRecord` did not yet expose
+  `ne_classical_coil_delta`
+- `.omo/evidence/task-182-regression-ne-deltas/focused-416887.out`:
+  focused benchmark-05 SP+ contact-relaxation report test passed after adding
+  structured `Ne_CC` and `Ne_MC` delta fields
+- `.omo/evidence/task-182-regression-ne-deltas/static-416888.out`:
+  `ruff` and `basedpyright` passed for `src/pyz1/regression.py` and
+  `tests/test_spplus_regression.py`
+- `.omo/evidence/task-182-regression-ne-deltas/package-smoke-final-416890.out`
+  and `.omo/evidence/task-182-regression-ne-deltas/benchmark-05-spplus-ne-deltas-final.md`:
+  installed CLI smoke passed and recorded benchmark-05 SP+ as strict
+  `mismatch` but statistical `passed`, with
+  `Ne classical coil delta = 0.0122531` and
+  `Ne modified coil delta = 0.613306`
+- `.omo/evidence/task-182-regression-ne-deltas/sacct.txt`:
+  records RED job `416886` as expected `FAILED`, final jobs `416887`,
+  `416888`, and `416890` as `COMPLETED`, plus a superseded package-smoke
+  failure caused by an overly broad grep expectation
 - `.omo/evidence/task-181-contour-residual-median/source-trace.md`:
   classifies the chain-contour residual median report expansion as
   `diagnostic_only`; it adds an ensemble-center residual view without changing

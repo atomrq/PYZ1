@@ -265,6 +265,13 @@ reducer runtime behavior, strict status, statistical status, or mismatch
 diagnostics; benchmark-05 SP+ remains strict `mismatch` but statistical
 `passed` under the current report-level criteria.
 
+Task-182 adds source-backed `Ne_CC` and `Ne_MC` delta columns to the
+default/SP+/selfZ benchmark regression report. This follows the public
+`Z1+summary.dat` contract documented in `Z1+README.txt` and the
+`Z1plus-code/scripts/Z1+import-lammps.pl` header. It keeps pass/fail logic and
+diagnostics unchanged while making summary/Ne residuals structured evidence
+for future statistical parity work.
+
 Task-162 adds the first generalized building block in
 `src/pyz1/contact_relaxation.py`: endpoint-fixed contact-constrained node
 relaxation driven by local geometry, not oracle final positions. The next

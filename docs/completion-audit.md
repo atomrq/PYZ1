@@ -42,6 +42,19 @@ evidence still leaves scientific and scalability boundaries open.
 
 Latest gate artifacts:
 
+- `.omo/evidence/task-182-regression-ne-deltas/source-trace.md`:
+  records a `source_contract` benchmark regression report expansion that adds
+  structured `Ne_CC` and `Ne_MC` delta fields from the public Z1+ summary
+  contract
+- `.omo/evidence/task-182-regression-ne-deltas/focused-416887.out`,
+  `.omo/evidence/task-182-regression-ne-deltas/static-416888.out`,
+  `.omo/evidence/task-182-regression-ne-deltas/package-smoke-final-416890.out`,
+  `.omo/evidence/task-182-regression-ne-deltas/benchmark-05-spplus-ne-deltas-final.md`,
+  and `.omo/evidence/task-182-regression-ne-deltas/sacct.txt`:
+  record the remote GPU-cluster gate for reporting benchmark-05 SP+
+  `Ne classical coil delta = 0.0122531` and
+  `Ne modified coil delta = 0.613306` while preserving strict `mismatch`,
+  statistical `passed`, and existing mismatch diagnostics
 - `.omo/evidence/task-181-contour-residual-median/source-trace.md`:
   records a `diagnostic_only` benchmark regression report expansion that adds a
   nearest-rank median chain-contour residual delta as an ensemble-center
