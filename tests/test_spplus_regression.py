@@ -1282,6 +1282,8 @@ def test_write_benchmark_report_when_contact_relaxation_measures_guarded_spplus(
         <= records[0].max_chain_contour_delta
     )
     assert "mean chain contour delta | rms chain contour delta" in text
+    assert records[0].statistical_status.value == "passed"
+    assert "| benchmark-05 | spplus | mismatch | passed |" in text
 
 
 def test_reduce_snapshot_when_benchmark05_chain39_matches_oracle_pairs() -> None:

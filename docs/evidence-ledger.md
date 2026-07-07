@@ -26,6 +26,36 @@ generalized topology/source/pairing rule.
 
 Latest remote GPU-cluster gate evidence:
 
+- `.omo/evidence/task-174-statistical-regression-status/source-trace.md`:
+  classifies the benchmark regression status split as `diagnostic_only`; it
+  implements the project correction that statistical parity is tracked beside,
+  not instead of, strict per-chain diagnostics
+- `.omo/evidence/task-174-statistical-regression-status/red-focused-416813.out`:
+  RED failed for the intended reason: `RegressionRecord` did not yet expose a
+  `statistical_status`
+- `.omo/evidence/task-174-statistical-regression-status/focused-final-416817.out`:
+  final focused benchmark-05 SP+ contact-relaxation report test passed
+- `.omo/evidence/task-174-statistical-regression-status/static-final-416818.out`:
+  `ruff` and `basedpyright` passed for `src/pyz1/regression.py` and
+  `tests/test_spplus_regression.py`
+- `.omo/evidence/task-174-statistical-regression-status/package-smoke-final-416819.out`:
+  editable install and `pyz1-benchmark-regression --contact-relaxation` report
+  generation passed
+- `.omo/evidence/task-174-statistical-regression-status/benchmark-05-spplus-statistical-status-final.md`:
+  final report keeps benchmark-05 SP+ strict `status` as `mismatch` while
+  adding `statistical status` as `passed`; residual diagnostics remain visible
+  with `Lpp delta` `0.00409694`, `Z delta` `0`, zero pair/node/source-sequence
+  mismatches, mean chain-contour delta `0.171325`, RMS `0.308536`, and max
+  chain-contour delta `0.886959`
+- `.omo/evidence/task-174-statistical-regression-status/sacct-green.txt`:
+  records final jobs `416817`, `416818`, and `416819` as `COMPLETED` with
+  `ExitCode=0:0`; earlier superseded static/package attempts are retained for
+  traceability
+- `.omo/evidence/task-174-statistical-regression-status/docs-gate-416820.out`
+  and `.omo/evidence/task-174-statistical-regression-status/sacct.txt`:
+  record the final docs/evidence gate as passed; job `416820` completed with
+  `ExitCode=0:0`
+
 - `.omo/evidence/task-173-corpus-ne-smoke/source-trace.md`:
   classifies the corpus Ne smoke expansion as `source_contract` over public
   `mkmat/Z1plus-code` benchmark 07/10/11 Z1+/PPA+ reference logs

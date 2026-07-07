@@ -50,6 +50,8 @@ if TYPE_CHECKING:
 
 SOURCE_BEAD_TOLERANCE: Final = 1.0e-9
 SHORTEST_PATH_POSITION_TOLERANCE: Final = 1.0e-3
+STATISTICAL_LPP_DELTA_TOLERANCE: Final = 1.0e-2
+STATISTICAL_Z_DELTA_TOLERANCE: Final = 1.0e-9
 MAX_TRUE_CHAIN_CONTACT_CANDIDATE_DISTANCE: Final = 0.3
 CORE_STAGE_NODE_FILENAME: Final = "Z1+NODES-best-match-step1-entry.dat"
 MAX_SOURCE_RESIDUAL_REPORT_DETAILS: Final = 12
@@ -82,6 +84,12 @@ class RegressionStatus(StrEnum):
     PASSED = "passed"
     MISMATCH = "mismatch"
     KNOWN_INVALID = "known-invalid"
+
+
+class StatisticalRegressionStatus(StrEnum):
+    PASSED = "passed"
+    MISMATCH = "mismatch"
+    NOT_APPLICABLE = "n/a"
 
 
 @dataclass(frozen=True, slots=True)
@@ -260,6 +268,29 @@ class RegressionRecord:
     mean_chain_contour_delta: float | None = None
     root_mean_square_chain_contour_delta: float | None = None
 
+    @property
+    def statistical_status(self) -> StatisticalRegressionStatus:
+        match self.status:
+            case RegressionStatus.KNOWN_INVALID:
+                return StatisticalRegressionStatus.NOT_APPLICABLE
+            case RegressionStatus.PASSED | RegressionStatus.MISMATCH:
+                pass
+        if (
+            self.lpp_delta is None
+            or self.z_delta is None
+            or self.node_count_mismatches is None
+        ):
+            return StatisticalRegressionStatus.NOT_APPLICABLE
+        if (
+            self.lpp_delta <= STATISTICAL_LPP_DELTA_TOLERANCE
+            and self.z_delta <= STATISTICAL_Z_DELTA_TOLERANCE
+            and self.node_count_mismatches == 0
+            and _optional_zero(self.pairing_mismatches)
+            and _optional_zero(self.pyz1_source_sequence_mismatch_count)
+        ):
+            return StatisticalRegressionStatus.PASSED
+        return StatisticalRegressionStatus.MISMATCH
+
 
 @dataclass(frozen=True, slots=True)
 class ShortestPathGeometryComparison:
@@ -335,6 +366,10 @@ class _RegressionStatusInput:
 class _ChainContourStatistics:
     mean_absolute_delta: float
     root_mean_square_delta: float
+
+
+def _optional_zero(value: int | None) -> bool:
+    return value is None or value == 0
 
 
 def compare_spplus_pairing(
@@ -1736,7 +1771,7 @@ def _chain_contour_residual_delta(residual: ChainContourResidual) -> float:
 
 def _format_report(records: tuple[RegressionRecord, ...]) -> str:
     header = (
-        "| benchmark | mode | status | Lpp delta | Z delta | "
+        "| benchmark | mode | status | statistical status | Lpp delta | Z delta | "
         "max chain contour delta | max chain contour delta chain | "
         "mean chain contour delta | rms chain contour delta | "
         "chain contour residual details | "
@@ -1822,7 +1857,8 @@ def _format_report_separator(header: str) -> str:
 def _format_record(record: RegressionRecord) -> str:
     return (
         f"| benchmark-{record.benchmark_id} | {record.mode.value} | "
-        f"{record.status.value} | {_format_optional_float(record.lpp_delta)} | "
+        f"{record.status.value} | {record.statistical_status.value} | "
+        f"{_format_optional_float(record.lpp_delta)} | "
         f"{_format_optional_float(record.z_delta)} | "
         f"{_format_optional_float(record.max_chain_contour_delta)} | "
         f"{_format_optional_int(record.max_chain_contour_delta_chain)} | "

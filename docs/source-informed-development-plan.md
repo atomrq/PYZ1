@@ -63,6 +63,11 @@ Exact SP/SP+ detail matching remains useful when it protects a generalized
 topology/source/pairing rule, but a new slice should not be judged solely by
 whether every individual chain overlays the oracle chain. Acceptance should
 separate statistical parity gates from chain-level diagnostic regressions.
+The benchmark regression report now carries a separate `statistical status`
+column for that purpose: strict `status` continues to protect detailed
+per-chain/oracle diagnostics, while `statistical status` tracks report-level
+`Lpp`, `Z`, pairing, node-count, and source-sequence closure without treating
+every remaining chain contour residual as an acceptance failure.
 
 Do not treat benchmark-specific oracle final geometry as a final reducer
 solution. Any `Vector3(...)` coordinate copied from a Z1+ oracle SP/SP+ output

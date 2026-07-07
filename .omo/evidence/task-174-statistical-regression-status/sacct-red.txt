@@ -1,0 +1,4 @@
+JobID|JobName|State|ExitCode|Elapsed
+416813|pyz1-t174-red|FAILED|1:0|00:00:33
+416813.batch|batch|FAILED|1:0|00:00:33
+416813.extern|extern|COMPLETED|0:0|00:00:33
