@@ -22,6 +22,25 @@ temporary oracle-regression shims, not final clean-room reducer algorithms.
 
 Latest remote GPU-cluster gate evidence:
 
+- `.omo/evidence/task-170-corpus-stat-smoke/source-trace.md`:
+  classifies the benchmark 07/10/11 corpus statistical smoke as a
+  `source_contract` over public `mkmat/Z1plus-code` benchmark inputs and
+  reference logs
+- `.omo/evidence/task-170-corpus-stat-smoke/red-focused-416784.out`:
+  RED failed for the intended reason before implementation:
+  `ModuleNotFoundError: No module named 'pyz1.corpus_smoke'`
+- `.omo/evidence/task-170-corpus-stat-smoke/focused-final-416788.out`:
+  final focused corpus smoke tests passed
+- `.omo/evidence/task-170-corpus-stat-smoke/static-final-416789.out`:
+  final ruff and basedpyright passed for the corpus report surface, CLI, and
+  focused tests
+- `.omo/evidence/task-170-corpus-stat-smoke/package-smoke-final-416790.out`:
+  package smoke passed after editable install and console-script execution
+- `.omo/evidence/task-170-corpus-stat-smoke/corpus-stat-smoke-final.md`:
+  final report marks benchmark 07, 10, and 11 `passed` with zero chain-count
+  and mean-`N` deltas between input statistics and public Z1+/PPA+ reference
+  logs
+
 - `.omo/evidence/task-169-benchmark-input-smoke/source-trace.md`:
   classifies the benchmark 07/10/11 `.Z1`/`.dump` input smoke as a
   `source_contract` over public `mkmat/Z1plus-code` benchmark inputs

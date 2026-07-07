@@ -299,3 +299,9 @@ public `.Z1` and `.dump` files from `Z1plus-code/benchmark-configurations` and
 reports chain count, node count, true-chain count, box lengths, and shear. This
 locks the source-backed input baseline for future statistical parity work and
 does not claim reducer parity for those large benchmarks.
+
+Task-170 joins the task168 reference-log smoke and task169 input smoke into a
+corpus statistical smoke report. It checks that benchmark 07/10/11 `.Z1` and
+`.dump` input statistics agree and that public Z1+/PPA+ reference logs have
+zero chain-count and mean-`N` deltas relative to those input statistics. This is
+a source-backed statistical baseline gate, not full reducer parity.
