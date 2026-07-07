@@ -308,6 +308,21 @@ class RegressionRecord:
 
 
 @dataclass(frozen=True, slots=True)
+class StatisticalParitySummary:
+    scope: str
+    record_count: int
+    statistical_passed_count: int
+    statistical_mismatch_count: int
+    strict_passed_count: int
+    strict_mismatch_count: int
+    known_invalid_count: int
+    max_lpp_delta: float | None
+    max_z_delta: float | None
+    max_mean_contour_delta: float | None
+    max_contour_p95_delta: float | None
+
+
+@dataclass(frozen=True, slots=True)
 class ShortestPathGeometryComparison:
     node_count_mismatches: int
     max_node_position_delta: float
@@ -1973,7 +1988,123 @@ def _format_report(records: tuple[RegressionRecord, ...]) -> str:
         _format_report_separator(header),
     ]
     lines.extend(_format_record(record) for record in records)
+    lines.extend(
+        (
+            "",
+            "## Statistical Parity Summary",
+            "",
+            _statistical_summary_header(),
+            _format_report_separator(_statistical_summary_header()),
+            _format_statistical_summary(
+                _statistical_parity_summary("all", records),
+            ),
+        ),
+    )
     return "\n".join(lines) + "\n"
+
+
+def _statistical_summary_header() -> str:
+    return (
+        "| scope | records | statistical passed | statistical mismatches | "
+        "strict passed | strict mismatches | known invalid | max Lpp delta | "
+        "max Z delta | max mean contour delta | max contour p95 delta |"
+    )
+
+
+def _statistical_parity_summary(
+    scope: str,
+    records: tuple[RegressionRecord, ...],
+) -> StatisticalParitySummary:
+    return StatisticalParitySummary(
+        scope=scope,
+        record_count=len(records),
+        statistical_passed_count=sum(
+            _statistical_passed_count(record) for record in records
+        ),
+        statistical_mismatch_count=sum(
+            _statistical_mismatch_count(record) for record in records
+        ),
+        strict_passed_count=sum(_strict_passed_count(record) for record in records),
+        strict_mismatch_count=sum(_strict_mismatch_count(record) for record in records),
+        known_invalid_count=sum(_known_invalid_count(record) for record in records),
+        max_lpp_delta=_max_optional_float(
+            tuple(record.lpp_delta for record in records),
+        ),
+        max_z_delta=_max_optional_float(tuple(record.z_delta for record in records)),
+        max_mean_contour_delta=_max_optional_float(
+            tuple(record.mean_chain_contour_delta for record in records),
+        ),
+        max_contour_p95_delta=_max_optional_float(
+            tuple(record.chain_contour_residual_p95_delta for record in records),
+        ),
+    )
+
+
+def _statistical_passed_count(record: RegressionRecord) -> int:
+    match record.statistical_status:
+        case StatisticalRegressionStatus.PASSED:
+            return 1
+        case (
+            StatisticalRegressionStatus.MISMATCH
+            | StatisticalRegressionStatus.NOT_APPLICABLE
+        ):
+            return 0
+
+
+def _statistical_mismatch_count(record: RegressionRecord) -> int:
+    match record.statistical_status:
+        case StatisticalRegressionStatus.MISMATCH:
+            return 1
+        case (
+            StatisticalRegressionStatus.PASSED
+            | StatisticalRegressionStatus.NOT_APPLICABLE
+        ):
+            return 0
+
+
+def _strict_passed_count(record: RegressionRecord) -> int:
+    match record.status:
+        case RegressionStatus.PASSED:
+            return 1
+        case RegressionStatus.MISMATCH | RegressionStatus.KNOWN_INVALID:
+            return 0
+
+
+def _strict_mismatch_count(record: RegressionRecord) -> int:
+    match record.status:
+        case RegressionStatus.MISMATCH:
+            return 1
+        case RegressionStatus.PASSED | RegressionStatus.KNOWN_INVALID:
+            return 0
+
+
+def _known_invalid_count(record: RegressionRecord) -> int:
+    match record.status:
+        case RegressionStatus.KNOWN_INVALID:
+            return 1
+        case RegressionStatus.PASSED | RegressionStatus.MISMATCH:
+            return 0
+
+
+def _max_optional_float(values: tuple[float | None, ...]) -> float | None:
+    finite_values = tuple(value for value in values if value is not None)
+    if len(finite_values) == 0:
+        return None
+    return max(finite_values)
+
+
+def _format_statistical_summary(summary: StatisticalParitySummary) -> str:
+    return (
+        f"| {summary.scope} | {summary.record_count} | "
+        f"{summary.statistical_passed_count} | "
+        f"{summary.statistical_mismatch_count} | "
+        f"{summary.strict_passed_count} | {summary.strict_mismatch_count} | "
+        f"{summary.known_invalid_count} | "
+        f"{_format_optional_float(summary.max_lpp_delta)} | "
+        f"{_format_optional_float(summary.max_z_delta)} | "
+        f"{_format_optional_float(summary.max_mean_contour_delta)} | "
+        f"{_format_optional_float(summary.max_contour_p95_delta)} |"
+    )
 
 
 def _format_report_separator(header: str) -> str:

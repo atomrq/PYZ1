@@ -1,0 +1,4 @@
+Task-186 applies the project-level statistical parity correction directly to
+docs/evidence-ledger.md:- `.omo/evidence/task-186-statistical-parity-summary/source-trace.md`:
+docs/completion-audit.md:- `.omo/evidence/task-186-statistical-parity-summary/source-trace.md`:
+Classification: `diagnostic_only`

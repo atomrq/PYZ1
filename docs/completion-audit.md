@@ -42,6 +42,25 @@ evidence still leaves scientific and scalability boundaries open.
 
 Latest gate artifacts:
 
+- `.omo/evidence/task-186-statistical-parity-summary/source-trace.md`:
+  records a `diagnostic_only` benchmark regression report expansion that adds
+  an aggregate statistical parity summary for ensemble/report-level acceptance
+  tracking while preserving strict per-chain mismatch diagnostics
+- `.omo/evidence/task-186-statistical-parity-summary/red-focused-416918.out`
+  and `.omo/evidence/task-186-statistical-parity-summary/green-focused-416919.out`:
+  record the remote GPU-cluster RED/GREEN gate for adding
+  `## Statistical Parity Summary` to the benchmark regression report
+- `.omo/evidence/task-186-statistical-parity-summary/final-static-rerun3.txt`,
+  `.omo/evidence/task-186-statistical-parity-summary/final-package-smoke.416924.out`,
+  `.omo/evidence/task-186-statistical-parity-summary/benchmark-04-05-spplus-statistical-summary.md`,
+  `.omo/evidence/task-186-statistical-parity-summary/final-regression-cli-pytest.txt`,
+  `.omo/evidence/task-186-statistical-parity-summary/final-spplus-rerun3-pytest.txt`,
+  `.omo/evidence/task-186-statistical-parity-summary/final-docs-gate-rerun2.txt`,
+  and `.omo/evidence/task-186-statistical-parity-summary/sacct.txt`:
+  record the remote GPU-cluster final gate: static passed, installed package
+  smoke passed with `| all | 2 | 2 | 0 | 1 | 1 | 0 |`, regression CLI tests
+  passed (`5 passed`), full SP+ regression tests passed (`84 passed`), and
+  docs/source-trace checks passed after final evidence synchronization
 - `.omo/evidence/task-185-regression-summary-input-deltas/source-trace.md`:
   records a `source_contract` benchmark regression report expansion that adds
   structured `b0` and density delta fields from the public Z1+ summary

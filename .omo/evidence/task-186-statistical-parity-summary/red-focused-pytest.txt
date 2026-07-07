@@ -1,0 +1,42 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_ test_write_benchmark_regression_report_when_statistical_parity_is_summarized _
+
+tmp_path = PosixPath('/tmp/pytest-of-jxm/pytest-319/test_write_benchmark_regressio0')
+
+    def test_write_benchmark_regression_report_when_statistical_parity_is_summarized(
+        tmp_path: Path,
+    ) -> None:
+        report_path = tmp_path / "pyz1-benchmark-regression.md"
+
+        records = write_benchmark_regression_report(
+            RegressionRequest(
+                source_dir=SOURCE_Z1,
+                oracle_root=ORACLE_ROOT,
+                report_path=report_path,
+                modes=(RegressionMode.SPPLUS,),
+                benchmark_ids=("04", "05"),
+                settings_overrides=(
+                    RegressionSettingsOverride(
+                        mode=RegressionMode.SPPLUS,
+                        settings=ReducerSettings(
+                            pairing_enabled=True,
+                            contact_relaxation_enabled=True,
+                        ),
+                    ),
+                ),
+            ),
+        )
+
+        text = report_path.read_text(encoding="utf-8")
+        assert tuple(record.statistical_status.value for record in records) == (
+            "passed",
+            "passed",
+        )
+>       assert "## Statistical Parity Summary" in text
+E       AssertionError: assert '## Statistical Parity Summary' in '# pyz1 Benchmark Regression\n\n| benchmark | mode | contact relaxation | status | statistical status | Lpp delta | Z ...ssical_coil: 16.198 != 16.210; ne_modified_coil: 73.212 != 73.825 | current clean-room reducer differs from oracle |\n'
+
+tests/test_spplus_regression.py:1370: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_spplus_regression.py::test_write_benchmark_regression_report_when_statistical_parity_is_summarized
+1 failed in 31.44s

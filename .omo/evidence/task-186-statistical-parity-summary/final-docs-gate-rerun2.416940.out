@@ -1,0 +1,4 @@
+Task-186 applies the project-level statistical parity correction directly to
+docs/evidence-ledger.md:- `.omo/evidence/task-186-statistical-parity-summary/final-spplus-rerun3-pytest.txt`:
+docs/completion-audit.md:  `.omo/evidence/task-186-statistical-parity-summary/final-spplus-rerun3-pytest.txt`,
+- Final full SP+ regression Slurm job `416939` passed

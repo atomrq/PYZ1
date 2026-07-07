@@ -29,6 +29,37 @@ regression safety, not on exact equality for every individual chain.
 
 Latest remote GPU-cluster gate evidence:
 
+- `.omo/evidence/task-186-statistical-parity-summary/source-trace.md`:
+  classifies the benchmark regression aggregate statistical parity summary as
+  `diagnostic_only`; it summarizes ensemble/report-level pass/mismatch counts
+  and max statistical residuals without changing reducer behavior or weakening
+  per-chain mismatch diagnostics
+- `.omo/evidence/task-186-statistical-parity-summary/red-focused-416918.out`:
+  RED failed for the intended reason: the benchmark regression report did not
+  yet include `## Statistical Parity Summary`
+- `.omo/evidence/task-186-statistical-parity-summary/green-focused-416919.out`:
+  focused benchmark-04/05 SP+ contact-relaxation report test passed after
+  adding the aggregate statistical parity summary
+- `.omo/evidence/task-186-statistical-parity-summary/final-static-rerun3.txt`:
+  `ruff` and `basedpyright` passed for `src/pyz1/regression.py`,
+  `tests/test_spplus_regression.py`, and `tests/test_regression_cli.py`
+- `.omo/evidence/task-186-statistical-parity-summary/final-package-smoke.416924.out`
+  and `.omo/evidence/task-186-statistical-parity-summary/benchmark-04-05-spplus-statistical-summary.md`:
+  installed CLI smoke passed and recorded benchmark-04/05 SP+ as two
+  statistical passes, one strict pass, and one strict mismatch:
+  `| all | 2 | 2 | 0 | 1 | 1 | 0 |`
+- `.omo/evidence/task-186-statistical-parity-summary/final-regression-cli-pytest.txt`:
+  regression CLI tests passed (`5 passed`)
+- `.omo/evidence/task-186-statistical-parity-summary/final-spplus-rerun3-pytest.txt`:
+  full SP+ regression tests passed (`84 passed`)
+- `.omo/evidence/task-186-statistical-parity-summary/final-docs-gate-rerun2.txt`:
+  docs/source-trace gate passed after final evidence synchronization
+- `.omo/evidence/task-186-statistical-parity-summary/sacct.txt`:
+  records RED job `416918` as expected `FAILED`, final jobs `416922`,
+  `416924`, `416930`, `416931`, `416938`, `416939`, and `416940` as
+  `COMPLETED`, plus
+  superseded static/full/diagnostic jobs used while closing stale strict
+  chain-level assertions
 - `.omo/evidence/task-185-regression-summary-input-deltas/source-trace.md`:
   classifies the benchmark regression summary input-field delta report
   expansion as `source_contract` over the public Z1+ `Z1+summary.dat` column

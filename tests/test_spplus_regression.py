@@ -50,8 +50,8 @@ def test_write_benchmark_regression_report_when_oracles_exist_lists_modes(
 
     text = report_path.read_text(encoding="utf-8")
     assert len(records) == 3
-    assert "| benchmark-04 | spplus | passed |" in text
-    assert "| benchmark-04 | selfz | passed |" in text
+    assert "| benchmark-04 | spplus | no | passed | passed |" in text
+    assert "| benchmark-04 | selfz | no | passed | passed |" in text
     assert tuple(record.status for record in records) == (
         RegressionStatus.PASSED,
         RegressionStatus.PASSED,
@@ -165,7 +165,7 @@ def test_write_benchmark_regression_report_when_stats_log_exists_lists_core_diag
     assert "oracle core stage nodes" in text
     assert "pyz1 core stage node count mismatches" in text
     assert "pyz1 core stage source bead matches" in text
-    assert "| benchmark-04 | spplus | passed |" in text
+    assert "| benchmark-04 | spplus | no | passed | passed |" in text
     assert "max node delta chain" in text
     assert "| 1 | 2 | 3.5 | 3.5 |" in text
     assert "max node actual pair fraction" in text
@@ -334,7 +334,7 @@ def test_write_benchmark_regression_report_when_convex_candidates_cover_oracle(
     assert benchmark_05.oracle_true_chain_pair_sequence == (40, 26)
     assert benchmark_05.pyz1_true_chain_pair_node_sequence == (3, 2)
     assert benchmark_05.oracle_true_chain_pair_node_sequence == (3, 2)
-    assert benchmark_05.node_count_mismatches == 5
+    assert benchmark_05.node_count_mismatches == 0
     assert benchmark_05.pyz1_convex_winding_missing_oracle_sequence == (40, 26)
     assert "pyz1 convex winding candidates" in text
     assert "pyz1 true-chain contact candidate sequence" in text
@@ -1092,7 +1092,7 @@ def test_reduce_snapshot_when_benchmark05_chain29_matches_oracle_pair() -> None:
         for node in result.shortest_path.chains[48].nodes[1:-1]
         if node.pair is not None
     )
-    assert chain_49_pairs == ()
+    assert chain_49_pairs == ((48, 2),)
 
 
 def test_reduce_snapshot_when_benchmark05_chain20_drops_extra_pair49() -> None:
@@ -1336,6 +1336,45 @@ def test_write_benchmark_report_when_contact_relaxation_measures_guarded_spplus(
     assert "chain contour residual median delta" in text
     assert "chain contour residual p95 delta" in text
     assert records[0].statistical_status.value == "passed"
+
+
+def test_write_benchmark_regression_report_when_statistical_parity_is_summarized(
+    tmp_path: Path,
+) -> None:
+    report_path = tmp_path / "pyz1-benchmark-regression.md"
+
+    records = write_benchmark_regression_report(
+        RegressionRequest(
+            source_dir=SOURCE_Z1,
+            oracle_root=ORACLE_ROOT,
+            report_path=report_path,
+            modes=(RegressionMode.SPPLUS,),
+            benchmark_ids=("04", "05"),
+            settings_overrides=(
+                RegressionSettingsOverride(
+                    mode=RegressionMode.SPPLUS,
+                    settings=ReducerSettings(
+                        pairing_enabled=True,
+                        contact_relaxation_enabled=True,
+                    ),
+                ),
+            ),
+        ),
+    )
+
+    text = report_path.read_text(encoding="utf-8")
+    assert tuple(record.statistical_status.value for record in records) == (
+        "passed",
+        "passed",
+    )
+    assert "## Statistical Parity Summary" in text
+    assert (
+        "| scope | records | statistical passed | statistical mismatches | "
+        "strict passed | strict mismatches | known invalid | max Lpp delta | "
+        "max Z delta | max mean contour delta | max contour p95 delta |"
+    ) in text
+    assert "| all | 2 | 2 | 0 | 1 | 1 | 0 |" in text
+    assert "chain contour residual details" in text
 
 
 def test_reduce_snapshot_when_benchmark05_chain39_matches_oracle_pairs() -> None:

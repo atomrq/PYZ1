@@ -43,9 +43,9 @@ def test_regression_cli_when_benchmark_requested_writes_report(
     assert result.returncode == 0, result.stdout + result.stderr
     text = report_path.read_text(encoding="utf-8")
     assert "wrote 3 benchmark regression records" in result.stdout
-    assert "| benchmark-04 | default | passed |" in text
-    assert "| benchmark-04 | spplus | passed |" in text
-    assert "| benchmark-04 | selfz | passed |" in text
+    assert "| benchmark-04 | default | no | passed | passed |" in text
+    assert "| benchmark-04 | spplus | no | passed | passed |" in text
+    assert "| benchmark-04 | selfz | no | passed | passed |" in text
 
 
 def test_regression_cli_when_node_guard_requested_reports_known_invalid(
@@ -79,9 +79,9 @@ def test_regression_cli_when_node_guard_requested_reports_known_invalid(
     assert result.returncode == 0, result.stdout + result.stderr
     text = report_path.read_text(encoding="utf-8")
     assert "wrote 3 benchmark regression records" in result.stdout
-    assert "| benchmark-04 | default | known-invalid |" in text
-    assert "| benchmark-04 | spplus | known-invalid |" in text
-    assert "| benchmark-04 | selfz | known-invalid |" in text
+    assert "| benchmark-04 | default | no | known-invalid | n/a |" in text
+    assert "| benchmark-04 | spplus | no | known-invalid | n/a |" in text
+    assert "| benchmark-04 | selfz | no | known-invalid | n/a |" in text
     assert "skipped: node_count>1" in text
 
 
@@ -116,7 +116,7 @@ def test_regression_cli_when_trace_guard_requested_disables_trace_diagnostics(
     assert result.returncode == 0, result.stdout + result.stderr
     text = report_path.read_text(encoding="utf-8")
     assert "wrote 1 benchmark regression records" in result.stdout
-    assert "| benchmark-04 | spplus | passed |" in text
+    assert "| benchmark-04 | spplus | no | passed | passed |" in text
     assert "| 10 | 11 | 10 | 0 | 0 | 0 | n/a | n/a | n/a | n/a | n/a |" in text
 
 
@@ -150,9 +150,7 @@ def test_regression_cli_when_contact_relaxation_requested_writes_guarded_report(
     assert result.returncode == 0, result.stdout + result.stderr
     text = report_path.read_text(encoding="utf-8")
     assert "wrote 1 benchmark regression records" in result.stdout
-    expected_row = (
-        "| benchmark-05 | spplus | mismatch | 0.00409694 | 0 | 0.886959 | 5 |"
-    )
+    expected_row = "| benchmark-05 | spplus | yes | mismatch | passed | 0.00409694 |"
     assert expected_row in text
     assert "| 6 | 0 | 0 |" in text
     assert "| 0 | 0 | none |" in text

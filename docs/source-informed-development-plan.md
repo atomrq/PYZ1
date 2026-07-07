@@ -295,6 +295,16 @@ all public numeric Z1+ summary fields that are meaningful for benchmark
 regression tracking. Reducer behavior, strict status, statistical status, and
 mismatch diagnostics remain unchanged.
 
+Task-186 applies the project-level statistical parity correction directly to
+the default/SP+/selfZ benchmark regression report. The report now adds an
+aggregate statistical parity summary after the per-benchmark rows, counting
+statistical passed/mismatch records separately from strict passed/mismatch and
+known-invalid records while surfacing max `Lpp`, `Z`, mean contour, and p95
+contour residual deltas. This is `diagnostic_only`: it changes no reducer
+runtime behavior, keeps per-chain residual details available as diagnostics,
+and makes the acceptance view explicitly ensemble/report-level rather than
+chain-by-chain coordinate equality.
+
 Task-162 adds the first generalized building block in
 `src/pyz1/contact_relaxation.py`: endpoint-fixed contact-constrained node
 relaxation driven by local geometry, not oracle final positions. The next
