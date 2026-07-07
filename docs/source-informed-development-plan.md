@@ -233,3 +233,13 @@ chain17, and pair mismatches, node-count mismatches, source residual details,
 and `Z` delta remain closed. The next reducer slice should inspect the
 guard-enabled chain17 residual and compare it against the temporary
 oracle-position shims before changing default reducer behavior.
+
+Task-165 performs that inspection as a diagnostic-only slice. Evidence in
+`.omo/evidence/task-165-chain17-guard-diagnostic/chain17-geometry.md` shows
+that benchmark-05 chain17 already has the expected source/pair sequence and
+node count, has no chain17 oracle final-position shim in the reducer, and still
+has a `0.999611` guard-enabled contour delta because the interior node geometry
+does not relax to the oracle contour. The next RED should therefore target a
+general endpoint-fixed multi-node contact-relaxation rule for paired retained
+nodes. Do not close the chain17 residual with benchmark-specific final
+coordinates.

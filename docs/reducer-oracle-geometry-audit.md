@@ -124,5 +124,12 @@ coordinates must not be production inputs.
      guard-enabled report keeps benchmark-04 SP+ passed and improves
      benchmark-05 `Lpp delta` and max chain-contour residual, but benchmark-05
      remains a mismatch and the guard remains default-off.
-5. Gradually replace the listed temporary shims with the generalized
+5. Inspect the new guard-enabled max residual before changing default reducer
+   behavior.
+   - Task165 diagnoses benchmark-05 chain17. It has matching source/pair
+     topology and no chain17 oracle final-position shim, but its interior
+     geometry still leaves `0.999611` contour delta. This points to a missing
+     multi-node endpoint-fixed contact-relaxation rule, not another
+     benchmark-specific coordinate constant.
+6. Gradually replace the listed temporary shims with the generalized
    constrained-relaxation path.

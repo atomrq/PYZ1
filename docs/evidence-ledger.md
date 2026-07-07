@@ -22,6 +22,17 @@ temporary oracle-regression shims, not final clean-room reducer algorithms.
 
 Latest remote GPU-cluster gate evidence:
 
+- `.omo/evidence/task-165-chain17-guard-diagnostic/source-trace.md`:
+  classifies the chain17 guard-enabled residual inspection as
+  `diagnostic_only` / `oracle_residual_inference_generalizable`; visible source
+  and current reducer inspection confirm no chain17 oracle final-position shim
+  is present
+- `.omo/evidence/task-165-chain17-guard-diagnostic/chain17-geometry.md`:
+  compares benchmark-05 SP+ default, guard-enabled, and oracle chain17
+  geometry; the guard-enabled path keeps the oracle source/pair sequence and
+  node count but still has `0.999611` contour delta, making the next target a
+  generalized endpoint-fixed multi-node relaxation rule rather than copied
+  oracle coordinates
 - `.omo/evidence/task-164-relaxation-report-surface/source-trace.md`:
   classifies the contact-relaxation regression surface as `diagnostic_only`
   with `oracle_residual_inference_generalizable` measurement; default reducer
