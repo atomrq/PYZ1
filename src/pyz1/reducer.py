@@ -4,6 +4,10 @@ from dataclasses import dataclass, replace
 from math import ceil, floor, sqrt
 from typing import TYPE_CHECKING, Final
 
+from pyz1.contact_relaxation import (
+    ContactConstrainedNodeRelaxation,
+    relax_contact_constrained_node,
+)
 from pyz1.geometry import (
     GEOMETRY_TOLERANCE,
     GeometryBox,
@@ -387,6 +391,7 @@ class ReducerSettings:
     max_sweeps: int = 16
     pairing_enabled: bool = False
     contact_preservation_distance: float = 0.1
+    contact_relaxation_enabled: bool = False
     trace_diagnostics_enabled: bool = True
 
 
@@ -1324,6 +1329,7 @@ class _ReciprocalRetentionState:
     candidates: list[list[_PreservedKinkCandidate]]
     original_chains: tuple[Chain, ...]
     reduced_chains: tuple[Chain, ...]
+    settings: ReducerSettings
 
 
 @dataclass(frozen=True, slots=True)
@@ -1448,6 +1454,7 @@ def _preserve_close_contacts(
         candidates=reciprocal_candidates,
         original_chains=original_chains,
         reduced_chains=reduced_chains,
+        settings=settings,
     )
     _apply_reciprocal_true_chain_candidates(retention_state)
     _prune_secondary_chain20_pair49_contacts(retention_state)
@@ -1517,6 +1524,12 @@ def _apply_reciprocal_true_chain_candidates(
         projected_candidates = tuple(
             sorted(retained_candidates, key=lambda item: item.source_bead),
         )
+        if state.settings.contact_relaxation_enabled:
+            projected_candidates = _relax_contact_constrained_candidates(
+                state,
+                chain_index,
+                projected_candidates,
+            )
         state.preserved_nodes[chain_index] = _insert_preserved_nodes(
             state.reduced_chains[chain_index],
             projected_candidates,
@@ -1532,6 +1545,63 @@ def _apply_reciprocal_true_chain_candidates(
             + [None]
         )
         _apply_reciprocal_target_candidates(state, chain_index, projected_candidates)
+
+
+def _relax_contact_constrained_candidates(
+    state: _ReciprocalRetentionState,
+    chain_index: int,
+    candidates: tuple[_PreservedKinkCandidate, ...],
+) -> tuple[_PreservedKinkCandidate, ...]:
+    relaxed: list[_PreservedKinkCandidate] = []
+    for candidate_index, candidate in enumerate(candidates):
+        contact = _candidate_pair_contact_segment(state, candidate)
+        if contact is None:
+            relaxed.append(candidate)
+            continue
+        previous = (
+            state.reduced_chains[chain_index].nodes[0]
+            if candidate_index == 0
+            else relaxed[candidate_index - 1].position
+        )
+        next_node = (
+            state.reduced_chains[chain_index].nodes[-1]
+            if candidate_index == len(candidates) - 1
+            else candidates[candidate_index + 1].position
+        )
+        current_contact_distance = segment_distance(
+            Segment(start=candidate.position, end=candidate.position),
+            contact,
+        )
+        relaxed_position = relax_contact_constrained_node(
+            ContactConstrainedNodeRelaxation(
+                previous=previous,
+                current=candidate.position,
+                next_node=next_node,
+                contact=contact,
+                max_contact_distance=current_contact_distance,
+            ),
+        )
+        relaxed.append(replace(candidate, position=relaxed_position))
+    return tuple(relaxed)
+
+
+def _candidate_pair_contact_segment(
+    state: _ReciprocalRetentionState,
+    candidate: _PreservedKinkCandidate,
+) -> Segment | None:
+    if candidate.pair_override is None:
+        return None
+    target_chain_index = candidate.pair_override.chain_index - 1
+    if target_chain_index < 0 or target_chain_index >= len(state.preserved_nodes):
+        return None
+    target_chain = state.preserved_nodes[target_chain_index]
+    target_node_index = candidate.pair_override.node_index
+    if target_node_index < 1 or target_node_index >= target_chain.node_count:
+        return None
+    return Segment(
+        start=target_chain.nodes[target_node_index - 1],
+        end=target_chain.nodes[target_node_index],
+    )
 
 
 def _can_extend_populated_reciprocal_target(

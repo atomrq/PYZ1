@@ -1199,6 +1199,25 @@ def test_reduce_snapshot_when_benchmark05_chain37_matches_oracle_pairs() -> None
     )
 
 
+def test_reduce_snapshot_when_contact_relaxation_shortens_chain37() -> None:
+    snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-05.Z1")
+
+    baseline = reduce_snapshot(snapshot, ReducerSettings(pairing_enabled=True))
+    relaxed = reduce_snapshot(
+        snapshot,
+        ReducerSettings(pairing_enabled=True, contact_relaxation_enabled=True),
+    )
+
+    baseline_chain = baseline.shortest_path.chains[36]
+    relaxed_chain = relaxed.shortest_path.chains[36]
+    assert _shortest_path_chain_contour(relaxed_chain) < _shortest_path_chain_contour(
+        baseline_chain,
+    )
+    assert _paired_source_sequence(relaxed_chain) == _paired_source_sequence(
+        baseline_chain,
+    )
+
+
 def test_reduce_snapshot_when_benchmark05_chain39_matches_oracle_pairs() -> None:
     snapshot = read_z1_file(SOURCE_Z1 / ".benchmark-05.Z1")
 
@@ -1836,6 +1855,16 @@ def _shortest_path_chain_contour(chain: ShortestPathChain) -> float:
     return sum(
         _shortest_path_node_distance(first, second)
         for first, second in zip(chain.nodes[:-1], chain.nodes[1:], strict=True)
+    )
+
+
+def _paired_source_sequence(
+    chain: ShortestPathChain,
+) -> tuple[tuple[float, int, int], ...]:
+    return tuple(
+        (node.source_bead, node.pair.chain_index, node.pair.node_index)
+        for node in chain.nodes
+        if node.pair is not None
     )
 
 

@@ -112,7 +112,13 @@ coordinates must not be production inputs.
      `relax_contact_constrained_node`.
 3. Apply the helper first behind a narrow guard that uses input topology and
    candidate contacts, not oracle coordinates.
-4. Re-run benchmark-04/05 SP+ regression and record whether existing
+   - Task163 adds the first settings-gated reducer integration through
+     `ReducerSettings.contact_relaxation_enabled=False` by default. Focused
+     benchmark-05 chain37 evidence shows contour shortening while preserving
+     the paired source sequence; full benchmark-04/05 default parity is not
+     claimed by this guard.
+4. Re-run benchmark-04/05 SP+ regression with the guard enabled and record
+   whether existing
    oracle-position shims can be removed or narrowed.
 5. Gradually replace the listed temporary shims with the generalized
    constrained-relaxation path.

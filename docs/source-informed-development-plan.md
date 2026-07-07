@@ -210,3 +210,15 @@ implementation step is to integrate this kind of helper behind a narrow reducer
 guard using input-derived contact candidates, then measure benchmark-04/05 SP+
 effects before removing or narrowing existing temporary oracle-regression
 shims.
+
+Task-163 performs that first integration step behind
+`ReducerSettings.contact_relaxation_enabled`, which defaults to `False`.
+The guard uses retained source ordering, pair topology, and pair contact
+segments from the current input-derived reducer state. It shortens the
+benchmark-05 chain37 focused case while preserving the paired source sequence,
+but it is not yet the default reducer path and is not a claim that benchmark-05
+full SP+ parity is closed. The next reducer slice should measure full
+benchmark-04/05 SP+ deltas with the guard enabled, identify which existing
+temporary oracle-regression shims become redundant or conflict with the
+general relaxation path, and then retire only those shims that are covered by
+remote regression evidence.

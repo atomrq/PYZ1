@@ -22,6 +22,25 @@ temporary oracle-regression shims, not final clean-room reducer algorithms.
 
 Latest remote GPU-cluster gate evidence:
 
+- `.omo/evidence/task-163-relaxation-reducer-guard/source-trace.md`:
+  classifies the settings-gated reducer contact-relaxation integration as
+  `oracle_residual_inference_generalizable`; the slice uses benchmark-05
+  chain37 only to expose a residual and does not copy oracle final coordinates
+- `.omo/evidence/task-163-relaxation-reducer-guard/red-focused-pytest.txt`:
+  focused RED failed because `ReducerSettings` did not yet expose
+  `contact_relaxation_enabled`
+- `.omo/evidence/task-163-relaxation-reducer-guard/focused-regression-416689.out`:
+  remote GPU-cluster focused GREEN passed
+  `tests/test_spplus_regression.py::test_reduce_snapshot_when_contact_relaxation_shortens_chain37`
+  with `PYZ1_SOURCE_Z1` pointed at the synced benchmark-05 fixture
+- `.omo/evidence/task-163-relaxation-reducer-guard/static-416688.out`:
+  remote ruff and basedpyright passed for `src/pyz1/reducer.py`,
+  `src/pyz1/contact_relaxation.py`, and `tests/test_spplus_regression.py`
+- `.omo/evidence/task-163-relaxation-reducer-guard/package-smoke-416690.out`:
+  package integration smoke passed after the settings-gated reducer integration
+- `.omo/evidence/task-163-relaxation-reducer-guard/sacct.txt`:
+  records jobs `416688`, `416689`, and `416690` as `COMPLETED` with exit
+  code `0:0`
 - `.omo/evidence/task-162-contact-relaxation/source-trace.md`:
   classifies the contact-constrained relaxation helper as
   `oracle_residual_inference_generalizable`, explicitly avoiding oracle final
