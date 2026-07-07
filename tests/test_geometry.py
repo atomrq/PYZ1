@@ -2,6 +2,10 @@ from __future__ import annotations
 
 from math import isclose
 
+from pyz1.contact_relaxation import (
+    ContactConstrainedNodeRelaxation,
+    relax_contact_constrained_node,
+)
 from pyz1.geometry import (
     CleanedPath,
     GeometryBox,
@@ -188,6 +192,29 @@ def test_evaluate_node_move_when_projected_crossing_is_3d_separated() -> None:
     evaluation = evaluate_node_move(chain, move, context)
 
     assert evaluation.accepted is True
+
+
+def test_relax_contact_constrained_node_when_contact_crosses_direct_path() -> None:
+    relaxation = ContactConstrainedNodeRelaxation(
+        previous=Vector3(0.0, 0.0, 0.0),
+        current=Vector3(2.0, 2.0, 0.0),
+        next_node=Vector3(4.0, 0.0, 0.0),
+        contact=Segment(start=Vector3(2.0, -1.0, 0.0), end=Vector3(2.0, 1.0, 0.0)),
+        max_contact_distance=0.0,
+    )
+
+    relaxed = relax_contact_constrained_node(relaxation)
+
+    assert_vector_close(relaxed, Vector3(2.0, 0.0, 0.0))
+    assert (
+        segment_distance(Segment(start=relaxed, end=relaxed), relaxation.contact)
+        == 0.0
+    )
+    assert chain_contour(
+        Chain((relaxation.previous, relaxed, relaxation.next_node)),
+    ) < chain_contour(
+        Chain((relaxation.previous, relaxation.current, relaxation.next_node)),
+    )
 
 
 def test_clean_collinear_kinks_when_path_has_redundant_nodes() -> None:

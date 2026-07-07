@@ -107,6 +107,9 @@ coordinates must not be production inputs.
    contact distances, and local contour contribution.
 2. Prototype a small pure geometry relaxation helper against synthetic unit
    tests before wiring it into benchmark-05.
+   - Task162 adds `src/pyz1/contact_relaxation.py` with
+     `ContactConstrainedNodeRelaxation` and
+     `relax_contact_constrained_node`.
 3. Apply the helper first behind a narrow guard that uses input topology and
    candidate contacts, not oracle coordinates.
 4. Re-run benchmark-04/05 SP+ regression and record whether existing

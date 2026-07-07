@@ -202,3 +202,11 @@ each reducer change, re-check the visible Z1+/Z1plus-code source surface and
 classify the rationale as `source_contract`, `oracle_residual_inference`, or
 `diagnostic_only`. Keep benchmark-04 SP+ passed and do not weaken existing
 mismatch diagnostics.
+
+Task-162 adds the first generalized building block in
+`src/pyz1/contact_relaxation.py`: endpoint-fixed contact-constrained node
+relaxation driven by local geometry, not oracle final positions. The next
+implementation step is to integrate this kind of helper behind a narrow reducer
+guard using input-derived contact candidates, then measure benchmark-04/05 SP+
+effects before removing or narrowing existing temporary oracle-regression
+shims.

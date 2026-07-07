@@ -22,6 +22,16 @@ temporary oracle-regression shims, not final clean-room reducer algorithms.
 
 Latest remote GPU-cluster gate evidence:
 
+- `.omo/evidence/task-162-contact-relaxation/source-trace.md`:
+  classifies the contact-constrained relaxation helper as
+  `oracle_residual_inference_generalizable`, explicitly avoiding oracle final
+  coordinates
+- `.omo/evidence/task-162-contact-relaxation/remote-gate-416682.out`:
+  corrected remote gate passed `tests/test_geometry.py`, ruff, and basedpyright
+  for `src/pyz1/contact_relaxation.py`, `src/pyz1/geometry.py`, and
+  `tests/test_geometry.py`
+- `.omo/evidence/task-162-contact-relaxation/package-smoke-416683.out`:
+  package integration smoke passed after the new helper landed
 - `.omo/evidence/task-160-chain22-contour/source-trace.md`:
   classifies the benchmark-05 SP+ chain22 contour placement slice as
   `oracle_residual_inference` after checking visible Z1+/Z1plus-code source and
@@ -1605,6 +1615,15 @@ hardcode attempt was rejected before commit and is not a formal reducer
 solution. Future GREEN work for this residual must target generalized
 endpoint-fixed/contact-constrained relaxation rather than copying oracle final
 coordinates.
+
+Task-162 starts that replacement path with `src/pyz1/contact_relaxation.py`.
+The new `ContactConstrainedNodeRelaxation` helper relaxes a retained node using
+only endpoints, current position, a contact segment, and a maximum contact
+distance. Focused TDD evidence is in
+`.omo/evidence/task-162-contact-relaxation/tdd.md`. Corrected remote gate job
+`416682` passed the geometry suite, ruff, and basedpyright; package smoke job
+`416683` passed. This is a generalized geometry building block, not a claim
+that benchmark-05 chain37 contour parity is closed.
 
 ## Open Boundaries
 
