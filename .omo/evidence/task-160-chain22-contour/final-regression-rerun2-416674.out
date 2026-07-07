@@ -1,0 +1,4 @@
+[pyz1] wrote 2 benchmark regression records to /public/home/jxm/codex_runs/z1-task160-chain22-contour-20260707/evidence/benchmark-04-05-spplus-final.md
+benchmark-04 spplus passed Lpp_delta=0.000360349 Z_delta=0 max_chain_contour_delta=0 chain=n/a summary=0 pairs=0 nodes=0
+benchmark-05 spplus mismatch Lpp_delta=0.242685 Z_delta=0 max_chain_contour_delta=1.0324 chain=37 summary=6 pairs=0 nodes=0
+report=/public/home/jxm/codex_runs/z1-task160-chain22-contour-20260707/evidence/benchmark-04-05-spplus-final.md

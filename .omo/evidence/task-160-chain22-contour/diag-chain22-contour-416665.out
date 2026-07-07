@@ -1,0 +1,22 @@
+actual chain22 contour=13.584342660879411 nodes=3
+  node=1 source=1 pos=(-2.003000,-0.903490,-0.631690) pair=None
+  node=2 source=4.84 pos=(-5.341205,-2.714345,1.105042) pair=(25, 2)
+  node=3 source=20 pos=(-5.803300,-7.437800,9.228600) pair=None
+  segments=4.176008,9.408334
+oracle chain22 contour=12.494943295278627 nodes=3
+  node=1 source=1 pos=(-2.003000,-0.903490,-0.631690) pair=None
+  node=2 source=4.84 pos=(-3.090765,-2.209248,0.860356) pair=(25, 2)
+  node=3 source=20 pos=(-5.803300,-7.437800,9.228600) pair=None
+  segments=2.261512,10.233431
+actual chain25 contour=10.577828656387123 nodes=4
+  node=1 source=1 pos=(-2.222200,-3.331100,-3.410400) pair=None
+  node=2 source=11.67 pos=(-4.769255,-1.987048,1.422242) pair=(3, 2)
+  node=3 source=15.83 pos=(-2.356595,-2.305635,0.617153) pair=(40, 2)
+  node=4 source=20 pos=(-2.125800,-3.182500,2.827200) pair=None
+  segments=5.625691,2.563317,2.388821
+oracle chain25 contour=10.577828656387123 nodes=4
+  node=1 source=1 pos=(-2.222200,-3.331100,-3.410400) pair=None
+  node=2 source=11.67 pos=(-4.769255,-1.987048,1.422242) pair=(3, 2)
+  node=3 source=15.83 pos=(-2.356595,-2.305635,0.617153) pair=(40, 2)
+  node=4 source=20 pos=(-2.125800,-3.182500,2.827200) pair=None
+  segments=5.625691,2.563317,2.388821

@@ -1,0 +1,4 @@
+/bin/bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8)
+Traceback (most recent call last):
+  File "<stdin>", line 2, in <module>
+ImportError: cannot import name 'benchmark_regression_records' from 'pyz1.regression' (/public/home/jxm/codex_runs/z1-task160-chain22-contour-20260707/worktree/src/pyz1/regression.py)
