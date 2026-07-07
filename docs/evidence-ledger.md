@@ -29,6 +29,31 @@ regression safety, not on exact equality for every individual chain.
 
 Latest remote GPU-cluster gate evidence:
 
+- `.omo/evidence/task-183-regression-ne-kink-deltas/source-trace.md`:
+  classifies the benchmark regression Ne kink delta report expansion as
+  `source_contract` over the public Z1+ `Z1+summary.dat` column contract and
+  `Z1plus-code` summary header
+- `.omo/evidence/task-183-regression-ne-kink-deltas/red-focused-416892.out`:
+  RED failed for the intended reason: `RegressionRecord` did not yet expose
+  `ne_classical_kink_delta`
+- `.omo/evidence/task-183-regression-ne-kink-deltas/focused-416895.out`:
+  focused benchmark-05 SP+ contact-relaxation report test passed after adding
+  structured `Ne_CK` and `Ne_MK` delta fields and treating their small nonzero
+  residuals as statistical/report evidence
+- `.omo/evidence/task-183-regression-ne-kink-deltas/static-416896.out`:
+  `ruff` and `basedpyright` passed for `src/pyz1/regression.py` and
+  `tests/test_spplus_regression.py`
+- `.omo/evidence/task-183-regression-ne-kink-deltas/package-smoke-416897.out`
+  and `.omo/evidence/task-183-regression-ne-kink-deltas/benchmark-05-spplus-ne-kink-deltas-final.md`:
+  installed CLI smoke passed and recorded benchmark-05 SP+ as strict
+  `mismatch` but statistical `passed`, with
+  `Ne classical kink delta = 0.000493562` and
+  `Ne modified kink delta = 0.000285714`
+- `.omo/evidence/task-183-regression-ne-kink-deltas/sacct.txt`:
+  records RED job `416892` as expected `FAILED`, final jobs `416895`,
+  `416896`, and `416897` as `COMPLETED`, plus a superseded focused GREEN
+  failure `416893` caused by an exact-zero expectation that was corrected to a
+  statistical residual bound
 - `.omo/evidence/task-182-regression-ne-deltas/source-trace.md`:
   classifies the benchmark regression Ne coil delta report expansion as
   `source_contract` over the public Z1+ `Z1+summary.dat` column contract and

@@ -274,6 +274,13 @@ default/SP+/selfZ benchmark regression report. This follows the public
 diagnostics unchanged while making summary/Ne residuals structured evidence
 for future statistical parity work.
 
+Task-183 adds the adjacent source-backed `Ne_CK` and `Ne_MK` delta columns to
+the default/SP+/selfZ benchmark regression report. This uses the same public
+`Z1+summary.dat` contract and `Z1plus-code` header, keeps strict and
+statistical status logic unchanged, and records benchmark-05 SP+
+contact-relaxation kink-Ne residuals as statistical/report evidence rather than
+exact-equality requirements.
+
 Task-162 adds the first generalized building block in
 `src/pyz1/contact_relaxation.py`: endpoint-fixed contact-constrained node
 relaxation driven by local geometry, not oracle final positions. The next

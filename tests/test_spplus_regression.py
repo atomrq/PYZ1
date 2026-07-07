@@ -1271,6 +1271,10 @@ def test_write_benchmark_report_when_contact_relaxation_measures_guarded_spplus(
     assert records[0].pyz1_source_sequence_mismatch_count == 0
     assert records[0].lpp_delta is not None
     assert records[0].lpp_delta < 0.01
+    assert records[0].ne_classical_kink_delta is not None
+    assert records[0].ne_classical_kink_delta < 0.001
+    assert records[0].ne_modified_kink_delta is not None
+    assert records[0].ne_modified_kink_delta < 0.001
     assert records[0].ne_classical_coil_delta is not None
     assert records[0].ne_classical_coil_delta < 0.02
     assert records[0].ne_modified_coil_delta is not None
@@ -1313,6 +1317,7 @@ def test_write_benchmark_report_when_contact_relaxation_measures_guarded_spplus(
         < 1.0e-12
     )
     assert "mean chain contour delta | rms chain contour delta" in text
+    assert "Ne classical kink delta | Ne modified kink delta" in text
     assert "Ne classical coil delta | Ne modified coil delta" in text
     assert "contact relaxation" in text
     assert "| benchmark-05 | spplus | yes | mismatch | passed |" in text

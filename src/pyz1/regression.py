@@ -184,6 +184,8 @@ class RegressionRecord:
     status: RegressionStatus
     lpp_delta: float | None
     z_delta: float | None
+    ne_classical_kink_delta: float | None
+    ne_modified_kink_delta: float | None
     ne_classical_coil_delta: float | None
     ne_modified_coil_delta: float | None
     summary_field_mismatches: int | None
@@ -425,6 +427,8 @@ def _compare_benchmark_mode(
             status=RegressionStatus.KNOWN_INVALID,
             lpp_delta=None,
             z_delta=None,
+            ne_classical_kink_delta=None,
+            ne_modified_kink_delta=None,
             ne_classical_coil_delta=None,
             ne_modified_coil_delta=None,
             summary_field_mismatches=None,
@@ -475,6 +479,8 @@ def _compare_benchmark_mode(
             status=RegressionStatus.KNOWN_INVALID,
             lpp_delta=None,
             z_delta=None,
+            ne_classical_kink_delta=None,
+            ne_modified_kink_delta=None,
             ne_classical_coil_delta=None,
             ne_modified_coil_delta=None,
             summary_field_mismatches=None,
@@ -530,6 +536,12 @@ def _compare_benchmark_mode(
         - oracle_summary.mean_shortest_path_contour,
     )
     z_delta = abs(actual_summary.mean_entanglements - oracle_summary.mean_entanglements)
+    ne_classical_kink_delta = abs(
+        actual_summary.ne_classical_kink - oracle_summary.ne_classical_kink,
+    )
+    ne_modified_kink_delta = abs(
+        actual_summary.ne_modified_kink - oracle_summary.ne_modified_kink,
+    )
     ne_classical_coil_delta = abs(
         actual_summary.ne_classical_coil - oracle_summary.ne_classical_coil,
     )
@@ -597,6 +609,8 @@ def _compare_benchmark_mode(
         status=status,
         lpp_delta=lpp_delta,
         z_delta=z_delta,
+        ne_classical_kink_delta=ne_classical_kink_delta,
+        ne_modified_kink_delta=ne_modified_kink_delta,
         ne_classical_coil_delta=ne_classical_coil_delta,
         ne_modified_coil_delta=ne_modified_coil_delta,
         summary_field_mismatches=summary_field_mismatches,
@@ -1833,6 +1847,7 @@ def _format_report(records: tuple[RegressionRecord, ...]) -> str:
     header = (
         "| benchmark | mode | contact relaxation | status | statistical status | "
         "Lpp delta | Z delta | "
+        "Ne classical kink delta | Ne modified kink delta | "
         "Ne classical coil delta | Ne modified coil delta | "
         "max chain contour delta | max chain contour delta chain | "
         "mean chain contour delta | rms chain contour delta | "
@@ -1926,6 +1941,8 @@ def _format_record(record: RegressionRecord) -> str:
         f"{record.status.value} | {record.statistical_status.value} | "
         f"{_format_optional_float(record.lpp_delta)} | "
         f"{_format_optional_float(record.z_delta)} | "
+        f"{_format_optional_float(record.ne_classical_kink_delta)} | "
+        f"{_format_optional_float(record.ne_modified_kink_delta)} | "
         f"{_format_optional_float(record.ne_classical_coil_delta)} | "
         f"{_format_optional_float(record.ne_modified_coil_delta)} | "
         f"{_format_optional_float(record.max_chain_contour_delta)} | "
