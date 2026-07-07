@@ -26,7 +26,7 @@ FLOAT_TOLERANCE: Final = 1.0e-9
 REPORT_HEADER: Final = (
     "| benchmark | status | input chains | input nodes | input <N> | "
     "Z1+ chains delta | PPA+ chains delta | Z1+ <N> delta | "
-    "PPA+ <N> delta | note |"
+    "PPA+ <N> delta | Z1+ <Z> | Z1+ Ne_MC | PPA+ Ne_MC | note |"
 )
 
 
@@ -54,6 +54,9 @@ class CorpusSmokeRecord:
     ppaplus_chain_count_delta: int | None
     z1plus_mean_original_beads_delta: float | None
     ppaplus_mean_original_beads_delta: float | None
+    z1plus_mean_entanglements: float | None
+    z1plus_ne_modified_coil: float | None
+    ppaplus_ne_modified_coil: float | None
     note: str
 
 
@@ -118,8 +121,11 @@ def read_corpus_smoke_record(
         or dump_input.true_chain_count is None
         or z1plus_log.chains is None
         or z1plus_log.mean_original_beads is None
+        or z1plus_log.mean_entanglements is None
+        or z1plus_log.ne_modified_coil is None
         or ppaplus_log.chains is None
         or ppaplus_log.mean_original_beads is None
+        or ppaplus_log.ne_modified_coil is None
     ):
         return _incomplete_record(benchmark_id)
 
@@ -149,6 +155,9 @@ def read_corpus_smoke_record(
         ppaplus_chain_count_delta=deltas.ppaplus_chain_count,
         z1plus_mean_original_beads_delta=deltas.z1plus_mean_original_beads,
         ppaplus_mean_original_beads_delta=deltas.ppaplus_mean_original_beads,
+        z1plus_mean_entanglements=z1plus_log.mean_entanglements,
+        z1plus_ne_modified_coil=z1plus_log.ne_modified_coil,
+        ppaplus_ne_modified_coil=ppaplus_log.ne_modified_coil,
         note=_status_note(status),
     )
 
@@ -201,6 +210,9 @@ def _incomplete_record(benchmark_id: str) -> CorpusSmokeRecord:
         ppaplus_chain_count_delta=None,
         z1plus_mean_original_beads_delta=None,
         ppaplus_mean_original_beads_delta=None,
+        z1plus_mean_entanglements=None,
+        z1plus_ne_modified_coil=None,
+        ppaplus_ne_modified_coil=None,
         note=_status_note(CorpusSmokeStatus.INCOMPLETE),
     )
 
@@ -210,11 +222,16 @@ def _format_report(records: tuple[CorpusSmokeRecord, ...]) -> str:
         "# pyz1 corpus statistical smoke",
         "",
         REPORT_HEADER,
-        "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+        _format_report_separator(),
     ]
     lines.extend(_format_record_row(record) for record in records)
     lines.append("")
     return "\n".join(lines)
+
+
+def _format_report_separator() -> str:
+    column_count = len(REPORT_HEADER.strip().strip("|").split("|"))
+    return "| " + " | ".join("---" for _ in range(column_count)) + " |"
 
 
 def _format_record_row(record: CorpusSmokeRecord) -> str:
@@ -227,6 +244,9 @@ def _format_record_row(record: CorpusSmokeRecord) -> str:
         f"{_format_int(record.ppaplus_chain_count_delta)} | "
         f"{_format_float(record.z1plus_mean_original_beads_delta)} | "
         f"{_format_float(record.ppaplus_mean_original_beads_delta)} | "
+        f"{_format_float(record.z1plus_mean_entanglements)} | "
+        f"{_format_float(record.z1plus_ne_modified_coil)} | "
+        f"{_format_float(record.ppaplus_ne_modified_coil)} | "
         f"{record.note} |"
     )
 

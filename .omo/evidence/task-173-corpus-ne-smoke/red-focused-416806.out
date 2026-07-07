@@ -1,0 +1,41 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+___ test_write_corpus_smoke_report_when_inputs_and_logs_align_reports_passed ___
+
+tmp_path = PosixPath('/tmp/pytest-of-jxm/pytest-289/test_write_corpus_smoke_report0')
+
+    def test_write_corpus_smoke_report_when_inputs_and_logs_align_reports_passed(
+        tmp_path: Path,
+    ) -> None:
+        report_path = tmp_path / "corpus-stat-smoke.md"
+    
+        records = write_corpus_smoke_report(
+            CorpusSmokeReportRequest(
+                benchmark_root=BENCHMARK_ROOT,
+                report_path=report_path,
+                benchmark_ids=("07", "10", "11"),
+            ),
+        )
+    
+        text = report_path.read_text(encoding="utf-8")
+        assert len(records) == 3
+        assert tuple(record.status for record in records) == (
+            CorpusSmokeStatus.PASSED,
+            CorpusSmokeStatus.PASSED,
+            CorpusSmokeStatus.PASSED,
+        )
+        assert records[0].input_chain_count == 129
+        assert records[0].input_node_count == 12900
+        assert records[0].input_mean_original_beads == 100.0
+        assert records[2].input_chain_count == 1044
+        assert records[2].input_node_count == 104400
+        assert records[2].z1plus_mean_original_beads_delta == 0.0
+        assert records[2].ppaplus_mean_original_beads_delta == 0.0
+>       assert records[0].z1plus_mean_entanglements == 16.48062
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'CorpusSmokeRecord' object has no attribute 'z1plus_mean_entanglements'
+
+tests/test_corpus_smoke.py:48: AttributeError
+=========================== short test summary info ============================
+FAILED tests/test_corpus_smoke.py::test_write_corpus_smoke_report_when_inputs_and_logs_align_reports_passed
+1 failed in 0.66s

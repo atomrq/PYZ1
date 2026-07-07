@@ -40,6 +40,17 @@ evidence still leaves scientific and scalability boundaries open.
 
 Latest gate artifacts:
 
+- `.omo/evidence/task-173-corpus-ne-smoke/source-trace.md`:
+  records a `source_contract` corpus smoke expansion over public
+  `mkmat/Z1plus-code` benchmark 07/10/11 Z1+/PPA+ reference logs
+- `.omo/evidence/task-173-corpus-ne-smoke/focused-green-416807.out`,
+  `.omo/evidence/task-173-corpus-ne-smoke/focused-static-416810.out`,
+  `.omo/evidence/task-173-corpus-ne-smoke/package-smoke-final-416811.out`,
+  `.omo/evidence/task-173-corpus-ne-smoke/corpus-stat-ne-smoke-final.md`,
+  and `.omo/evidence/task-173-corpus-ne-smoke/sacct.txt`:
+  record the remote GPU-cluster gate for adding source-backed `Z1+ <Z>`,
+  `Z1+ Ne_MC`, and `PPA+ Ne_MC` tracking fields to the benchmark 07/10/11
+  corpus statistical smoke report
 - `.omo/evidence/task-172-regression-statistical-contour/source-trace.md`:
   records a `diagnostic_only` regression-report slice that adds ensemble
   mean/RMS chain-contour delta metrics without weakening per-chain residual

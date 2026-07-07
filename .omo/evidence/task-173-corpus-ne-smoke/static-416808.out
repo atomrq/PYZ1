@@ -1,0 +1,12 @@
+E501 Line too long (90 > 88)
+   --> src/pyz1/corpus_smoke.py:225:89
+    |
+223 |         "",
+224 |         REPORT_HEADER,
+225 |         "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+    |                                                                                         ^^
+226 |     ]
+227 |     lines.extend(_format_record_row(record) for record in records)
+    |
+
+Found 1 error.

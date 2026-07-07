@@ -26,6 +26,29 @@ generalized topology/source/pairing rule.
 
 Latest remote GPU-cluster gate evidence:
 
+- `.omo/evidence/task-173-corpus-ne-smoke/source-trace.md`:
+  classifies the corpus Ne smoke expansion as `source_contract` over public
+  `mkmat/Z1plus-code` benchmark 07/10/11 Z1+/PPA+ reference logs
+- `.omo/evidence/task-173-corpus-ne-smoke/red-focused-416806.out`:
+  RED failed for the intended reason:
+  `CorpusSmokeRecord` did not yet expose `z1plus_mean_entanglements`
+- `.omo/evidence/task-173-corpus-ne-smoke/focused-green-416807.out`:
+  focused corpus smoke test passed after threading selected reference-log
+  summary/Ne fields into the report
+- `.omo/evidence/task-173-corpus-ne-smoke/focused-static-416810.out`:
+  final focused pytest, `ruff`, and `basedpyright` passed for
+  `src/pyz1/corpus_smoke.py` and `tests/test_corpus_smoke.py`
+- `.omo/evidence/task-173-corpus-ne-smoke/package-smoke-final-416811.out`:
+  editable install and `pyz1-corpus-stat-smoke` console-script report
+  generation passed
+- `.omo/evidence/task-173-corpus-ne-smoke/corpus-stat-ne-smoke-final.md`:
+  final report keeps benchmark 07/10/11 `passed` for input/reference baseline
+  checks and adds source-backed `Z1+ <Z>`, `Z1+ Ne_MC`, and `PPA+ Ne_MC`
+  tracking fields
+- `.omo/evidence/task-173-corpus-ne-smoke/sacct.txt`:
+  records final jobs `416807`, `416810`, and `416811` as `COMPLETED` with
+  `ExitCode=0:0`; RED and superseded static/package attempts remain recorded
+
 - `.omo/evidence/task-172-regression-statistical-contour/source-trace.md`:
   classifies the benchmark regression contour-statistics report slice as
   `diagnostic_only`; it adds ensemble-level mean/RMS chain-contour deltas while

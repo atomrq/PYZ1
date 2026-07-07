@@ -319,3 +319,9 @@ report now includes ensemble `mean chain contour delta` and
 per-chain residual-detail diagnostics. This is a diagnostic/report improvement,
 not a reducer algorithm change and not a claim that benchmark-05 full parity is
 closed.
+
+Task-173 extends the benchmark 07/10/11 corpus statistical smoke with
+source-backed `Z1+ <Z>`, `Z1+ Ne_MC`, and `PPA+ Ne_MC` columns parsed from the
+public `mkmat/Z1plus-code` reference logs. This strengthens summary/Ne tracking
+for future statistical parity work while keeping the report explicitly separate
+from full native reducer or PPA+ runtime parity.
